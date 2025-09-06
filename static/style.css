@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #141b33;
+    color: white;
+}
+
+button {
+    color: white;
+    background: none;
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    gap: 15px;
+    justify-content: center; /* Centra horizontalmente */
+}
+
+a:link { 
+    text-decoration: none;
+} 
+
+.category {
+    background-color: #0b1021;
+    padding: 10px;
+    border: 5px solid #6f60eb;
+    border-radius: 10px;
+}
+
+.items-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 162px); /* Exactamente 3 columnas de 160px + 2px de borde */
+    gap: 10px;
+    width: fit-content; /* Se ajusta al contenido */
+}
+
+.item {
+    border: 1px solid rgba(255, 0, 0, 0);
+    border-radius: 5px;
+    background-color: #141b33;
+    width: 160px;
+    height: 170px;
+    transition: all 0.2s ease-in-out;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.item:hover {
+    scale: 1.1;
+    z-index: 1001;
+}
+
+.content-wrapper{
+    text-align: center;
+    color: white;
+}
+
+.category-title{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    background-color: #503fe4;
+    border: 2px solid rgba(0, 0, 0, 0);
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+}
+
+.category-title:hover{
+    background-color: #4f3fe4a2;
+}
+
+.context-menu{
+    display: none;
+    position: fixed;
+    background-color: red;
+    width: auto;
+    height: auto;
+    top: 100px;
+    left: 200px;
+}
+
+.toolbox{
+    text-align: left;
+}
