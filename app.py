@@ -95,6 +95,27 @@ def set_dictionary(data):
         items.append(data_dict)
     return items
 
+def get_items_ids():
+    item_ids = []
+    for item in data:
+        item_ids.append(int(item["id"]))
+    return item_ids
+
+def get_usable_id():
+    return max(get_items_ids()) + 1
+
+
+# Create item
+@app.route('/item/', methods=['POST'])
+def create_item():
+    new_item_data = request.get_json()
+    new_item_data['id'] = get_usable_id() # Populating with an id
+    
+    data.append(new_item_data)
+    update_database()
+    
+    return jsonify({"success": True})
+    
 # Delete item
 @app.route('/item/<int:item_id>', methods=['DELETE'])
 def delete_item(item_id):
@@ -103,10 +124,10 @@ def delete_item(item_id):
         if item["id"] == str(item_id):
             data.pop(i)
             update_database()
+            
             return jsonify({"success": True})
     
     return jsonify({"success": False, "error": "Item not found"}), 404
-
 
 # Get item
 @app.route('/item/<int:item_id>', methods=['GET'])
@@ -125,7 +146,7 @@ def get_item(item_id):
         'success': False,
         'error': 'Item not found'
     }), 404
-    
+
 # Edit item
 @app.route('/item/<int:item_id>', methods=['PUT'])
 def update_item(item_id):
@@ -151,13 +172,11 @@ def home():
     return render_template('index.html', grouped_category=grouped_data)
 
 if __name__ == "__main__":
-    
     data = reload_database()
     categories_grouped = grouped_data
     
     monitor_changes = threading.Thread(target=monitor_database_changes, daemon=True)
     monitor_changes.start()
-    
-    print(data)
+
     print("✅ Started")
     app.run(debug=True)

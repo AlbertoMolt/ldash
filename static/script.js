@@ -1,6 +1,7 @@
 const contextMenu = document.getElementById('contextMenu');
-const editItemDialog = document.getElementById('editItemDialog');
 const deleteItemDialog = document.getElementById('deleteItemDialog');
+const editItemDialog = document.getElementById('editItemDialog');
+const createItemDialog = document.getElementById('createItemDialog');
 
 
 let currentMouseX = 0;
@@ -59,41 +60,40 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                 <div class="edit-item-wrapper">
                     <h2>Edit ${item.name}</h2>
         
-                    <label for="itemName">Name</label><br>
-                    <input type="text" class="inputEdit" id="itemName" name="itemName" value="${item.name}"><br>
+                    <label for="itemNameEdit">Name</label><br>
+                    <input type="text" id="itemNameEdit" name="itemNameEdit" value="${item.name}"><br>
                     <br>
         
-                    <label for="itemIcon">Icon</label><br>
-                    <input type="text" class="inputEdit" id="itemIcon" name="itemIcon" value="${item.icon}"><br>
-                    <div class="icon-wrapper">
-                        <img src=${item.icon} id="iconPreview" width="30px">
+                    <label for="itemIconEdit">Icon</label><br>
+                    <input type="text" id="itemIconEdit" name="itemIconEdit" value="${item.icon}"><br>
+                    <div class="icon-preview-container">
+                        <img src=${item.icon} id="iconPreviewEdit" width="30px">
                     </div>
                     <br>
         
-                    <label for="itemUrl">Url</label><br>
-                    <input type="url" class="inputEdit" id="itemUrl" name="itemUrl" value="${item.url}"><br>
+                    <label for="itemUrlEdit">Url</label><br>
+                    <input type="url" id="itemUrlEdit" name="itemUrlEdit" value="${item.url}"><br>
                     <br>
         
-                    <label for="itemCategory">Category</label><br>
-                    <input type="text" class="inputEdit" id="itemCategory" name="itemCategory" value="${item.category}"><br>
+                    <label for="itemCategoryEdit">Category</label><br>
+                    <input type="text" id="itemCategoryEdit" name="itemCategoryEdit" value="${item.category}"><br>
                     <br>
                     
-                    <label for="openingMethod">Opening method</label><br>
-                    <select class="inputEdit" id="openingMethod" name="openingMethod">
+                    <label for="openingMethodEdit">Opening method</label><br>
+                    <select id="openingMethodEdit" name="openingMethodEdit">
                         <option value="true" ${item.tabType === 'true' ? 'selected' : ''}>New tab</option>
                         <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
                     </select>
                 </div>
-                <button type="button" id="applyChangesBtn" onclick="applyChanges()">Apply</button>
-                <button type="button" id="cancelChangesBtn" onclick="cancelOperation()">Cancel</button>
+                <button type="button" onclick="applyChanges()">Apply</button>
+                <button type="button" onclick="cancelOperation()">Cancel</button>
             `;
         
-            const itemIconInput = document.getElementById('itemIcon')
-            const iconPreview = document.getElementById('iconPreview')
+            const itemIconEditInput = document.getElementById('itemIconEdit')
+            const iconPreviewEdit = document.getElementById('iconPreviewEdit')
         
-            itemIconInput.addEventListener('input', () => {
-                console.log(itemIconInput.value);
-                iconPreview.src = itemIconInput.value;
+            itemIconEditInput.addEventListener('input', () => {
+                iconPreviewEdit.src = itemIconEditInput.value;
             });
         })
         .catch(err => alert(err));
@@ -105,17 +105,17 @@ function applyChanges(){
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                name: document.getElementById('itemName').value,
-                icon: document.getElementById('itemIcon').value,
-                url: document.getElementById('itemUrl').value,
-                category: document.getElementById('itemCategory').value,
-                tab_type: document.getElementById('openingMethod').value
+                name: document.getElementById('itemNameEdit').value,
+                icon: document.getElementById('itemIconEdit').value,
+                url: document.getElementById('itemUrlEdit').value,
+                category: document.getElementById('itemCategoryEdit').value,
+                tab_type: document.getElementById('openingMethodEdit').value
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload(); // Recargar página
+                location.reload();
             } else {
                 alert('Error: ' + data.error);
             }
@@ -124,6 +124,76 @@ function applyChanges(){
         console.error("ID item undefined")
     }
 }
+
+//################################
+//            CREATE
+//################################
+document.getElementById("createItemBtn").addEventListener('click', function(){
+    createItemDialog.showModal();
+
+    createItemDialog.innerHTML = `
+        <div class="create-item-wrapper">
+            <h2>Create item</h2>
+
+            <label for="itemNameCreate">Name</label><br>
+            <input type="text" id="itemNameCreate" name="itemNameCreate"><br>
+            <br>
+
+            <label for="itemIconCreate">Icon</label><br>
+            <input type="text" id="itemIconCreate" name="itemIconCreate"><br>
+            <div class="icon-wrapper">
+                <img src="" id="iconPreviewCreate" width="30px">
+            </div>
+            <br>
+
+            <label for="itemUrlCreate">Url</label><br>
+            <input type="url" id="itemUrlCreate" name="itemUrlCreate" value=""><br>
+            <br>
+
+            <label for="itemCategoryCreate">Category</label><br>
+            <input type="text" id="itemCategoryCreate" name="itemCategoryCreate" value=""><br>
+            <br>
+            
+            <label for="openingMethodCreate">Opening method</label><br>
+            <select id="openingMethodCreate" name="openingMethodCreate">
+                <option value="true" selected>New tab</option>
+                <option value="false">Same tab</option>
+            </select>
+        </div>
+        <button type="button" onclick="createItem()">Create</button>
+        <button type="button" onclick="cancelOperation()">Cancel</button>
+    `
+
+    const itemIconCreateInput = document.getElementById('itemIconCreate')
+    const iconPreviewCreate = document.getElementById('iconPreviewCreate')
+
+    itemIconCreateInput.addEventListener('input', () => {
+        iconPreviewCreate.src = itemIconCreateInput.value;
+    });
+});
+
+function createItem(){
+    fetch('/item', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            id: '0',
+            name: document.getElementById('itemNameCreate').value,
+            icon: document.getElementById('itemIconCreate').value,
+            url: document.getElementById('itemUrlCreate').value,
+            category: document.getElementById('itemCategoryCreate').value,
+            tab_type: document.getElementById('openingMethodCreate').value
+        })  
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload()
+        } else {
+            throw new Error(data.error);
+        }
+    });
+};
 
 //################################
 //       GENERAL FUNCTIONS
@@ -162,6 +232,9 @@ function cancelOperation() {
     `
     deleteItemDialog.close();
 
+    //Create dialog
+    createItemDialog.close();
+
 }
 //---------------------------------
 
@@ -171,7 +244,6 @@ document.addEventListener("contextmenu", function(event) {
         
         if (item_selected) {
             event.preventDefault();
-            console.log("id item selected: ", item_selected);
 
             itemid = item_selected
 

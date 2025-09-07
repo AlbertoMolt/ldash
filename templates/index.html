@@ -30,6 +30,10 @@
         {% endfor %}
     </div>
 
+    <div class="toolbar">
+        <button class="create-item-btn" id="createItemBtn">+</button>
+    </div>
+
     <div class="context-menu" id="contextMenu">
         <h1 class="context-title">Config</h1>
             <div class="context-toolbox" id="toolbox">
@@ -39,13 +43,11 @@
         </div>
     </div>
 
-    <dialog class="edit-item-dialog" id="editItemDialog">
-        <p>Loading...</p>
-    </dialog>
+    <dialog class="edit-item-dialog" id="editItemDialog"><p>Loading...</p></dialog>
 
-    <dialog class="delete-item-dialog" id="deleteItemDialog">
-        <p>Loading...</p>
-    </dialog>
+    <dialog class="delete-item-dialog" id="deleteItemDialog"><p>Loading...</p></dialog>
+
+    <dialog class="create-item-dialog" id="createItemDialog"></dialog>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
