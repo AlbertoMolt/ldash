@@ -1,86 +1,169 @@
 const contextMenu = document.getElementById('contextMenu');
 const editItemDialog = document.getElementById('editItemDialog');
+const deleteItemDialog = document.getElementById('deleteItemDialog');
 
 
 let currentMouseX = 0;
 let currentMouseY = 0;
 
-<<<<<<< HEAD
 let itemid = 0;
 
-=======
->>>>>>> 6bb3e6e (Implement database monitoring and CRUD operations with Flask; add context menu for item editing and deletion)
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
     currentMouseX = e.clientX;
     currentMouseY = e.clientY;
 });
 
-function getMousePos() {
-    console.log('X: ' + currentMouseX + ', Y: ' + currentMouseY);
-    
-    contextMenu.style.display = 'block';
-    contextMenu.style.top = currentMouseY + 'px';
-    contextMenu.style.left = currentMouseX + 'px';
-}
+//################################
+//            DELETE
+//################################
+document.getElementById('deleteItemBtn').addEventListener('click', function(){
+    deleteItemDialog.showModal();
 
+    getItemData()
+    .then(item => {
+        deleteItemDialog.innerHTML = `
+            <h2>Delete ${item.name}</h2>
+            <p>Are you sure?<p>
+            <button type="button" id="confirmDelete" onclick="deleteItem()">Yes</button>
+            <button type="button" id="cancelDelete" onclick="cancelOperation()">Cancel</button>
+        `
+    })
+    .catch(err => alert(err));
+});
 
-document.getElementById('editItem').addEventListener('click', function(){
-    editItemDialog.showModal();
-
-<<<<<<< HEAD
-
-    fetch(`/item/${itemid}`, {  // aquí el ID va en la URL
-        method: 'GET',             // usamos GET porque solo queremos obtener datos
+function deleteItem(){
+    fetch(`/item/${itemid}`, {
+        method: 'DELETE',
         headers: {'Content-Type': 'application/json'}
     })
-
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            
+            location.reload()
         } else {
             alert('Error: ' + data.error);
         }
-    });
-
-=======
->>>>>>> 6bb3e6e (Implement database monitoring and CRUD operations with Flask; add context menu for item editing and deletion)
-    dialogContent = `
-        <input type="text" id="itemName" name="Item name" value=""><br>
-        <input type="text" id="itemIcon" name="Item icon" value=""><br>
-        <input type="url" id="itemUrl" name="Item url" value=""><br>
-        <input type="text" id="itemUrl" name="Item category" value=""><br>
-
-        <select id="openingMethod" name="Opening method">
-            <option value="true">New tab</option>
-            <option value="false">Same tab</option>
-        </select>
-    `;
-
-    editItemDialog.innerHTML = dialogContent
-
-<<<<<<< HEAD
-
-=======
-    console.log("Hola")
-    fetch('/edit_item', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: })
     })
+}
 
+//################################
+//            EDIT
+//################################
+document.getElementById('editItemBtn').addEventListener('click', function(){
+    editItemDialog.showModal();
+
+    getItemData()
+        .then(item => {
+            editItemDialog.innerHTML = `
+                <div class="edit-item-wrapper">
+                    <h2>Edit ${item.name}</h2>
+        
+                    <label for="itemName">Name</label><br>
+                    <input type="text" class="inputEdit" id="itemName" name="itemName" value="${item.name}"><br>
+                    <br>
+        
+                    <label for="itemIcon">Icon</label><br>
+                    <input type="text" class="inputEdit" id="itemIcon" name="itemIcon" value="${item.icon}"><br>
+                    <div class="icon-wrapper">
+                        <img src=${item.icon} id="iconPreview" width="30px">
+                    </div>
+                    <br>
+        
+                    <label for="itemUrl">Url</label><br>
+                    <input type="url" class="inputEdit" id="itemUrl" name="itemUrl" value="${item.url}"><br>
+                    <br>
+        
+                    <label for="itemCategory">Category</label><br>
+                    <input type="text" class="inputEdit" id="itemCategory" name="itemCategory" value="${item.category}"><br>
+                    <br>
+                    
+                    <label for="openingMethod">Opening method</label><br>
+                    <select class="inputEdit" id="openingMethod" name="openingMethod">
+                        <option value="true" ${item.tabType === 'true' ? 'selected' : ''}>New tab</option>
+                        <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
+                    </select>
+                </div>
+                <button type="button" id="applyChangesBtn" onclick="applyChanges()">Apply</button>
+                <button type="button" id="cancelChangesBtn" onclick="cancelOperation()">Cancel</button>
+            `;
+        
+            const itemIconInput = document.getElementById('itemIcon')
+            const iconPreview = document.getElementById('iconPreview')
+        
+            itemIconInput.addEventListener('input', () => {
+                console.log(itemIconInput.value);
+                iconPreview.src = itemIconInput.value;
+            });
+        })
+        .catch(err => alert(err));
+});
+
+function applyChanges(){
+    if (itemid != 0) {
+        fetch(`/item/${itemid}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: document.getElementById('itemName').value,
+                icon: document.getElementById('itemIcon').value,
+                url: document.getElementById('itemUrl').value,
+                category: document.getElementById('itemCategory').value,
+                tab_type: document.getElementById('openingMethod').value
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Recargar página
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    } else {
+        console.error("ID item undefined")
+    }
+}
+
+//################################
+//       GENERAL FUNCTIONS
+//################################
+function getItemData() {
+    return fetch(`/item/${itemid}`, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload(); // Recarga la página
+            return {
+                name: data.name,
+                icon: data.icon,
+                url: data.url,
+                category: data.category,
+                tabType: data.tab_type
+            };
         } else {
-            alert('Error: ' + data.error);
+            throw new Error(data.error);
         }
     });
->>>>>>> 6bb3e6e (Implement database monitoring and CRUD operations with Flask; add context menu for item editing and deletion)
-})
+}
 
+function cancelOperation() {
+    //Edit dialog
+    editItemDialog.innerHTML = `
+        <p>Loading...</p>
+    `
+    editItemDialog.close();
+
+    //Delete dialog
+    deleteItemDialog.innerHTML = `
+        <p>Loading...</p>
+    `
+    deleteItemDialog.close();
+
+}
+//---------------------------------
 
 document.addEventListener("contextmenu", function(event) {
     try {
@@ -89,11 +172,12 @@ document.addEventListener("contextmenu", function(event) {
         if (item_selected) {
             event.preventDefault();
             console.log("id item selected: ", item_selected);
-<<<<<<< HEAD
+
             itemid = item_selected
-=======
->>>>>>> 6bb3e6e (Implement database monitoring and CRUD operations with Flask; add context menu for item editing and deletion)
-            getMousePos()
+
+            contextMenu.style.display = 'block';
+            contextMenu.style.top = currentMouseY + 'px';
+            contextMenu.style.left = currentMouseX + 'px';
         }
     } catch (error) {}
 });

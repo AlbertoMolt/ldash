@@ -42,14 +42,15 @@ a:link {
     background-color: #141b33;
     width: 160px;
     height: 170px;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.15s ease-in-out;
     z-index: 1000;
     overflow: hidden;
 }
 
 .item:hover {
-    scale: 1.1;
+    scale: 1.07;
     z-index: 1001;
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .content-wrapper{
@@ -63,25 +64,73 @@ a:link {
     justify-content: center;
     margin-bottom: 10px;
     background-color: #503fe4;
-    border: 2px solid rgba(0, 0, 0, 0);
-    transition: all 0.2s ease-in-out;
+    border: 1px solid rgba(0, 0, 0, 0);
+    transition: all 0.15s ease-in-out;
     text-align: center;
+    border-radius: 5px;
 }
 
 .category-title:hover{
     background-color: #4f3fe4a2;
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+
+/*############################*/
+/*        CONTEXT MENU        */
+/*############################*/
 .context-menu{
     display: none;
     position: fixed;
-    background-color: red;
+    background-color: #1f294d;
     width: auto;
     height: auto;
     top: 100px;
     left: 200px;
+    padding: 10px;
 }
 
-.toolbox{
-    text-align: left;
+.context-content{
+    display: flex;
+}
+
+.context-title{
+    text-align: center;
+}
+
+.context-toolbox{
+    display: flex;
+    flex-direction: column; /* Coloca los hijos en columna */
+    gap: 10px; /* Espacio entre los botones */
+}
+
+
+/*############################*/
+/*           DIALOGS          */
+/*############################*/
+dialog{
+    background-color: #1f294d;
+    color: white;
+    border: none;
+}
+
+dialog::backdrop{
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.edit-item-dialog{
+    width: 300px;
+}
+
+.edit-item-wrapper{
+    margin-bottom: 20px;
+}
+
+.inputEdit{
+    width: 100%;
+}
+
+.icon-wrapper{
+    display: flex;
+    text-align: center;
 }

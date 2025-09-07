@@ -8,8 +8,13 @@ import threading
 
 DATABASE_FILE = "data/database.csv"
 
+database_header = "ID,Name,Icon,Url,Category,New tab? true/false,(THIS ROW IS BEING IGNORED)"
+
+database_header_list = ["id", "name", "icon", "url", "category", "tab_type"]
+
+
 if not os.path.exists(DATABASE_FILE):
-    print("Database file not found!")
+    print("Error: " + "Database file not found!")
     
 last_modification_time = os.path.getmtime(DATABASE_FILE)
 
@@ -33,18 +38,40 @@ def monitor_database_changes():
 def reload_database():
     global data, grouped_data
     data = []
-    with open(DATABASE_FILE, "r", encoding="utf-8") as archivo:
-        reader = csv.reader(archivo)
-        for line in reader:
-            if any(item.strip() != "" for item in line):
-                data.append(line)
-                
-        del data[0] # Eliminar primera linea
-    
+    try:
+        with open(DATABASE_FILE, "r", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            for line in reader:
+                if any(item.strip() != "" for item in line):
+                    data.append(line)
+            try:
+                del data[0] # Eliminar primera linea
+            except:
+                print("Database header not found, writing it...")
+                with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
+                    file.write(database_header)
+                    
+                reload_database()
+    except:
+        print("Error: " + "Database file not found!")
+
     # Actualizar datos agrupados también
-    grouped_data = grouped_category(data)
-    data = set_dictionary(data)
+    try:
+        grouped_data = grouped_category(data)
+        data = set_dictionary(data)
+    except:
+        # TODO: añadir una excepción para manejar si el archivo está vacío
+        ...
     return data
+
+def update_database():
+    with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=database_header_list)
+        writer.writeheader()
+        writer.writerows(data)
+    
+    reload_database() # Forzar recargar base de datos
+    print("Database updated!")
 
 def grouped_category(data):
     grouped = defaultdict(list)
@@ -68,42 +95,56 @@ def set_dictionary(data):
         items.append(data_dict)
     return items
 
-@app.route('/delete_item', methods=['POST'])
-def delete_item():
-    data = request.json
-    print(data)
-    return jsonify({
-        'success': True, 
-        'message': 'Item añadido correctamente',
-        'id': 123  # ID del nuevo item creado
-    })
+# Delete item
+@app.route('/item/<int:item_id>', methods=['DELETE'])
+def delete_item(item_id):
     
-@app.route('/edit_item', methods=['POST'])
-def edit_item():
-    data = request.json
-    print(data)
-    return jsonify({
-        'success': True, 
-        'message': 'Item añadido correctamente',
-        'id': 123  # ID del nuevo item creado
-    })
+    for i, item in enumerate(data):
+        if item["id"] == str(item_id):
+            data.pop(i)
+            update_database()
+            return jsonify({"success": True})
     
+    return jsonify({"success": False, "error": "Item not found"}), 404
+
+
+# Get item
 @app.route('/item/<int:item_id>', methods=['GET'])
 def get_item(item_id):
-    item = data[item_id]
-
     for item in data:
-        if item["id"] == item_id:
+        if item["id"] == str(item_id):
             return jsonify({
+                'success': True,
                 'name': item["name"],
                 'icon': item["icon"],
                 'url': item["url"],
-                'url': item["url"],
-                'tab_type' : item["tab_type"]
+                'category': item["category"],
+                'tab_type': item["tab_type"]
             })
-        else:
-            abort(404, description="Item not found")
+    return jsonify({
+        'success': False,
+        'error': 'Item not found'
+    }), 404
     
+# Edit item
+@app.route('/item/<int:item_id>', methods=['PUT'])
+def update_item(item_id):
+    data_received = request.get_json()
+    
+    for i, item in enumerate(data):
+        if item["id"] == str(item_id):
+            data[i] = {
+                "id": item_id,
+                "name": data_received["name"],
+                "icon": data_received["icon"],
+                "url": data_received["url"],
+                "category": data_received["category"],
+                "tab_type": data_received["tab_type"]
+            }
+            update_database()
+            return jsonify({"success": True})
+    
+    return jsonify({"success": False, "error": "Item not found"}), 404
 
 @app.route('/')
 def home():
@@ -111,14 +152,12 @@ def home():
 
 if __name__ == "__main__":
     
-    # Cargar datos iniciales
     data = reload_database()
     categories_grouped = grouped_data
     
-    # Iniciar hilo monitor como daemon
     monitor_changes = threading.Thread(target=monitor_database_changes, daemon=True)
     monitor_changes.start()
     
-    print("Started")
     print(data)
+    print("✅ Started")
     app.run(debug=True)

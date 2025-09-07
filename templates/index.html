@@ -8,7 +8,7 @@
 </head>
 <body">
     <div class="container">
-        {% for category, items in grouped_data.items() %}
+        {% for category, items in grouped_category.items() %}
         <div class="category" category="{{ category|replace(' ', '-') }}" id="category-{{ loop.index }}">
             <div class="category-title">
                 <p>⮞</p>
@@ -32,24 +32,19 @@
 
     <div class="context-menu" id="contextMenu">
         <h1 class="context-title">Config</h1>
-        <div class="toolbox" id="toolbox">
-            <button id="editItem">✏️Edit</button>
-            <button id="deleteItem">❌Delete</button>
+            <div class="context-toolbox" id="toolbox">
+                <button class="context-btn" id="editItemBtn">✏️Edit</button>
+                <button class="context-btn" id="deleteItemBtn">❌Delete</button>
+            </div>
         </div>
     </div>
 
     <dialog class="edit-item-dialog" id="editItemDialog">
-        <form>
-            <input type="text" id="itemName" name="Item name"><br>
-            <input type="text" id="itemIcon" name="Item icon"><br>
-            <input type="url" id="itemUrl" name="Item url"><br>
-            <input type="text" id="itemUrl" name="Item category"><br>
+        <p>Loading...</p>
+    </dialog>
 
-            <select id="openingMethod" name="Opening method">
-                <option value="true">New tab</option>
-                <option value="false">Same tab</option>
-            </select>
-        </form>
+    <dialog class="delete-item-dialog" id="deleteItemDialog">
+        <p>Loading...</p>
     </dialog>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
