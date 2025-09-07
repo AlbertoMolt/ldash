@@ -4,6 +4,7 @@ from collections import defaultdict
 import os
 import time
 import threading
+import psutil # TODO: ELIMINAR ESTA LIBRERÍA, Y DEL VENV TAMBIÉN
 
 
 DATABASE_FILE = "data/database.csv"
@@ -171,6 +172,13 @@ def update_item(item_id):
 def home():
     return render_template('index.html', grouped_category=grouped_data)
 
+
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    return f"RSS: {memory_info.rss / 1024 / 1024:.1f} MB"
+
+
 if __name__ == "__main__":
     data = reload_database()
     categories_grouped = grouped_data
@@ -179,4 +187,7 @@ if __name__ == "__main__":
     monitor_changes.start()
 
     print("✅ Started")
+    
+    print(get_memory_usage())  # Antes de app.run()
+    
     app.run(debug=True)

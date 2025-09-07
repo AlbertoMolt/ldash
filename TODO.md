@@ -1,13 +1,12 @@
 # Bookmarks Dashboard - Ideas
 
 ## 🔥 Must Have (Core features)
-- [ ] Full funcional CRUD
+- [✔] Full funcional CRUD
 - [ ] Status checks (ping simple)
 - [ ] Búsqueda rápida 
-- [ ] Temas oscuro/claro
+- [ ] Cambiar colores (personalización)
 
 ## 💡 Should Have (Nice to have)
-- [ ] Tipos de ventana (popup/nueva pestaña)
 - [ ] Shortcuts de teclado
 - [ ] Categorías colapsables
 - [ ] iFrames opcionales
