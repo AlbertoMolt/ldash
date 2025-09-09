@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi primera web con Flask</title>
+    <title>ldash</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body">
@@ -31,18 +31,28 @@
     </div>
 
     <div class="toolbar">
+        <button class="toolbar-btn config-btn" id="configBtn">⚙️</button>
         <button class="toolbar-btn" id="createItemBtn">+</button>
         <button class="toolbar-btn customize-btn" id="customizeBtn">🎨</button>
     </div>
 
     <div class="context-menu" id="contextMenu">
-        <h1 class="context-title">Config</h1>
+        <h1 class="context-title">Options</h1>
             <div class="context-toolbox" id="toolbox">
                 <button class="context-btn" id="editItemBtn">✏️Edit</button>
                 <button class="context-btn" id="deleteItemBtn">❌Delete</button>
             </div>
         </div>
     </div>
+
+    <dialog class="config-dialog" id="configDialog">
+        <div class="config-wrapper dialog-wrapper">
+            <h2>Configuration</h2>
+            <label for="enablePingStatus">Enable ping status</label>
+            <input type="checkbox" id="enablePingStatus" name="enablePingStatus">
+        </div>
+        <button type="button" onclick="cancelOperation()">Close</button>
+    </dialog>
 
     <dialog class="edit-item-dialog" id="editItemDialog"><p>Loading...</p></dialog>
 

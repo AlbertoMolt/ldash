@@ -96,9 +96,10 @@ a:link {
     font-size: 30px;
     margin-bottom: 10px;
     border-radius: 5px;
+    text-align: center;
 }
 
-.customize-btn {
+.customize-btn, .config-btn {
     font-size: 20px;
 }
 
@@ -115,6 +116,7 @@ a:link {
     top: 100px;
     left: 200px;
     padding: 10px;
+    border-radius: 5px;
 }
 
 .context-content{
@@ -123,6 +125,10 @@ a:link {
 
 .context-title{
     text-align: center;
+}
+
+.context-btn{
+    border-radius: 3px;
 }
 
 .context-toolbox{
@@ -139,21 +145,23 @@ dialog{
     background-color: #1f294d;
     color: white;
     border: none;
+    border-radius: 10px;
 }
 
 dialog::backdrop{
-    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.dialog-wrapper{
+    margin-bottom: 20px;
 }
 
 .edit-item-dialog, .create-item-wrapper{
     width: 300px;
 }
 
-.edit-item-wrapper, .create-item-wrapper{
-    margin-bottom: 20px;
-}
-
-input{
+input[type="text"], [type="url"]{
     width: 100%;
 }
 

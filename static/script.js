@@ -2,17 +2,22 @@ const contextMenu = document.getElementById('contextMenu');
 const deleteItemDialog = document.getElementById('deleteItemDialog');
 const editItemDialog = document.getElementById('editItemDialog');
 const createItemDialog = document.getElementById('createItemDialog');
-
+const configDialog = document.getElementById('configDialog');
 
 let currentMouseX = 0;
 let currentMouseY = 0;
 
 let itemid = 0;
 
+
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
     currentMouseX = e.clientX;
     currentMouseY = e.clientY;
+});
+
+document.getElementById('configBtn').addEventListener('click', function(){
+    configDialog.showModal();
 });
 
 //################################
@@ -56,60 +61,123 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
 
     getItemData()
         .then(item => {
-            editItemDialog.innerHTML = `
-                <div class="edit-item-wrapper">
-                    <h2>Edit ${item.name}</h2>
-        
-                    <label for="itemNameEdit">Name</label><br>
-                    <input type="text" id="itemNameEdit" name="itemNameEdit" value="${item.name}"><br>
-                    <br>
-        
-                    <label for="itemIconEdit">Icon</label><br>
-                    <input type="text" id="itemIconEdit" name="itemIconEdit" value="${item.icon}"><br>
-                    <div class="icon-preview-container">
-                        <img src=${item.icon} id="iconPreviewEdit" width="30px">
-                    </div>
-                    <br>
-        
-                    <label for="itemUrlEdit">Url</label><br>
-                    <input type="url" id="itemUrlEdit" name="itemUrlEdit" value="${item.url}"><br>
-                    <br>
-        
-                    <label for="itemCategoryEdit">Category</label><br>
-                    <input type="text" id="itemCategoryEdit" name="itemCategoryEdit" value="${item.category}"><br>
-                    <br>
+             getItemCategories()
+                .then(itemCategories => {
+                    const categoriesFiltered = itemCategories.filter(cat => cat !== item.category);
+                    const categoriesOptions = categoriesFiltered
+                        .map(cat => `<option value="${cat}">${cat}</option>`)
+                        .join("");
+
+                    editItemDialog.innerHTML = `
+                        <div class="edit-item-wrapper dialog-wrapper">
+                            <h2>Edit ${item.name}</h2>
+                
+                            <label for="itemNameEdit">Name</label><br>
+                            <input type="text" id="itemNameEdit" name="itemNameEdit" value="${item.name}"><br>
+                            <br>
+                
+                            <label for="itemIconEdit">Icon</label><br>
+                            <input type="text" id="itemIconEdit" name="itemIconEdit" value="${item.icon}"><br>
+                            <div class="icon-preview-container">
+                                <img src="${item.icon}" id="iconPreviewEdit" width="30px">
+                            </div>
+                            <br>
+                
+                            <label for="itemUrlEdit">Url</label><br>
+                            <input type="url" id="itemUrlEdit" name="itemUrlEdit" value="${item.url}"><br>
+                            <br>
+
+                            <label for="itemCategoryEdit">Category</label><br>
+                            <select id="itemCategoryEdit" name="itemCategoryEdit">
+                                <option value="${item.category}" selected>${item.category}</option>
+                                <option value="newCategory">-New category-</option>
+                                ${categoriesOptions}
+                            </select><br>
+                            <br>
+
+                            <div id="newCategoryWrapperEdit" style="display: none; position: fixed;">
+                                <label for="newCategoryEdit">New category name</label><br>
+                                <input type="text" id="newCategoryEdit" name="newCategoryEdit"><br>
+                                <br>
+                            </div>
+
+                            <label for="openingMethodEdit">Opening method</label><br>
+                            <select id="openingMethodEdit" name="openingMethodEdit">
+                                <option value="true" ${item.tabType === 'true' ? 'selected' : ''}>New tab</option>
+                                <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
+                            </select>
+                        </div>
+                        <button type="button" id="editItemBtnDialog">Apply</button>
+                        <button type="button" onclick="cancelOperation()">Cancel</button>
+                    `;
+
+                    const itemCategoryEdit = document.getElementById('itemCategoryEdit');
+                    const newCategoryWrapperEdit = document.getElementById('newCategoryWrapperEdit');
+                    const newCategoryEdit = document.getElementById('newCategoryEdit');
+                    let selectedCategory = item.category;
                     
-                    <label for="openingMethodEdit">Opening method</label><br>
-                    <select id="openingMethodEdit" name="openingMethodEdit">
-                        <option value="true" ${item.tabType === 'true' ? 'selected' : ''}>New tab</option>
-                        <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
-                    </select>
-                </div>
-                <button type="button" onclick="applyChanges()">Apply</button>
-                <button type="button" onclick="cancelOperation()">Cancel</button>
-            `;
-        
-            const itemIconEditInput = document.getElementById('itemIconEdit')
-            const iconPreviewEdit = document.getElementById('iconPreviewEdit')
-        
-            itemIconEditInput.addEventListener('input', () => {
-                iconPreviewEdit.src = itemIconEditInput.value;
-            });
+                    itemCategoryEdit.addEventListener('change', () => {
+                        if (itemCategoryEdit.value === "newCategory") {
+                            newCategoryWrapperEdit.style.display = "block";
+                            newCategoryWrapperEdit.style.position = "static";
+                            selectedCategory = newCategoryEdit.value;
+                        } else {
+                            newCategoryWrapperEdit.style.display = "none";
+                            newCategoryWrapperEdit.style.position = "fixed";
+                            selectedCategory = itemCategoryEdit.value;
+                        }
+                    });
+
+                    newCategoryEdit.addEventListener('input', () => {
+                        if (itemCategoryEdit.value === "newCategory") {
+                            selectedCategory = newCategoryEdit.value;
+                        }
+                    });
+                
+                    const itemIconEditInput = document.getElementById('itemIconEdit');
+                    const iconPreviewEdit = document.getElementById('iconPreviewEdit');
+                
+                    itemIconEditInput.addEventListener('input', () => {
+                        iconPreviewEdit.src = itemIconEditInput.value;
+                    });
+
+                    const editItemBtnDialog = document.getElementById('editItemBtnDialog');
+                    editItemBtnDialog.addEventListener('click', function(){
+
+                        let finalCategory = selectedCategory;
+                        if (itemCategoryEdit.value === "newCategory") {
+                            finalCategory = newCategoryEdit.value.trim();
+                            if (!finalCategory) {
+                                alert("Please enter a category name");
+                                return;
+                            }
+                        }
+
+                        applyChanges(
+                            document.getElementById('itemNameEdit').value, 
+                            document.getElementById('itemIconEdit').value, 
+                            document.getElementById('itemUrlEdit').value,
+                            finalCategory,
+                            document.getElementById('openingMethodEdit').value
+                        );
+                    });
+                })
+                .catch(err => alert(err));
         })
         .catch(err => alert(err));
 });
 
-function applyChanges(){
+function applyChanges(name, icon, url, category, tab_type){
     if (itemid != 0) {
         fetch(`/item/${itemid}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                name: document.getElementById('itemNameEdit').value,
-                icon: document.getElementById('itemIconEdit').value,
-                url: document.getElementById('itemUrlEdit').value,
-                category: document.getElementById('itemCategoryEdit').value,
-                tab_type: document.getElementById('openingMethodEdit').value
+                name: name,
+                icon: icon,
+                url: url,
+                category: category,
+                tab_type: tab_type
             })
         })
         .then(response => response.json())
@@ -131,58 +199,124 @@ function applyChanges(){
 document.getElementById("createItemBtn").addEventListener('click', function(){
     createItemDialog.showModal();
 
-    createItemDialog.innerHTML = `
-        <div class="create-item-wrapper">
-            <h2>Create item</h2>
+    getItemCategories()
+        .then(itemCategories => {
+            const categoryOptions = itemCategories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
 
-            <label for="itemNameCreate">Name</label><br>
-            <input type="text" id="itemNameCreate" name="itemNameCreate"><br>
-            <br>
+            createItemDialog.innerHTML = `
+                <div class="create-item-wrapper dialog-wrapper">
+                    <h2>Create item</h2>
 
-            <label for="itemIconCreate">Icon</label><br>
-            <input type="text" id="itemIconCreate" name="itemIconCreate"><br>
-            <div class="icon-wrapper">
-                <img src="" id="iconPreviewCreate" width="30px">
-            </div>
-            <br>
+                    <label for="itemNameCreate">Name</label><br>
+                    <input type="text" id="itemNameCreate" name="itemNameCreate"><br>
+                    <br>
 
-            <label for="itemUrlCreate">Url</label><br>
-            <input type="url" id="itemUrlCreate" name="itemUrlCreate" value=""><br>
-            <br>
+                    <label for="itemIconCreate">Icon</label><br>
+                    <input type="text" id="itemIconCreate" name="itemIconCreate"><br>
+                    <div class="icon-wrapper">
+                        <img src="" id="iconPreviewCreate" width="30px">
+                    </div>
+                    <br>
 
-            <label for="itemCategoryCreate">Category</label><br>
-            <input type="text" id="itemCategoryCreate" name="itemCategoryCreate" value=""><br>
-            <br>
-            
-            <label for="openingMethodCreate">Opening method</label><br>
-            <select id="openingMethodCreate" name="openingMethodCreate">
-                <option value="true" selected>New tab</option>
-                <option value="false">Same tab</option>
-            </select>
-        </div>
-        <button type="button" onclick="createItem()">Create</button>
-        <button type="button" onclick="cancelOperation()">Cancel</button>
-    `
+                    <label for="itemUrlCreate">Url</label><br>
+                    <input type="url" id="itemUrlCreate" name="itemUrlCreate" value=""><br>
+                    <br>
 
-    const itemIconCreateInput = document.getElementById('itemIconCreate')
-    const iconPreviewCreate = document.getElementById('iconPreviewCreate')
+                    <label for="itemCategoryCreate">Category</label><br>
+                    <select id="itemCategoryCreate" name="itemCategoryCreate">
+                        <option value="newCategory" selected>-New category-</option>
+                        ${categoryOptions}
+                    </select><br>
+                    <br>
 
-    itemIconCreateInput.addEventListener('input', () => {
-        iconPreviewCreate.src = itemIconCreateInput.value;
-    });
+                    <div id="newCategoryWrapperCreate">
+                        <label for="newCategoryCreate">New category name</label><br>
+                        <input type="text" id="newCategoryCreate" name="newCategoryCreate"><br>
+                        <br>
+                    </div>
+                    
+                    <label for="openingMethodCreate">Opening method</label><br>
+                    <select id="openingMethodCreate" name="openingMethodCreate">
+                        <option value="true" selected>New tab</option>
+                        <option value="false">Same tab</option>
+                    </select>
+                </div>
+                <button type="button" id="createItemBtnDialog">Create</button>
+                <button type="button" onclick="cancelOperation()">Cancel</button>
+            `;
+
+            const itemCategoryCreate = document.getElementById('itemCategoryCreate');
+            const newCategoryWrapperCreate = document.getElementById('newCategoryWrapperCreate');
+            const newCategoryCreate = document.getElementById('newCategoryCreate');
+            let selectedCategory = "";
+
+            if (itemCategoryCreate.value === "newCategory") {
+                selectedCategory = "";
+            } else {
+                selectedCategory = itemCategoryCreate.value;
+            }
+
+            itemCategoryCreate.addEventListener('change', () => {
+                if (itemCategoryCreate.value === "newCategory") {
+                    newCategoryWrapperCreate.style.display = "block";
+                    newCategoryWrapperCreate.style.position = "static";
+                    selectedCategory = newCategoryCreate.value;
+                } else {
+                    newCategoryWrapperCreate.style.display = "none";
+                    newCategoryWrapperCreate.style.position = "fixed";
+                    selectedCategory = itemCategoryCreate.value;
+                }
+            });
+
+            newCategoryCreate.addEventListener('input', () => {
+                if (itemCategoryCreate.value === "newCategory") {
+                    selectedCategory = newCategoryCreate.value;
+                }
+            });
+
+            const itemIconCreateInput = document.getElementById('itemIconCreate');
+            const iconPreviewCreate = document.getElementById('iconPreviewCreate');
+
+            itemIconCreateInput.addEventListener('input', () => {
+                iconPreviewCreate.src = itemIconCreateInput.value;
+            });
+
+            const createItemBtnDialog = document.getElementById('createItemBtnDialog');
+            createItemBtnDialog.addEventListener('click', function() {
+
+                let finalCategory = selectedCategory;
+                if (itemCategoryCreate.value === "newCategory") {
+                    finalCategory = newCategoryCreate.value.trim();
+                    if (!finalCategory) {
+                        alert("Please enter a category name");
+                        return;
+                    }
+                }
+
+                createItem(
+                    document.getElementById('itemNameCreate').value, 
+                    document.getElementById('itemIconCreate').value, 
+                    document.getElementById('itemUrlCreate').value,
+                    finalCategory,
+                    document.getElementById('openingMethodCreate').value
+                );
+            });
+
+        })
+        .catch(err => alert(err));
 });
 
-function createItem(){
+function createItem(name, icon, url, category, tab_type){
     fetch('/item', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            id: '0',
-            name: document.getElementById('itemNameCreate').value,
-            icon: document.getElementById('itemIconCreate').value,
-            url: document.getElementById('itemUrlCreate').value,
-            category: document.getElementById('itemCategoryCreate').value,
-            tab_type: document.getElementById('openingMethodCreate').value
+            id: '0', // Temporal id
+            name: name,
+            icon: icon,
+            url: url,
+            category: category,
+            tab_type: tab_type
         })  
     })
     .then(response => response.json())
@@ -232,11 +366,28 @@ function cancelOperation() {
     `
     deleteItemDialog.close();
 
-    //Create dialog
+    
     createItemDialog.close();
+
+    configDialog.close()
 
 }
 //---------------------------------
+
+async function getItemCategories() {
+    return fetch(`/item/categories`, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            return data.categories;
+        } else {
+            throw new Error(data.error);
+        }
+    });
+}
 
 document.addEventListener("contextmenu", function(event) {
     try {
@@ -245,7 +396,7 @@ document.addEventListener("contextmenu", function(event) {
         if (item_selected) {
             event.preventDefault();
 
-            itemid = item_selected
+            itemid = item_selected;
 
             contextMenu.style.display = 'block';
             contextMenu.style.top = currentMouseY + 'px';
@@ -259,4 +410,8 @@ document.addEventListener("click", function(event) {
     if (!event.target.closest('#contextMenu') || event.target.closest('#toolbox')) {
         contextMenu.style.display = "none";
     }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    
 });

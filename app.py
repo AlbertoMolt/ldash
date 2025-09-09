@@ -9,7 +9,7 @@ import psutil # TODO: ELIMINAR ESTA LIBRERÍA, Y DEL VENV TAMBIÉN
 
 DATABASE_FILE = "data/database.csv"
 
-database_header = "ID,Name,Icon,Url,Category,New tab? true/false,(THIS ROW IS BEING IGNORED)"
+database_header = "id,name,icon,url,category,tab_type"
 
 database_header_list = ["id", "name", "icon", "url", "category", "tab_type"]
 
@@ -50,7 +50,8 @@ def reload_database():
             except:
                 print("Database header not found, writing it...")
                 with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
-                    file.write(database_header)
+                    writer = csv.DictWriter(file, fieldnames=database_header_list)
+                    writer.writeheader()
                     
                 reload_database()
     except:
@@ -96,6 +97,14 @@ def set_dictionary(data):
         items.append(data_dict)
     return items
 
+def get_items_categories():
+    item_categories = []
+    for item in data:
+        if item["category"] not in item_categories:
+            item_categories.append(item["category"])
+    item_categories.sort()
+    return item_categories
+
 def get_items_ids():
     item_ids = []
     for item in data:
@@ -105,7 +114,13 @@ def get_items_ids():
 def get_usable_id():
     return max(get_items_ids()) + 1
 
+def service_status_checker():
+    ...
+    
 
+# ########################
+#          CRUD
+# ########################
 # Create item
 @app.route('/item/', methods=['POST'])
 def create_item():
@@ -130,24 +145,6 @@ def delete_item(item_id):
     
     return jsonify({"success": False, "error": "Item not found"}), 404
 
-# Get item
-@app.route('/item/<int:item_id>', methods=['GET'])
-def get_item(item_id):
-    for item in data:
-        if item["id"] == str(item_id):
-            return jsonify({
-                'success': True,
-                'name': item["name"],
-                'icon': item["icon"],
-                'url': item["url"],
-                'category': item["category"],
-                'tab_type': item["tab_type"]
-            })
-    return jsonify({
-        'success': False,
-        'error': 'Item not found'
-    }), 404
-
 # Edit item
 @app.route('/item/<int:item_id>', methods=['PUT'])
 def update_item(item_id):
@@ -167,6 +164,37 @@ def update_item(item_id):
             return jsonify({"success": True})
     
     return jsonify({"success": False, "error": "Item not found"}), 404
+# --------------------------------------------------
+
+# Get item by id
+@app.route('/item/<int:item_id>', methods=['GET'])
+def get_item(item_id):
+    for item in data:
+        if item["id"] == str(item_id):
+            return jsonify({
+                'success': True,
+                'name': item["name"],
+                'icon': item["icon"],
+                'url': item["url"],
+                'category': item["category"],
+                'tab_type': item["tab_type"]
+            })
+    return jsonify({
+        'success': False,
+        'error': 'Item not found'
+    }), 404
+
+# Get all categories
+@app.route('/item/categories', methods=['GET'])
+def get_categories():
+    try:
+        return jsonify({
+            'success': True,
+            'categories': get_items_categories()
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/')
 def home():
@@ -188,6 +216,6 @@ if __name__ == "__main__":
 
     print("✅ Started")
     
-    print(get_memory_usage())  # Antes de app.run()
-    
+    print(get_memory_usage())
+ 
     app.run(debug=True)
