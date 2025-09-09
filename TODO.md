@@ -1,7 +1,7 @@
 # Bookmarks Dashboard - Ideas
 
 ## 🔥 Must Have (Core features)
-- [✔] Full funcional CRUD
+- [x] Full funcional CRUD
 - [ ] Status checks (ping simple)
 - [ ] Búsqueda rápida 
 - [ ] Cambiar colores (personalización)
