@@ -9,13 +9,11 @@ import psutil # TODO: ELIMINAR ESTA LIBRERÍA, Y DEL VENV TAMBIÉN
 
 DATABASE_FILE = "data/database.csv"
 
-database_header = "id,name,icon,url,category,tab_type"
-
 database_header_list = ["id", "name", "icon", "url", "category", "tab_type"]
-
 
 if not os.path.exists(DATABASE_FILE):
     print("Error: " + "Database file not found!")
+    # TODO: Añadir generación automática de la base de datos
     
 last_modification_time = os.path.getmtime(DATABASE_FILE)
 
@@ -59,8 +57,8 @@ def reload_database():
 
     # Actualizar datos agrupados también
     try:
-        grouped_data = grouped_category(data)
         data = set_dictionary(data)
+        grouped_data = grouped_category(data)
     except:
         # TODO: añadir una excepción para manejar si el archivo está vacío
         ...
@@ -79,7 +77,7 @@ def grouped_category(data):
     grouped = defaultdict(list)
 
     for item in data:
-        category = item[4]
+        category = item["category"]
         grouped[category].append(item)
     return grouped
 
@@ -87,7 +85,7 @@ def set_dictionary(data):
     items = []
     for item in data:
         data_dict = {
-            "id": item[0],
+            "id": int(item[0]),
             "name": item[1],
             "icon": item[2],
             "url": item[3],
@@ -98,18 +96,10 @@ def set_dictionary(data):
     return items
 
 def get_items_categories():
-    item_categories = []
-    for item in data:
-        if item["category"] not in item_categories:
-            item_categories.append(item["category"])
-    item_categories.sort()
-    return item_categories
+    return sorted({item["category"] for item in data})
 
 def get_items_ids():
-    item_ids = []
-    for item in data:
-        item_ids.append(int(item["id"]))
-    return item_ids
+    return [item["id"] for item in data]
 
 def get_usable_id():
     return max(get_items_ids()) + 1
@@ -137,7 +127,7 @@ def create_item():
 def delete_item(item_id):
     
     for i, item in enumerate(data):
-        if item["id"] == str(item_id):
+        if item["id"] == item_id:
             data.pop(i)
             update_database()
             
@@ -151,7 +141,7 @@ def update_item(item_id):
     data_received = request.get_json()
     
     for i, item in enumerate(data):
-        if item["id"] == str(item_id):
+        if item["id"] == item_id:
             data[i] = {
                 "id": item_id,
                 "name": data_received["name"],
@@ -170,7 +160,7 @@ def update_item(item_id):
 @app.route('/item/<int:item_id>', methods=['GET'])
 def get_item(item_id):
     for item in data:
-        if item["id"] == str(item_id):
+        if item["id"] == item_id:
             return jsonify({
                 'success': True,
                 'name': item["name"],
@@ -209,7 +199,6 @@ def get_memory_usage():
 
 if __name__ == "__main__":
     data = reload_database()
-    categories_grouped = grouped_data
     
     monitor_changes = threading.Thread(target=monitor_database_changes, daemon=True)
     monitor_changes.start()
