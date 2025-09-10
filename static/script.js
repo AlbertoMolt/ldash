@@ -76,10 +76,10 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                             <input type="text" id="itemNameEdit" name="itemNameEdit" value="${item.name}"><br>
                             <br>
                 
-                            <label for="itemIconEdit">Icon</label><br>
-                            <input type="text" id="itemIconEdit" name="itemIconEdit" value="${item.icon}"><br>
+                            <label for="itemIcon">Icon</label><br>
+                            <input type="text" id="itemIcon" name="itemIcon" value="${item.icon}"><br>
                             <div class="icon-preview-container">
-                                <img src="${item.icon}" id="iconPreviewEdit" width="30px">
+                                <img src="${item.icon}" id="iconPreview" width="30px">
                             </div>
                             <br>
                 
@@ -107,14 +107,14 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                                 <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
                             </select>
                         </div>
-                        <button type="button" id="editItemBtnDialog">Apply</button>
+                        <button type="button" id="applyItemBtn">Apply</button>
                         <button type="button" onclick="cancelOperation()">Cancel</button>
                     `;
 
                     const itemCategoryEdit = document.getElementById('itemCategoryEdit');
                     const newCategoryWrapperEdit = document.getElementById('newCategoryWrapperEdit');
                     const newCategoryEdit = document.getElementById('newCategoryEdit');
-                    let selectedCategory = item.category;
+                    let selectedCategory = item.category; // De forma predeterminada, se le da el valor de la categoría vieja del item
                     
                     itemCategoryEdit.addEventListener('change', () => {
                         if (itemCategoryEdit.value === "newCategory") {
@@ -128,23 +128,20 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                         }
                     });
 
+                    // Dar valor del input text al la categoría 
                     newCategoryEdit.addEventListener('input', () => {
                         if (itemCategoryEdit.value === "newCategory") {
                             selectedCategory = newCategoryEdit.value;
                         }
                     });
-                
-                    const itemIconEditInput = document.getElementById('itemIconEdit');
-                    const iconPreviewEdit = document.getElementById('iconPreviewEdit');
-                
-                    itemIconEditInput.addEventListener('input', () => {
-                        iconPreviewEdit.src = itemIconEditInput.value;
+
+                    document.getElementById('itemIcon').addEventListener('input', () => {
+                        document.getElementById('iconPreview').src = document.getElementById('itemIcon').value;
                     });
 
-                    const editItemBtnDialog = document.getElementById('editItemBtnDialog');
-                    editItemBtnDialog.addEventListener('click', function(){
-
+                    document.getElementById('applyItemBtn').addEventListener('click', function(){
                         let finalCategory = selectedCategory;
+
                         if (itemCategoryEdit.value === "newCategory") {
                             finalCategory = newCategoryEdit.value.trim();
                             if (!finalCategory) {
@@ -155,7 +152,7 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
 
                         applyChanges(
                             document.getElementById('itemNameEdit').value, 
-                            document.getElementById('itemIconEdit').value, 
+                            document.getElementById('itemIcon').value, 
                             document.getElementById('itemUrlEdit').value,
                             finalCategory,
                             document.getElementById('openingMethodEdit').value
@@ -211,10 +208,10 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                     <input type="text" id="itemNameCreate" name="itemNameCreate"><br>
                     <br>
 
-                    <label for="itemIconCreate">Icon</label><br>
-                    <input type="text" id="itemIconCreate" name="itemIconCreate"><br>
-                    <div class="icon-wrapper">
-                        <img src="" id="iconPreviewCreate" width="30px">
+                    <label for="itemIcon">Icon</label><br>
+                    <input type="text" id="itemIcon" name="itemIcon" value=""><br>
+                    <div class="icon-preview-container">
+                        <img src="" id="iconPreview" width="30px">
                     </div>
                     <br>
 
@@ -274,11 +271,8 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                 }
             });
 
-            const itemIconCreateInput = document.getElementById('itemIconCreate');
-            const iconPreviewCreate = document.getElementById('iconPreviewCreate');
-
-            itemIconCreateInput.addEventListener('input', () => {
-                iconPreviewCreate.src = itemIconCreateInput.value;
+            document.getElementById('itemIcon').addEventListener('input', () => {
+                document.getElementById('iconPreview').src = document.getElementById('itemIcon').value;
             });
 
             const createItemBtnDialog = document.getElementById('createItemBtnDialog');
@@ -295,7 +289,7 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
 
                 createItem(
                     document.getElementById('itemNameCreate').value, 
-                    document.getElementById('itemIconCreate').value, 
+                    document.getElementById('itemIcon').value, 
                     document.getElementById('itemUrlCreate').value,
                     finalCategory,
                     document.getElementById('openingMethodCreate').value

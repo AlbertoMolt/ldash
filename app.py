@@ -95,6 +95,9 @@ def set_dictionary(data):
         items.append(data_dict)
     return items
 
+def service_status_checker():
+    ...
+
 def get_items_categories():
     return sorted({item["category"] for item in data})
 
@@ -104,9 +107,9 @@ def get_items_ids():
 def get_usable_id():
     return max(get_items_ids()) + 1
 
-def service_status_checker():
+def get_domains():
     ...
-    
+
 
 # ########################
 #          CRUD
@@ -188,7 +191,9 @@ def get_categories():
 
 @app.route('/')
 def home():
-    return render_template('index.html', grouped_category=grouped_data)
+    # Recarga los datos antes de renderizar para asegurar que estén actualizados
+    reload_database()
+    return render_template('index.html', grouped_data=grouped_data)
 
 
 def get_memory_usage():

@@ -8,7 +8,7 @@
 </head>
 <body">
     <div class="container">
-        {% for category, items in grouped_category.items() %}
+        {% for category, items in grouped_data.items() %}
         <div class="category" category="{{ category|replace(' ', '-') }}" id="category-{{ loop.index }}">
             <div class="category-title">
                 <p>⮞</p>
@@ -16,14 +16,15 @@
             </div>
             <div class="items-wrapper">
                 {% for item in items %}
-                <a href="{{ item[3] }}" {% if 'true' in item[5] %}target="_blank" rel="noopener noreferrer"{% endif %}>
-                    <div class="item" itemid="{{ item[0] }}">
+                <div class="item" itemid="{{ item.id }}">
+                    <a href="{{ item.url }}" {% if item.tab_type == 'true' %}target="_blank" rel="noopener noreferrer"{% endif %}>
                         <div class="content-wrapper">
-                            <p>{{ item[1] }}</p>
-                            <img src="{{ item[2] }}" alt="{{ item[1] }} icon" width="100px">
+                            <p>{{ item.name }}</p>
+                            <span class="status-ping">•</span>
+                            <img src="{{ item.icon }}" alt="{{ item.name }} icon" width="100px">
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
                 {% endfor %}
             </div>
         </div>

@@ -17,29 +17,35 @@ button:hover {
 }
 
 .container {
-    display: flex;
-    padding: 10px;
-    border-radius: 10px;
-    gap: 15px;
-    justify-content: center; /* Centra horizontalmente */
+  display: flex;
+  flex-wrap: wrap;            /* permite varias filas */
+  justify-content: center;    /* centra cada fila horizontalmente */
+  align-items: flex-start;    /* alinea las .category por arriba */
+  gap: 15px;                  /* espacio constante entre categorías */
+  padding: 10px;
+  margin: 0 auto;
 }
-
-a:link { 
-    text-decoration: none;
-} 
 
 .category {
     background-color: #0b1021;
     padding: 10px;
     border: 5px solid #6f60eb;
     border-radius: 10px;
+    width: fit-content;
+    box-sizing: border-box;
+    align-self: start;
 }
+
+a:link { 
+    text-decoration: none;
+} 
 
 .items-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 162px); /* Exactamente 3 columnas de 160px + 2px de borde */
     gap: 10px;
     width: fit-content; /* Se ajusta al contenido */
+    min-height: 353px;
 }
 
 .item {
@@ -51,6 +57,8 @@ a:link {
     transition: all 0.15s ease-in-out;
     z-index: 1000;
     overflow: hidden;
+    position: relative;
+
 }
 
 .item:hover {
@@ -101,6 +109,29 @@ a:link {
 
 .customize-btn, .config-btn {
     font-size: 20px;
+}
+
+.status-ping {
+    display: none;
+    position: absolute;
+    right: 10px;   /* distancia desde el borde derecho */
+    bottom: 0;  /* distancia desde el borde inferior */
+    margin: 0;
+    font-size: 20px;
+    font-size: 20px;
+    color: #00ff00;
+    animation: blink-online 3s infinite;
+}
+
+@keyframes blink-offline {
+    50% {color: rgba(255, 0, 0, 0.5);}
+    100%  {color: red;}
+}
+
+@keyframes blink-online {
+    0% {color: #00ff00;}
+    50% {color: #00ff0083;}
+    100%  {color: #00ff00;}
 }
 
 
