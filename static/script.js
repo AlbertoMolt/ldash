@@ -4,11 +4,13 @@ const editItemDialog = document.getElementById('editItemDialog');
 const createItemDialog = document.getElementById('createItemDialog');
 const configDialog = document.getElementById('configDialog');
 
+const enablePingStatus = document.getElementById('enablePingStatus');
+
+
 let currentMouseX = 0;
 let currentMouseY = 0;
 
 let itemid = 0;
-
 
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
@@ -71,7 +73,8 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                     editItemDialog.innerHTML = `
                         <div class="edit-item-wrapper dialog-wrapper">
                             <h2>Edit ${item.name}</h2>
-                
+                            
+                            <p style="color:rgba(255, 255, 255, 0.2); font-style: italic;">id: ${item.id}<p>
                             <label for="itemNameEdit">Name</label><br>
                             <input type="text" id="itemNameEdit" name="itemNameEdit" value="${item.name}"><br>
                             <br>
@@ -335,6 +338,7 @@ function getItemData() {
     .then(data => {
         if (data.success) {
             return {
+                id: data.id,
                 name: data.name,
                 icon: data.icon,
                 url: data.url,
@@ -347,24 +351,51 @@ function getItemData() {
     });
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days*24*60*60*1000));
+    
+    try {
+        document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(';');
+    for(let i = 0; i < cookies.length; i++) {
+        let c = cookies[i].trim();
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function reloadPage() {
+    location.reload()
+}
+
 function cancelOperation() {
     //Edit dialog
+    editItemDialog.close();
     editItemDialog.innerHTML = `
         <p>Loading...</p>
     `
-    editItemDialog.close();
 
     //Delete dialog
+    deleteItemDialog.close();
     deleteItemDialog.innerHTML = `
         <p>Loading...</p>
     `
-    deleteItemDialog.close();
 
-    
     createItemDialog.close();
 
     configDialog.close()
-
 }
 //---------------------------------
 
@@ -382,6 +413,54 @@ async function getItemCategories() {
         }
     });
 }
+
+async function getItemStatus() {
+    const statusPingElements = document.querySelectorAll('.status-ping');
+
+    if (getCookie("statusPing") === "true") {
+        statusPingElements.forEach(el => {
+            el.style.display = "inline-block";
+        });
+
+        while (true) {
+            try {
+                const response = await fetch(`/item/status`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'}
+                });
+    
+                const data = await response.json();
+    
+                if (data.success && Array.isArray(data.status_item)) {
+                    data.status_item.forEach(host => {
+                        const itemElement = document.querySelector(`.item[itemid="${host.id}"]`);
+                        if (itemElement) {
+                            const statusPing = itemElement.querySelector('.status-ping');
+                            if (statusPing) {
+                                statusPing.classList.remove("online", "offline");
+                                statusPing.classList.add(host.status ? "online" : "offline");
+                            }
+                        }
+                    });
+                } else {
+                    console.error('Error en los datos de estado:', data.error);
+                }
+            } catch (err) {
+                console.error('Error actualizando estado:', err);
+            }
+
+            await sleep(30 * 1000); // 30 segs
+        }
+    } else {
+        statusPingElements.forEach(el => {
+            el.style.display = "none";
+        });
+    }
+}
+
+enablePingStatus.addEventListener('change', () => {
+    setCookie("statusPing", enablePingStatus.checked, 365);
+});
 
 document.addEventListener("contextmenu", function(event) {
     try {
@@ -406,6 +485,15 @@ document.addEventListener("click", function(event) {
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    
-});
+window.onload = () => {
+    function getStatusConfig() {
+        const statusPingCheckBox = document.getElementById('enablePingStatus');
+        if (getCookie('statusPing') === "true") {
+            statusPingCheckBox.checked = true;
+        } else {
+            statusPingCheckBox.checked = false;
+        }
+    }
+    getStatusConfig();
+    getItemStatus();
+};

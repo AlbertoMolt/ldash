@@ -20,10 +20,10 @@
                     <a href="{{ item.url }}" {% if item.tab_type == 'true' %}target="_blank" rel="noopener noreferrer"{% endif %}>
                         <div class="content-wrapper">
                             <p>{{ item.name }}</p>
-                            <span class="status-ping">•</span>
                             <img src="{{ item.icon }}" alt="{{ item.name }} icon" width="100px">
                         </div>
                     </a>
+                    <span class="status-ping" id="statusPing">•</span>
                 </div>
                 {% endfor %}
             </div>
@@ -52,7 +52,7 @@
             <label for="enablePingStatus">Enable ping status</label>
             <input type="checkbox" id="enablePingStatus" name="enablePingStatus">
         </div>
-        <button type="button" onclick="cancelOperation()">Close</button>
+        <button type="button" onclick="reloadPage()">Close</button>
     </dialog>
 
     <dialog class="edit-item-dialog" id="editItemDialog"><p>Loading...</p></dialog>
