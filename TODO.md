@@ -1,20 +1,19 @@
-# Bookmarks Dashboard - Ideas
+# LDASH - Ideas
 
 ## 🔥 Must Have (Core features)
 - [x] Full funcional CRUD
 - [x] Status checks (ping simple)
-- [ ] Búsqueda rápida 
 - [ ] Cambiar colores (personalización)
 
 ## 💡 Should Have (Nice to have)
+- [ ] Sistema de perfiles
 - [ ] Shortcuts de teclado
 - [ ] Categorías colapsables
 - [ ] iFrames opcionales
 
 ## 🚀 Could Have (Future)
-- [ ] noVNC integration
+- [ ] ssh integration
 - [ ] Export/import config
-- [ ] Multi-usuario básico
 
 ## ❄️ Icebox (Probably never)
 - [ ] Widgets complejos
