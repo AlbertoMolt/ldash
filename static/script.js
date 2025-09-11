@@ -7,10 +7,14 @@ const configDialog = document.getElementById('configDialog');
 const enablePingStatus = document.getElementById('enablePingStatus');
 
 
+// GLOBAL VARs
 let currentMouseX = 0;
 let currentMouseY = 0;
 
 let itemid = 0;
+
+let currentDashProfile = "";
+let dashProfiles = getProfiles();
 
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
@@ -23,7 +27,7 @@ document.getElementById('configBtn').addEventListener('click', function(){
 });
 
 //################################
-//            DELETE
+//          DELETE ITEM
 //################################
 document.getElementById('deleteItemBtn').addEventListener('click', function(){
     deleteItemDialog.showModal();
@@ -56,7 +60,7 @@ function deleteItem(){
 }
 
 //################################
-//            EDIT
+//           EDIT ITEM
 //################################
 document.getElementById('editItemBtn').addEventListener('click', function(){
     editItemDialog.showModal();
@@ -194,7 +198,7 @@ function applyChanges(name, icon, url, category, tab_type){
 }
 
 //################################
-//            CREATE
+//         CREATE ITEM
 //################################
 document.getElementById("createItemBtn").addEventListener('click', function(){
     createItemDialog.showModal();
@@ -398,6 +402,34 @@ function cancelOperation() {
     configDialog.close()
 }
 //---------------------------------
+
+function createProfile(name) {
+    fetch('/profiles', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: name
+        })
+    })
+}
+
+function getProfiles() {
+    fetch('/profiles', {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: name
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            return data.categories;
+        } else {
+            throw new Error(data.error);
+        }
+    });
+}
 
 async function getItemCategories() {
     return fetch(`/item/categories`, {

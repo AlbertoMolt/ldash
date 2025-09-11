@@ -7,6 +7,7 @@ import os
 import time
 import threading
 from urllib.parse import urlparse
+from collections import Counter
 import psutil # TODO: ELIMINAR ESTA LIBRERÍA, Y DEL VENV TAMBIÉN
 
 
@@ -97,7 +98,8 @@ def set_dictionary(data):
             "icon": item[2],
             "url": item[3],
             "category": item[4],
-            "tab_type": item[5]
+            "tab_type": item[5],
+            "profile": item[6]
         }
         items.append(data_dict)
     return items
@@ -122,6 +124,8 @@ def ping_host(host, timeout=5): # TODO: Reemplazar esto porque da muchos falsos 
     except Exception:
         return False
 
+def get_item_profiles():
+    ...
 
 def get_items_categories():
     return sorted({item["category"] for item in data})
@@ -208,6 +212,12 @@ def update_item(item_id):
 #        Other APIs
 # ########################
 
+# Get dash profiles
+@app.route('/profiles', methods=['GET'])
+def get_profiles():
+    ...
+
+# Get item's status
 @app.route('/item/status', methods=['GET'])
 def get_status():
     if not host_list_status:
