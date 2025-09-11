@@ -2,7 +2,7 @@
 
 ## 🔥 Must Have (Core features)
 - [x] Full funcional CRUD
-- [ ] Status checks (ping simple)
+- [x] Status checks (ping simple)
 - [ ] Búsqueda rápida 
 - [ ] Cambiar colores (personalización)
 

@@ -273,6 +273,6 @@ if __name__ == "__main__":
 
     print("✅ Started")
     
-    get_memory_usage()
+    print(get_memory_usage())
  
     app.run(debug=True)
