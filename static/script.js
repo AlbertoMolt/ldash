@@ -1,3 +1,4 @@
+const itemsContainer = document.getElementById('itemsContainer')
 const contextMenu = document.getElementById('contextMenu');
 const deleteItemDialog = document.getElementById('deleteItemDialog');
 const editItemDialog = document.getElementById('editItemDialog');
@@ -13,8 +14,7 @@ let currentMouseY = 0;
 
 let itemid = 0;
 
-let currentDashProfile = "";
-let dashProfiles = getProfiles();
+let profile = 'default';
 
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
@@ -45,7 +45,7 @@ document.getElementById('deleteItemBtn').addEventListener('click', function(){
 });
 
 function deleteItem(){
-    fetch(`/item/${itemid}`, {
+    fetch(`/api/items/${itemid}`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'}
     })
@@ -173,7 +173,7 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
 
 function applyChanges(name, icon, url, category, tab_type){
     if (itemid != 0) {
-        fetch(`/item/${itemid}`, {
+        fetch(`/api/items/${itemid}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -308,7 +308,7 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
 });
 
 function createItem(name, icon, url, category, tab_type){
-    fetch('/item', {
+    fetch('/api/items', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -334,7 +334,7 @@ function createItem(name, icon, url, category, tab_type){
 //       GENERAL FUNCTIONS
 //################################
 function getItemData() {
-    return fetch(`/item/${itemid}`, {
+    return fetch(`/api/items/${itemid}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     })
@@ -403,36 +403,35 @@ function cancelOperation() {
 }
 //---------------------------------
 
-function createProfile(name) {
-    fetch('/profiles', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            name: name
-        })
-    })
-}
+async function getItemsByCat() {
+    let request;
 
-function getProfiles() {
-    fetch('/profiles', {
+    if (profile) {
+        request = `/api/items?profile=${profile}`
+    } else {
+        request = "/api/items"
+    }
+
+    return fetch(request, {
         method: 'GET',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            name: name
-        })
+        headers: {'Content-Type': 'application/json'}
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            return data.categories;
+            return data;
         } else {
             throw new Error(data.error);
         }
     });
 }
 
+async function renderDashboard(data) {
+    
+}
+
 async function getItemCategories() {
-    return fetch(`/item/categories`, {
+    return fetch(`/api/items/categories`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     })
@@ -518,6 +517,10 @@ document.addEventListener("click", function(event) {
 });
 
 window.onload = () => {
+    getItemsByCat().then(data => {
+        renderDashboard(data);
+    });
+
     function getStatusConfig() {
         const statusPingCheckBox = document.getElementById('enablePingStatus');
         if (getCookie('statusPing') === "true") {

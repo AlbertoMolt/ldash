@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body">
-    <div class="container">
+    <div class="items-container" id="itemsContainer">
         {% for category, items in grouped_data.items() %}
         <div class="category" category="{{ category|replace(' ', '-') }}" id="category-{{ loop.index }}">
             <div class="category-title">

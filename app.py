@@ -66,7 +66,7 @@ def reload_database():
     # Actualizar datos agrupados también
     try:
         data = set_dictionary(data)
-        grouped_data = grouped_category(data)
+        grouped_data = group_by_category(data)
     except:
         # TODO: añadir una excepción para manejar si el archivo está vacío
         ...
@@ -81,7 +81,7 @@ def update_database():
     reload_database() # Forzar recargar base de datos
     print("Database updated!")
 
-def grouped_category(data):
+def group_by_category(data):
     grouped = defaultdict(list)
 
     for item in data:
@@ -212,13 +212,8 @@ def update_item(item_id):
 #        Other APIs
 # ########################
 
-# Get dash profiles
-@app.route('/profiles', methods=['GET'])
-def get_profiles():
-    ...
-
-# Get item's status
-@app.route('/item/status', methods=['GET'])
+# Get all item's status
+@app.route('/api/items/status', methods=['GET'])
 def get_status():
     if not host_list_status:
         return jsonify({"success": False, "error": "No items found"}), 404
@@ -236,7 +231,7 @@ def get_status():
     })
 
 # Get item by id
-@app.route('/item/<int:item_id>', methods=['GET'])
+@app.route('/api/items/<int:item_id>', methods=['GET'])
 def get_item(item_id):
     for item in data:
         if item["id"] == item_id:
@@ -255,7 +250,7 @@ def get_item(item_id):
     }), 404
 
 # Get all categories
-@app.route('/item/categories', methods=['GET'])
+@app.route('/api/items/categories', methods=['GET'])
 def get_categories():
     try:
         return jsonify({
@@ -264,6 +259,19 @@ def get_categories():
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/items', methods=['GET'])
+def get_items():
+    profile_filter = request.args.get('profile')
+    
+    if profile_filter:
+        filtered_items = [item for item in data if item['profile'] == profile_filter]
+        # Si quieres devolver agrupados por categoría:
+        grouped = group_by_category(filtered_items)
+        return jsonify({"success": True, "items": grouped})
+    else:
+        grouped = group_by_category(data)
+        return jsonify({"success": True, "items": grouped})
 
 @app.route('/')
 def home():
@@ -284,5 +292,7 @@ if __name__ == "__main__":
     print("✅ Started")
     
     print(get_memory_usage())
+    
+    #print(grouped_data)
  
     app.run(debug=True)
