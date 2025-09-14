@@ -6,7 +6,7 @@
 - [ ] Cambiar colores (personalización)
 
 ## 💡 Should Have (Nice to have)
-- [ ] Sistema de perfiles
+- [x] Sistema de perfiles
 - [ ] Shortcuts de teclado
 - [ ] Categorías colapsables
 - [ ] iFrames opcionales
