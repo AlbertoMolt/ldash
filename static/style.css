@@ -107,6 +107,10 @@ a:link {
     text-align: center;
 }
 
+.profileSelector {
+    display: block;
+}
+
 .customize-btn, .config-btn {
     font-size: 20px;
 }

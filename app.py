@@ -15,7 +15,7 @@ DATABASE_FILE = "data/database.csv"
 
 current_os = platform.system()
 
-database_header_list = ["id", "name", "icon", "url", "category", "tab_type"]
+database_header_list = ["id", "name", "icon", "url", "category", "tab_type", "profile"]
 
 last_modification_time = os.path.getmtime(DATABASE_FILE)
 
@@ -125,7 +125,7 @@ def ping_host(host, timeout=5): # TODO: Reemplazar esto porque da muchos falsos 
         return False
 
 def get_item_profiles():
-    ...
+    return sorted({item["profile"] for item in data})
 
 def get_items_categories():
     return sorted({item["category"] for item in data})
@@ -164,7 +164,7 @@ def host_status_checker():
 #        CRUD APIs
 # ########################
 # Create item
-@app.route('/item', methods=['POST'])
+@app.route('/api/items', methods=['POST'])
 def create_item():
     new_item_data = request.get_json()
     new_item_data['id'] = get_usable_id() # Populating with an id
@@ -175,7 +175,7 @@ def create_item():
     return jsonify({"success": True})
     
 # Delete item
-@app.route('/item/<int:item_id>', methods=['DELETE'])
+@app.route('/api/items/<int:item_id>', methods=['DELETE'])
 def delete_item(item_id):
     
     for i, item in enumerate(data):
@@ -188,7 +188,7 @@ def delete_item(item_id):
     return jsonify({"success": False, "error": "Item not found"}), 404
 
 # Edit item
-@app.route('/item/<int:item_id>', methods=['PUT'])
+@app.route('/api/items/<int:item_id>', methods=['PUT'])
 def update_item(item_id):
     data_received = request.get_json()
     
@@ -248,6 +248,17 @@ def get_item(item_id):
         'success': False,
         'error': 'Item not found'
     }), 404
+    
+# Get all profiles
+@app.route('/api/items/profiles', methods=['GET'])
+def get_profiles():
+    try:
+        return jsonify({
+            'success': True,
+            'profiles': get_item_profiles()
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # Get all categories
 @app.route('/api/items/categories', methods=['GET'])
@@ -263,21 +274,22 @@ def get_categories():
 @app.route('/api/items', methods=['GET'])
 def get_items():
     profile_filter = request.args.get('profile')
+    filtered_items = []
     
     if profile_filter:
-        filtered_items = [item for item in data if item['profile'] == profile_filter]
-        # Si quieres devolver agrupados por categoría:
-        grouped = group_by_category(filtered_items)
-        return jsonify({"success": True, "items": grouped})
+        for item in data:
+            if item['profile'] == profile_filter:
+                filtered_items.append(item)
+        
+        return jsonify({"success": True, "items": filtered_items})
     else:
-        grouped = group_by_category(data)
-        return jsonify({"success": True, "items": grouped})
+        return jsonify({"success": True, "items": data})
 
 @app.route('/')
 def home():
     # Recarga los datos antes de renderizar para asegurar que estén actualizados
     reload_database()
-    return render_template('index.html', grouped_data=grouped_data)
+    return render_template('index.html')
 # --------------------------------------------------
 
 if __name__ == "__main__":
@@ -293,6 +305,6 @@ if __name__ == "__main__":
     
     print(get_memory_usage())
     
-    #print(grouped_data)
+    print(group_by_category)
  
     app.run(debug=True)

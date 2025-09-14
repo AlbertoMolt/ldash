@@ -7,31 +7,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body">
-    <div class="items-container" id="itemsContainer">
-        {% for category, items in grouped_data.items() %}
-        <div class="category" category="{{ category|replace(' ', '-') }}" id="category-{{ loop.index }}">
-            <div class="category-title">
-                <p>⮞</p>
-                <h3>{{ category }}</h3>
-            </div>
-            <div class="items-wrapper">
-                {% for item in items %}
-                <div class="item" itemid="{{ item.id }}">
-                    <a href="{{ item.url }}" {% if item.tab_type == 'true' %}target="_blank" rel="noopener noreferrer"{% endif %}>
-                        <div class="content-wrapper">
-                            <p>{{ item.name }}</p>
-                            <img src="{{ item.icon }}" alt="{{ item.name }} icon" width="100px">
-                        </div>
-                    </a>
-                    <span class="status-ping" id="statusPing">•</span>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+    <div class="items-container" id="itemsContainer"></div>
 
     <div class="toolbar">
+        <div class="profileSelector">
+            <label for="selectedProfile">Profile</label><br>
+            <select id="selectedProfile" name="selectedProfile">
+                <option value="newProfile">-New profile-</option>
+            </select>
+        </div>
+
         <button class="toolbar-btn config-btn" id="configBtn">⚙️</button>
         <button class="toolbar-btn" id="createItemBtn">+</button>
         <button class="toolbar-btn customize-btn" id="customizeBtn">🎨</button>

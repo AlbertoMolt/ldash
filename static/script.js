@@ -5,6 +5,8 @@ const editItemDialog = document.getElementById('editItemDialog');
 const createItemDialog = document.getElementById('createItemDialog');
 const configDialog = document.getElementById('configDialog');
 
+selectedProfile = document.getElementById('selectedProfile')
+
 const enablePingStatus = document.getElementById('enablePingStatus');
 
 
@@ -14,7 +16,8 @@ let currentMouseY = 0;
 
 let itemid = 0;
 
-let profile = 'default';
+let currentProfile = "";
+
 
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
@@ -317,7 +320,8 @@ function createItem(name, icon, url, category, tab_type){
             icon: icon,
             url: url,
             category: category,
-            tab_type: tab_type
+            tab_type: tab_type,
+            profile: getProfile()
         })  
     })
     .then(response => response.json())
@@ -380,6 +384,11 @@ function getCookie(name) {
     return null;
 }
 
+function existCookie(name) {
+    const cookies = document.cookie.split(";").map(c => c.trim());
+    return cookies.some(cookie => cookie.startsWith(name + "="));
+}
+
 function reloadPage() {
     location.reload()
 }
@@ -403,11 +412,11 @@ function cancelOperation() {
 }
 //---------------------------------
 
-async function getItemsByCat() {
+async function getItemsByCategory() {
     let request;
 
-    if (profile) {
-        request = `/api/items?profile=${profile}`
+    if (currentProfile) {
+        request = `/api/items?profile=${currentProfile}`
     } else {
         request = "/api/items"
     }
@@ -419,15 +428,66 @@ async function getItemsByCat() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            return data;
+            return data.items
         } else {
             throw new Error(data.error);
         }
     });
 }
 
-async function renderDashboard(data) {
-    
+async function renderDashboard(items, categories) {
+    let html = [];
+
+    let itemsProfiles = getCurrentItemsProfiles(items);
+
+    if (itemsProfiles.some(profile => currentProfile.includes(profile))) {
+        for (const category of categories) {
+            html.push(`
+                <div class="category" category="${category}">
+                    <div class="category-title">
+                        <p>⮞</p>
+                        <h3>${category}</h3>
+                    </div>
+                    <div class="items-wrapper">
+            `);
+            for (const item of items) {
+                if (item.category === category) {
+                    let target = item.tab_type ? "_blank" : "_self";
+                    html.push(`
+                        <div class="item" itemid="${item.id}">
+                            <a href="${item.url}" target="${target}">
+                                <div class="content-wrapper">
+                                    <p>${item.name}</p>
+                                    <img src="${item.icon}" alt="${item.name} icon" width="100px" loading="lazy">
+                                </div>
+                            </a>
+                            <span class="status-ping" id="statusPing">•</span>
+                        </div>
+                    `);
+                }
+            }
+            html.push(`
+                    </div>
+                </div>
+            `);
+        }
+        itemsContainer.innerHTML = html.join("");
+    }
+}
+
+async function getItemProfiles() {
+    return fetch(`/api/items/profiles`, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            return data.profiles;
+        } else {
+            throw new Error(data.error);
+        }
+    });
 }
 
 async function getItemCategories() {
@@ -443,6 +503,28 @@ async function getItemCategories() {
             throw new Error(data.error);
         }
     });
+}
+
+function getCurrentItemsProfiles(items) {
+    let itemsProfiles = []
+    for (let item of items) {
+        itemsProfiles.push(item.profile)
+    }
+
+    return itemsProfiles;
+}
+
+async function loadProfilesUi(){
+    const selectedProfileElement = document.querySelector('#selectedProfile');
+    const profiles = await getItemProfiles()
+
+    for (let profile of profiles) {
+            const option = document.createElement('option');
+            option.value = profile;
+            option.textContent = profile;
+            selectedProfileElement.add(option);
+    }
+    selectedProfileElement.value = getProfile()
 }
 
 async function getItemStatus() {
@@ -489,6 +571,22 @@ async function getItemStatus() {
     }
 }
 
+function getProfile() {
+    let profile;
+    if (existCookie("profile")) {
+        profile = getCookie("profile")
+    } else {
+        setCookie("profile", "default", 365) // Default profile
+        profile = getCookie("profile")
+    }
+    return profile
+}
+
+selectedProfile.addEventListener('change', () =>{
+    setCookie("profile", selectedProfile.value, 365);
+    reloadPage();
+})
+
 enablePingStatus.addEventListener('change', () => {
     setCookie("statusPing", enablePingStatus.checked, 365);
 });
@@ -517,10 +615,7 @@ document.addEventListener("click", function(event) {
 });
 
 window.onload = () => {
-    getItemsByCat().then(data => {
-        renderDashboard(data);
-    });
-
+    // Render status
     function getStatusConfig() {
         const statusPingCheckBox = document.getElementById('enablePingStatus');
         if (getCookie('statusPing') === "true") {
@@ -531,4 +626,14 @@ window.onload = () => {
     }
     getStatusConfig();
     getItemStatus();
+
+    loadProfilesUi()
 };
+
+document.addEventListener("DOMContentLoaded", async () => {
+    currentProfile = getProfile();
+
+    items = await getItemsByCategory(),
+    categories = await getItemCategories()
+    renderDashboard(items, categories);
+});
