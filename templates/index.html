@@ -35,9 +35,23 @@
         <div class="config-wrapper dialog-wrapper">
             <h2>Configuration</h2>
             <label for="enablePingStatus">Enable ping status</label>
-            <input type="checkbox" id="enablePingStatus" name="enablePingStatus">
+            <input type="checkbox" id="enablePingStatus" name="enablePingStatus"><br>
+
+            <label for="defaultProfile">Default profile</label><br>
+            <select id="defaultProfile" name="defaultProfile"></select>
         </div>
-        <button type="button" onclick="reloadPage()">Close</button>
+        <button onclick="reloadPage()" id="closeConfigDialog">Close</button>
+    </dialog>
+
+    <dialog class="create-profile-dialog" id="createProfileDialog">
+        <h2>Configuration</h2>
+        <div class="create-profile-wrapper dialog-wrapper">
+            <label for="createProfile">New profile name</label>
+            <input type="text" id="createProfile" name="createProfile">
+        </div>
+
+        <button type="button" onclick="createProfile()">Apply</button>
+        <button type="button" onclick="cancelOperation()">Cancel</button>
     </dialog>
 
     <dialog class="edit-item-dialog" id="editItemDialog"><p>Loading...</p></dialog>

@@ -1,11 +1,15 @@
-const itemsContainer = document.getElementById('itemsContainer')
+const itemsContainer = document.getElementById('itemsContainer');
+
 const contextMenu = document.getElementById('contextMenu');
+
 const deleteItemDialog = document.getElementById('deleteItemDialog');
 const editItemDialog = document.getElementById('editItemDialog');
 const createItemDialog = document.getElementById('createItemDialog');
 const configDialog = document.getElementById('configDialog');
+const createProfileDialog = document.getElementById('createProfileDialog');
 
-selectedProfile = document.getElementById('selectedProfile')
+const selectedProfile = document.getElementById('selectedProfile');
+const defaultProfile = document.getElementById('defaultProfile');
 
 const enablePingStatus = document.getElementById('enablePingStatus');
 
@@ -26,6 +30,7 @@ document.addEventListener('mousemove', function(e) {
 });
 
 document.getElementById('configBtn').addEventListener('click', function(){
+    loadProfilesForConfig();
     configDialog.showModal();
 });
 
@@ -55,7 +60,8 @@ function deleteItem(){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload()
+            deleteItemDialog.close();
+            updateDashboard();
         } else {
             alert('Error: ' + data.error);
         }
@@ -167,6 +173,7 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                             finalCategory,
                             document.getElementById('openingMethodEdit').value
                         );
+                        editItemDialog.close();
                     });
                 })
                 .catch(err => alert(err));
@@ -184,13 +191,14 @@ function applyChanges(name, icon, url, category, tab_type){
                 icon: icon,
                 url: url,
                 category: category,
-                tab_type: tab_type
+                tab_type: tab_type,
+                profile: getDefaultProfile()
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload();
+                updateDashboard();
             } else {
                 alert('Error: ' + data.error);
             }
@@ -304,6 +312,7 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                     finalCategory,
                     document.getElementById('openingMethodCreate').value
                 );
+                createItemDialog.close();
             });
 
         })
@@ -321,13 +330,13 @@ function createItem(name, icon, url, category, tab_type){
             url: url,
             category: category,
             tab_type: tab_type,
-            profile: getProfile()
+            profile: getDefaultProfile()
         })  
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload()
+            updateDashboard();
         } else {
             throw new Error(data.error);
         }
@@ -408,7 +417,9 @@ function cancelOperation() {
 
     createItemDialog.close();
 
-    configDialog.close()
+    configDialog.close();
+
+    createProfileDialog.close();
 }
 //---------------------------------
 
@@ -471,8 +482,15 @@ async function renderDashboard(items, categories) {
                 </div>
             `);
         }
+        itemsContainer.innerHTML = "";
         itemsContainer.innerHTML = html.join("");
     }
+}
+
+async function updateDashboard() {
+    const items = await getItemsByCategory();
+    const categories = await getItemCategories();
+    await renderDashboard(items, categories);
 }
 
 async function getItemProfiles() {
@@ -524,7 +542,20 @@ async function loadProfilesUi(){
             option.textContent = profile;
             selectedProfileElement.add(option);
     }
-    selectedProfileElement.value = getProfile()
+    selectedProfileElement.value = getDefaultProfile()
+}
+
+async function loadProfilesForConfig(){
+    const defaultProfileElement = document.querySelector('#defaultProfile');
+    const profiles = await getItemProfiles()
+
+    for (let profile of profiles) {
+            const option = document.createElement('option');
+            option.value = profile;
+            option.textContent = profile;
+            defaultProfileElement.add(option);
+    }
+    defaultProfileElement.value = getCookie("profile");
 }
 
 async function getItemStatus() {
@@ -571,7 +602,7 @@ async function getItemStatus() {
     }
 }
 
-function getProfile() {
+function getDefaultProfile() {
     let profile;
     if (existCookie("profile")) {
         profile = getCookie("profile")
@@ -582,9 +613,23 @@ function getProfile() {
     return profile
 }
 
-selectedProfile.addEventListener('change', () =>{
-    setCookie("profile", selectedProfile.value, 365);
-    reloadPage();
+function createProfile() {
+    const createProfileInput = document.getElementById("createProfile");
+    currentProfile = createProfileInput.value;
+    updateDashboard();
+}
+
+selectedProfile.addEventListener('change', async () =>{
+    if (selectedProfile.value === "newProfile") {
+        createProfileDialog.showModal();
+    } else {
+        currentProfile = selectedProfile.value;
+        updateDashboard();
+    }
+})
+
+defaultProfile.addEventListener('change', async() =>{
+    setCookie("profile", defaultProfile.value, 365);
 })
 
 enablePingStatus.addEventListener('change', () => {
@@ -631,9 +676,6 @@ window.onload = () => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-    currentProfile = getProfile();
-
-    items = await getItemsByCategory(),
-    categories = await getItemCategories()
-    renderDashboard(items, categories);
+    currentProfile = getDefaultProfile();
+    updateDashboard()
 });

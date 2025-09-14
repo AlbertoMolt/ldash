@@ -1,13 +1,13 @@
 import platform
 import subprocess
-from flask import Flask, abort, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify
 import csv
 from collections import defaultdict
 import os
 import time
 import threading
 from urllib.parse import urlparse
-from collections import Counter
+from waitress import serve
 import psutil # TODO: ELIMINAR ESTA LIBRERÍA, Y DEL VENV TAMBIÉN
 
 
@@ -200,7 +200,8 @@ def update_item(item_id):
                 "icon": data_received["icon"],
                 "url": data_received["url"],
                 "category": data_received["category"],
-                "tab_type": data_received["tab_type"]
+                "tab_type": data_received["tab_type"],
+                "profile": data_received["profile"]
             }
             update_database()
             return jsonify({"success": True})
@@ -242,7 +243,8 @@ def get_item(item_id):
                 'icon': item["icon"],
                 'url': item["url"],
                 'category': item["category"],
-                'tab_type': item["tab_type"]
+                'tab_type': item["tab_type"],
+                'profile': item["profile"]
             })
     return jsonify({
         'success': False,
@@ -304,7 +306,6 @@ if __name__ == "__main__":
     print("✅ Started")
     
     print(get_memory_usage())
-    
-    print(group_by_category)
- 
-    app.run(debug=True)
+     
+    app.run(host="0.0.0.0", debug=True)
+    #serve(app, host='0.0.0.0', port=5000)
