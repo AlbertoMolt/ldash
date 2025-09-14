@@ -192,7 +192,7 @@ function applyChanges(name, icon, url, category, tab_type){
                 url: url,
                 category: category,
                 tab_type: tab_type,
-                profile: getDefaultProfile()
+                profile: currentProfile
             })
         })
         .then(response => response.json())
@@ -330,7 +330,7 @@ function createItem(name, icon, url, category, tab_type){
             url: url,
             category: category,
             tab_type: tab_type,
-            profile: getDefaultProfile()
+            profile: currentProfile
         })  
     })
     .then(response => response.json())
@@ -449,48 +449,61 @@ async function getItemsByCategory() {
 async function renderDashboard(items, categories) {
     let html = [];
 
-    let itemsProfiles = getCurrentItemsProfiles(items);
+    const filteredItems = items.filter(item => item.profile === currentProfile);
+    
+    if (filteredItems.length === 0) {
+        itemsContainer.innerHTML = "<p>No items were found in this profile. Create an item to use.</p>";
+        return;
+    }
 
-    if (itemsProfiles.some(profile => currentProfile.includes(profile))) {
-        for (const category of categories) {
+    const categoriesWithItems = [...new Set(filteredItems.map(item => item.category))];
+    
+    const categoriesToShow = categories.filter(category => 
+        categoriesWithItems.includes(category)
+    );
+
+    for (const category of categoriesToShow) {
+        const categoryItems = filteredItems.filter(item => item.category === category);
+        
+        if (categoryItems.length > 0) {
             html.push(`
                 <div class="category" category="${category}">
                     <div class="category-title">
-                        <p>⮞</p>
+                        <p>➤</p>
                         <h3>${category}</h3>
                     </div>
                     <div class="items-wrapper">
             `);
-            for (const item of items) {
-                if (item.category === category) {
-                    let target = item.tab_type ? "_blank" : "_self";
-                    html.push(`
-                        <div class="item" itemid="${item.id}">
-                            <a href="${item.url}" target="${target}">
-                                <div class="content-wrapper">
-                                    <p>${item.name}</p>
-                                    <img src="${item.icon}" alt="${item.name} icon" width="100px" loading="lazy">
-                                </div>
-                            </a>
-                            <span class="status-ping" id="statusPing">•</span>
-                        </div>
-                    `);
-                }
+            
+            for (const item of categoryItems) {
+                let target = item.tab_type ? "_blank" : "_self";
+                html.push(`
+                    <div class="item" itemid="${item.id}">
+                        <a href="${item.url}" target="${target}">
+                            <div class="content-wrapper">
+                                <p>${item.name}</p>
+                                <img src="${item.icon}" alt="${item.name} icon" width="100px" loading="lazy">
+                            </div>
+                        </a>
+                        <span class="status-ping" id="statusPing">•</span>
+                    </div>
+                `);
             }
             html.push(`
                     </div>
                 </div>
             `);
         }
-        itemsContainer.innerHTML = "";
-        itemsContainer.innerHTML = html.join("");
     }
+    itemsContainer.innerHTML = html.join("");
 }
 
 async function updateDashboard() {
     const items = await getItemsByCategory();
     const categories = await getItemCategories();
     await renderDashboard(items, categories);
+
+    console.log(currentProfile)
 }
 
 async function getItemProfiles() {
@@ -616,6 +629,8 @@ function getDefaultProfile() {
 function createProfile() {
     const createProfileInput = document.getElementById("createProfile");
     currentProfile = createProfileInput.value;
+
+    createProfileDialog.close();
     updateDashboard();
 }
 
