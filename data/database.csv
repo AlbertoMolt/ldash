@@ -1,0 +1,4 @@
+id,name,icon,url,category,tab_type,profile
+1,Google,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google.svg,https://www.google.com/,External,true,default
+2,GitHub,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github-light.svg,https://github.com/,External,true,default
+3,JellyFin,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyfin.svg, ,Local,true,default
