@@ -9,3 +9,8 @@ Lightweight dashboard for managing server services...
 
 ## Installation
 pip install -r requirements.txt
+
+## Note
+⚠️ Incomplete project.
+
+--->[TODO](TODO.md)<---
