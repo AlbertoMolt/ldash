@@ -8,8 +8,10 @@ Lightweight dashboard for managing server services...
 - Real-time file monitoring
 
 ## Installation
+```bash
 pip install -r requirements.txt
-
+python app.py
+```
 ## Note
 ⚠️ Incomplete but functional project.
 
