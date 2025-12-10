@@ -12,6 +12,7 @@ Lightweight dashboard for managing server services...
 pip install -r requirements.txt
 python app.py
 ```
+[localhost:5000](http://localhost:5000)
 ## Note
 ⚠️ Incomplete but functional project.
 
