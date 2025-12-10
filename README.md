@@ -8,5 +8,4 @@ Lightweight dashboard for managing server services...
 - Real-time file monitoring
 
 ## Installation
-pip install flask
-python app.py
+pip install -r requirements.txt
