@@ -1,6 +1,6 @@
 # LDash
 
-A lightweight web dashboard to organize and access your self-hosted services from one place.
+A (very simple) lightweight web dashboard to organize and access your self-hosted services from one place.
 
 🔗 [Live demo](https://ldash.onrender.com/)
 
