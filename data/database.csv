@@ -1,15 +1,9 @@
 id,name,item_type,icon,url,category,tab_type,profile
-4,Home Assistant,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/home-assistant-alt.svg,http://home-assistant.local:8123/,Local,true,default
-5,AMP,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/amp.png,http://ampserver.local:8080/,Local,true,default
-6,Pi-Hole,item,https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png,https://pihole.local/,Local,true,default
-7,Proxmox,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/proxmox.svg,https://proxmox.local:8006/,Local,true,default
-8,ExoMusic,item,http://192.168.0.105/icon.png,http://exomusic.local,Local,true,default
-9,Pairdrop,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/pairdrop.webp,http://pairdrop.local:3000/,Servers,true,test
-10,copyparty,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/copyparty.svg,https://self-hosted:3434/,Servers,true,test
-11,Hetzner Cloud,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/hetzner.svg,https://console.hetzner.com/projects/11716088/storage-boxes/471188/overview,External Services,true,test
-12,Solarman Smart,item,https://play-lh.googleusercontent.com/0OywUNNIIDe9uFPe8kzpmaAPb5wHf1gdvF0GEilQ5hb-9uHWyeCe6ALVxLowAVQ6ftcc,https://home.solarmanpv.com/plant/infos/data,External,Services,test
-15,Hetzner Cloud,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/hetzner.svg,https://console.hetzner.com/projects/11716088/storage-boxes/471188/overview,External Services,true,default
-17,Arlo,item,https://community.arlo.com/html/assets/arlo_secure_appicon.png,https://my.arlo.com/,External Services,true,default
-18,Frigate,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/frigate-light.svg,https://frigate.local,Local,true,default
-19,GitHub,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github-light.svg,https://github.com/,External Services,true,default
-20,test,iframe,,https://frigate.local/live/webrtc/entrada_principal,,,default
+1,Google,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google.svg,https://www.google.com/,External,true,default
+2,GitHub,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github-light.svg,https://github.com/,External,true,default
+3,Jellyfin,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyfin.svg,,Local,true,default
+4,Music,iframe,,https://open.spotify.com/embed/track/4PTG3Z6ehGkBFwjybzWkR8?utm_source=generator,,,default
+5,YouTube,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/youtube.png,https://www.youtube.com/,External,true,default
+6,Proxmox,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/proxmox.svg,,Local,true,default
+7,OpenMediaVault,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openmediavault.svg,,Local,true,default
+8,Spotify,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg,https://open.spotify.com/,External,true,default

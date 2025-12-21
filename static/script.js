@@ -157,7 +157,7 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                         case "iframe":
                             editItemDialog.innerHTML = `
                                 <div class="edit-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
-                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit ${item.name}</h2>
+                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit "${item.name}"</h2>
                                     
                                     <div style="margin-bottom: 10px;">
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
@@ -636,7 +636,6 @@ async function renderDashboard(items, categories) {
         html.push(`
             <div class="category" category="uncategorized">
                 <div class="category-title">
-                    <p>➤</p>
                     <h3>Uncategorized</h3>
                 </div>
                 <div class="items-wrapper">
@@ -665,7 +664,6 @@ async function renderDashboard(items, categories) {
             html.push(`
                 <div class="category" category="${category}">
                     <div class="category-title">
-                        <p>➤</p>
                         <h3>${category}</h3>
                     </div>
                     <div class="items-wrapper">
