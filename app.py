@@ -15,7 +15,7 @@ DATABASE_FILE = "data/database.csv"
 
 current_os = platform.system()
 
-database_header_list = ["id", "name", "icon", "url", "category", "tab_type", "profile"]
+database_header_list = ["id", "name", "item_type", "icon", "url", "category", "tab_type", "profile"]
 
 last_modification_time = os.path.getmtime(DATABASE_FILE)
 
@@ -95,11 +95,12 @@ def set_dictionary(data):
         data_dict = {
             "id": int(item[0]),
             "name": item[1],
-            "icon": item[2],
-            "url": item[3],
-            "category": item[4],
-            "tab_type": item[5],
-            "profile": item[6]
+            "item_type": item[2],
+            "icon": item[3],
+            "url": item[4],
+            "category": item[5],
+            "tab_type": item[6],
+            "profile": item[7]
         }
         items.append(data_dict)
     return items
@@ -197,6 +198,7 @@ def update_item(item_id):
             data[i] = {
                 "id": item_id,
                 "name": data_received["name"],
+                "item_type": data_received["item_type"],
                 "icon": data_received["icon"],
                 "url": data_received["url"],
                 "category": data_received["category"],
@@ -240,6 +242,7 @@ def get_item(item_id):
                 'success': True,
                 'id': item["id"],
                 'name': item["name"],
+                'item_type': item["item_type"],
                 'icon': item["icon"],
                 'url': item["url"],
                 'category': item["category"],

@@ -4,7 +4,9 @@ const contextMenu = document.getElementById('contextMenu');
 
 const deleteItemDialog = document.getElementById('deleteItemDialog');
 const editItemDialog = document.getElementById('editItemDialog');
+
 const createItemDialog = document.getElementById('createItemDialog');
+
 const configDialog = document.getElementById('configDialog');
 const createProfileDialog = document.getElementById('createProfileDialog');
 
@@ -43,10 +45,10 @@ document.getElementById('deleteItemBtn').addEventListener('click', function(){
     getItemData()
     .then(item => {
         deleteItemDialog.innerHTML = `
-            <h2>Delete ${item.name}</h2>
+            <h2>Delete "${item.name}"</h2>
             <p>Are you sure?<p>
-            <button type="button" id="confirmDelete" onclick="deleteItem()">Yes</button>
-            <button type="button" id="cancelDelete" onclick="cancelOperation()">Cancel</button>
+            <button type="button" id="confirmDelete" onclick="deleteItem()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Yes</button>
+            <button type="button" id="cancelDelete" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Cancel</button>
         `
     })
     .catch(err => alert(err));
@@ -83,111 +85,198 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                         .map(cat => `<option value="${cat}">${cat}</option>`)
                         .join("");
 
-                    editItemDialog.innerHTML = `
-                        <div class="edit-item-wrapper dialog-wrapper">
-                            <h2>Edit ${item.name}</h2>
-                            
-                            <p style="color:rgba(255, 255, 255, 0.2); font-style: italic;">id: ${item.id}<p>
-                            <label for="itemNameEdit">Name</label><br>
-                            <input type="text" id="itemNameEdit" name="itemNameEdit" value="${item.name}"><br>
-                            <br>
-                
-                            <label for="itemIcon">Icon</label><br>
-                            <input type="text" id="itemIcon" name="itemIcon" value="${item.icon}"><br>
-                            <div class="icon-preview-container">
-                                <img src="${item.icon}" id="iconPreview" width="30px">
-                            </div>
-                            <br>
-                
-                            <label for="itemUrlEdit">Url</label><br>
-                            <input type="url" id="itemUrlEdit" name="itemUrlEdit" value="${item.url}"><br>
-                            <br>
+                    const itemType = item.item_type;
 
-                            <label for="itemCategoryEdit">Category</label><br>
-                            <select id="itemCategoryEdit" name="itemCategoryEdit">
-                                <option value="${item.category}" selected>${item.category}</option>
-                                <option value="newCategory">-New category-</option>
-                                ${categoriesOptions}
-                            </select><br>
-                            <br>
+                    switch (itemType) {
+                        case "item":
+                            editItemDialog.innerHTML = `
+                                <div class="edit-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
+                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit "${item.name}"</h2>
+                                    
+                                    <div style="margin-bottom: 10px;">
+                                        <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
+                                        <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">Type: ${item.item_type}</p>
+                                    </div>
+        
+                                    <div style="display: flex; flex-direction: column; gap: 15px;">
 
-                            <div id="newCategoryWrapperEdit" style="display: none; position: fixed;">
-                                <label for="newCategoryEdit">New category name</label><br>
-                                <input type="text" id="newCategoryEdit" name="newCategoryEdit"><br>
-                                <br>
-                            </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
+                                            <input type="text" id="itemNameEdit" value="${item.name}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                                        </div>
+        
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL</label>
+                                            <div style="display: flex; gap: 10px; align-items: center;">
+                                                <input type="text" id="itemIcon" value="${item.icon}" style="flex-grow: 1; padding: 8px;">
+                                                <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center;">
+                                                    <img src="${item.icon}" 
+                                                        id="iconPreview" 
+                                                        width="30px" 
+                                                        height="30px" 
+                                                        style="object-fit: contain;">
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL</label>
+                                            <input type="url" id="itemUrlEdit" value="${item.url}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                                        </div>
+        
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Category</label>
+                                            <select id="itemCategoryEdit" style="width: 100%; padding: 8px;">
+                                                <option value="${item.category}" selected>${item.category}</option>
+                                                <option value="newCategory">- New category -</option>
+                                                ${categoriesOptions}
+                                            </select>
+                                        </div>
+        
+                                        <div id="newCategoryWrapperEdit" style="display: none; background: #0b1021; padding: 10px; border-radius: 4px;">
+                                            <label style="display: block; margin-bottom: 5px;">New category name</label>
+                                            <input type="text" id="newCategoryEdit" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                                        </div>
+        
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Opening method</label>
+                                            <select id="openingMethodEdit" style="width: 100%; padding: 8px;">
+                                                <option value="true" ${item.tabType === 'true' ? 'selected' : ''}>New tab</option>
+                                                <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
+                                            </select>
+                                        </div>
+                                    </div>
+        
+                                    <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                                        <button type="button" id="applyItemBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
+                                        <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                                    </div>
+                                </div>
+                            `;
+                            break;
+                        case "iframe":
+                            editItemDialog.innerHTML = `
+                                <div class="edit-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
+                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit ${item.name}</h2>
+                                    
+                                    <div style="margin-bottom: 10px;">
+                                        <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
+                                        <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">Type: ${item.item_type}</p>
+                                    </div>
+        
+                                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
+                                            <input type="text" id="itemNameEdit" value="${item.name}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                                        </div>
+        
+                                        <div>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL</label>
+                                            <input type="url" id="itemUrlEdit" value="${item.url}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                                        </div>
+        
+                                        <div id="newCategoryWrapperEdit" style="display: none; background: #0b1021; padding: 10px; border-radius: 4px;">
+                                            <label style="display: block; margin-bottom: 5px;">New category name</label>
+                                            <input type="text" id="newCategoryEdit" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                                        </div>
+                                    </div>
+        
+                                    <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                                        <button type="button" id="applyItemBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
+                                        <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                                    </div>
+                                </div>
+                            `;
+                            break;
+                    }
 
-                            <label for="openingMethodEdit">Opening method</label><br>
-                            <select id="openingMethodEdit" name="openingMethodEdit">
-                                <option value="true" ${item.tabType === 'true' ? 'selected' : ''}>New tab</option>
-                                <option value="false" ${item.tabType === 'false' ? 'selected' : ''}>Same tab</option>
-                            </select>
-                        </div>
-                        <button type="button" id="applyItemBtn">Apply</button>
-                        <button type="button" onclick="cancelOperation()">Cancel</button>
-                    `;
 
                     const itemCategoryEdit = document.getElementById('itemCategoryEdit');
                     const newCategoryWrapperEdit = document.getElementById('newCategoryWrapperEdit');
                     const newCategoryEdit = document.getElementById('newCategoryEdit');
                     let selectedCategory = item.category; // De forma predeterminada, se le da el valor de la categoría vieja del item
                     
-                    itemCategoryEdit.addEventListener('change', () => {
-                        if (itemCategoryEdit.value === "newCategory") {
-                            newCategoryWrapperEdit.style.display = "block";
-                            newCategoryWrapperEdit.style.position = "static";
-                            selectedCategory = newCategoryEdit.value;
-                        } else {
-                            newCategoryWrapperEdit.style.display = "none";
-                            newCategoryWrapperEdit.style.position = "fixed";
-                            selectedCategory = itemCategoryEdit.value;
-                        }
-                    });
-
-                    // Dar valor del input text al la categoría 
-                    newCategoryEdit.addEventListener('input', () => {
-                        if (itemCategoryEdit.value === "newCategory") {
-                            selectedCategory = newCategoryEdit.value;
-                        }
-                    });
-
-                    document.getElementById('itemIcon').addEventListener('input', () => {
-                        document.getElementById('iconPreview').src = document.getElementById('itemIcon').value;
-                    });
-
-                    document.getElementById('applyItemBtn').addEventListener('click', function(){
-                        let finalCategory = selectedCategory;
-
-                        if (itemCategoryEdit.value === "newCategory") {
-                            finalCategory = newCategoryEdit.value.trim();
-                            if (!finalCategory) {
-                                alert("Please enter a category name");
-                                return;
+                    if (itemCategoryEdit) {
+                        itemCategoryEdit.addEventListener('change', () => {
+                            if (itemCategoryEdit.value === "newCategory") {
+                                newCategoryWrapperEdit.style.display = "block";
+                                newCategoryWrapperEdit.style.position = "static";
+                                selectedCategory = newCategoryEdit.value;
+                            } else {
+                                newCategoryWrapperEdit.style.display = "none";
+                                newCategoryWrapperEdit.style.position = "fixed";
+                                selectedCategory = itemCategoryEdit.value;
                             }
-                        }
+                        });
+    
+                        // Dar valor del input text al la categoría 
+                        newCategoryEdit.addEventListener('input', () => {
+                            if (itemCategoryEdit.value === "newCategory") {
+                                selectedCategory = newCategoryEdit.value;
+                            }
+                        });
+                    }
 
-                        applyChanges(
-                            document.getElementById('itemNameEdit').value, 
-                            document.getElementById('itemIcon').value, 
-                            document.getElementById('itemUrlEdit').value,
-                            finalCategory,
-                            document.getElementById('openingMethodEdit').value
-                        );
+                    const itemIcon = document.getElementById('itemIcon');
+                    if (itemIcon && item.item_type == "item") {
+                        itemIcon.addEventListener('input', () => {
+                            document.getElementById('iconPreview').src = itemIcon.value;
+                        });
+                    }
+
+                    const applyItemBtn = document.getElementById('applyItemBtn');
+                    if (applyItemBtn) {
+                        applyItemBtn.addEventListener('click', function(){
+                        switch(itemType) {
+                            case "item":
+                                let finalCategory = selectedCategory;
+
+                                if (itemCategoryEdit && itemCategoryEdit.value === "newCategory") {
+                                    finalCategory = newCategoryEdit.value.trim();
+                                    if (!finalCategory) {
+                                        alert("Please enter a category name");
+                                        return;
+                                    }
+                                }
+
+                                applyChanges(
+                                    document.getElementById('itemNameEdit').value,
+                                    "item",
+                                    document.getElementById('itemIcon').value, 
+                                    document.getElementById('itemUrlEdit').value,
+                                    finalCategory,
+                                    document.getElementById('openingMethodEdit').value
+                                );
+                                break;
+                            case "iframe":
+                                applyChanges(
+                                    document.getElementById('itemNameEdit').value,
+                                    "iframe",
+                                    "",
+                                    document.getElementById('itemUrlEdit').value,
+                                    "",
+                                    "",
+                                );
+                                break;
+                        }
+                        
                         editItemDialog.close();
-                    });
+                        });
+                    }
                 })
                 .catch(err => alert(err));
         })
         .catch(err => alert(err));
 });
 
-function applyChanges(name, icon, url, category, tab_type){
+function applyChanges(name, item_type, icon, url, category, tab_type){
     if (itemid != 0) {
         fetch(`/api/items/${itemid}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 name: name,
+                item_type: item_type,
                 icon: icon,
                 url: url,
                 category: category,
@@ -219,113 +308,193 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
             const categoryOptions = itemCategories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
 
             createItemDialog.innerHTML = `
-                <div class="create-item-wrapper dialog-wrapper">
-                    <h2>Create item</h2>
+                <div class="create-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
+                    <h2 id="createItemTitle" style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Create item</h2>
 
-                    <label for="itemNameCreate">Name</label><br>
-                    <input type="text" id="itemNameCreate" name="itemNameCreate"><br>
-                    <br>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
 
-                    <label for="itemIcon">Icon</label><br>
-                    <input type="text" id="itemIcon" name="itemIcon" value=""><br>
-                    <div class="icon-preview-container">
-                        <img src="" id="iconPreview" width="30px">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Type</label>
+
+                            <input type="radio" id="item-type-item" name="radio-item-type" value="item" required checked>
+                            <label for="item-type-item">Item</label>
+
+                            <input type="radio" id="item-type-iframe" name="radio-item-type" value="iframe">
+                            <label for="item-type-iframe">Iframe</label>
+                        </div>
+                        
+                        <div">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
+                            <input type="text" id="itemNameCreate" placeholder="Item name..." style="width: 100%; padding: 8px; box-sizing: border-box;">
+                        </div>
+
+                        <div id="iconURLWrapperCreate">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="itemIcon" placeholder="https://..." style="flex-grow: 1; padding: 8px;">
+                                <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center; min-width: 30px; min-height: 30px;">
+                                    <img src="/static/preview-icon.png" 
+                                        id="iconPreview" 
+                                        width="30px" 
+                                        height="30px" 
+                                        style="object-fit: contain;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL</label>
+                            <input type="url" id="itemUrlCreate" placeholder="https://google.com" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                        </div>
+
+                        <div id="categoryWrapperCreate">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Category</label>
+                            <select id="itemCategoryCreate" style="width: 100%; padding: 8px;">
+                                <option value="newCategory" selected>- New category -</option>
+                                ${categoryOptions}
+                            </select>
+                        </div>
+
+                        <div id="newCategoryWrapperCreate" style="background: #0b1021; padding: 10px; border-radius: 4px;">
+                            <label style="display: block; margin-bottom: 5px;">New category name</label>
+                            <input type="text" id="newCategoryCreate" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                        </div>
+
+                        <div id="openingMethodWrapperCreate">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Opening method</label>
+                            <select id="openingMethodCreate" style="width: 100%; padding: 8px;">
+                                <option value="true" selected>New tab</option>
+                                <option value="false">Same tab</option>
+                            </select>
+                        </div>
                     </div>
-                    <br>
 
-                    <label for="itemUrlCreate">Url</label><br>
-                    <input type="url" id="itemUrlCreate" name="itemUrlCreate" value=""><br>
-                    <br>
-
-                    <label for="itemCategoryCreate">Category</label><br>
-                    <select id="itemCategoryCreate" name="itemCategoryCreate">
-                        <option value="newCategory" selected>-New category-</option>
-                        ${categoryOptions}
-                    </select><br>
-                    <br>
-
-                    <div id="newCategoryWrapperCreate">
-                        <label for="newCategoryCreate">New category name</label><br>
-                        <input type="text" id="newCategoryCreate" name="newCategoryCreate"><br>
-                        <br>
+                    <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" id="createItemBtnDialog" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold;">Create</button>
+                        <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
                     </div>
-                    
-                    <label for="openingMethodCreate">Opening method</label><br>
-                    <select id="openingMethodCreate" name="openingMethodCreate">
-                        <option value="true" selected>New tab</option>
-                        <option value="false">Same tab</option>
-                    </select>
                 </div>
-                <button type="button" id="createItemBtnDialog">Create</button>
-                <button type="button" onclick="cancelOperation()">Cancel</button>
             `;
+
+            const itemTypeItem = document.getElementById('item-type-item');
+            const itemTypeIframe = document.getElementById('item-type-iframe');
 
             const itemCategoryCreate = document.getElementById('itemCategoryCreate');
             const newCategoryWrapperCreate = document.getElementById('newCategoryWrapperCreate');
             const newCategoryCreate = document.getElementById('newCategoryCreate');
             let selectedCategory = "";
 
-            if (itemCategoryCreate.value === "newCategory") {
+            if (itemCategoryCreate && itemCategoryCreate.value === "newCategory") {
                 selectedCategory = "";
-            } else {
+            } else if (itemCategoryCreate) {
                 selectedCategory = itemCategoryCreate.value;
             }
 
-            itemCategoryCreate.addEventListener('change', () => {
-                if (itemCategoryCreate.value === "newCategory") {
-                    newCategoryWrapperCreate.style.display = "block";
-                    newCategoryWrapperCreate.style.position = "static";
-                    selectedCategory = newCategoryCreate.value;
-                } else {
-                    newCategoryWrapperCreate.style.display = "none";
-                    newCategoryWrapperCreate.style.position = "fixed";
-                    selectedCategory = itemCategoryCreate.value;
-                }
-            });
+            if (itemCategoryCreate) {
+                itemCategoryCreate.addEventListener('change', () => {
+                    if (itemCategoryCreate.value === "newCategory") {
+                        newCategoryWrapperCreate.style.display = "block";
+                        newCategoryWrapperCreate.style.position = "static";
+                        selectedCategory = newCategoryCreate.value;
+                    } else {
+                        newCategoryWrapperCreate.style.display = "none";
+                        newCategoryWrapperCreate.style.position = "fixed";
+                        selectedCategory = itemCategoryCreate.value;
+                    }
+                });
+            }
 
-            newCategoryCreate.addEventListener('input', () => {
-                if (itemCategoryCreate.value === "newCategory") {
-                    selectedCategory = newCategoryCreate.value;
-                }
-            });
+            if (newCategoryCreate) {
+                newCategoryCreate.addEventListener('input', () => {
+                    if (itemCategoryCreate && itemCategoryCreate.value === "newCategory") {
+                        selectedCategory = newCategoryCreate.value;
+                    }
+                });
+            }
 
-            document.getElementById('itemIcon').addEventListener('input', () => {
-                document.getElementById('iconPreview').src = document.getElementById('itemIcon').value;
+            const itemIconCreate = document.getElementById('itemIcon');
+            if (itemIconCreate) {
+                itemIconCreate.addEventListener('input', () => {
+                    document.getElementById('iconPreview').src = itemIconCreate.value;
+                });
+            }
+
+            const itemTypeRadios = document.querySelectorAll('input[name="radio-item-type"]');
+            itemTypeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const iconWrapper = document.getElementById('iconURLWrapperCreate');
+                    const openingMethodWrapper = document.getElementById('openingMethodWrapperCreate');
+                    
+                    if (e.target.value === 'item') {
+                        if (iconWrapper) iconWrapper.style.display = 'block';
+                        if (openingMethodWrapper) openingMethodWrapper.style.display = 'block';
+
+                        createItemTitle.innerHTML = "Create item";
+                        itemNameCreate.placeholder = "Item name...";
+                        itemUrlCreate.placeholder = "https://google.com";
+
+                    } else if (e.target.value === 'iframe') {
+                        if (iconWrapper) iconWrapper.style.display = 'none';
+                        if (openingMethodWrapper) openingMethodWrapper.style.display = 'none';
+                        if (categoryWrapperCreate) categoryWrapperCreate.style.display = 'none';
+                        if (newCategoryWrapperCreate) newCategoryWrapperCreate.style.display = 'none';
+
+                        createItemTitle.innerHTML = "Create iframe";
+                        itemNameCreate.placeholder = "Iframe name...";
+                        itemUrlCreate.placeholder = "https://...";
+                    }
+                });
             });
 
             const createItemBtnDialog = document.getElementById('createItemBtnDialog');
-            createItemBtnDialog.addEventListener('click', function() {
+            if (createItemBtnDialog) {
+                createItemBtnDialog.addEventListener('click', function() {
 
-                let finalCategory = selectedCategory;
-                if (itemCategoryCreate.value === "newCategory") {
-                    finalCategory = newCategoryCreate.value.trim();
-                    if (!finalCategory) {
-                        alert("Please enter a category name");
-                        return;
+                    if (itemTypeItem.checked) {
+                        let finalCategory = selectedCategory;
+                        if (itemCategoryCreate && itemCategoryCreate.value === "newCategory") {
+                            finalCategory = newCategoryCreate.value.trim();
+                            if (!finalCategory) {
+                                alert("Please enter a category name");
+                                return;
+                            }
+                        }
+                        createItem(
+                            document.getElementById('itemNameCreate').value,
+                            "item",
+                            document.getElementById('itemIcon').value, 
+                            document.getElementById('itemUrlCreate').value,
+                            finalCategory,
+                            document.getElementById('openingMethodCreate').value
+                        );
                     }
-                }
 
-                createItem(
-                    document.getElementById('itemNameCreate').value, 
-                    document.getElementById('itemIcon').value, 
-                    document.getElementById('itemUrlCreate').value,
-                    finalCategory,
-                    document.getElementById('openingMethodCreate').value
-                );
-                createItemDialog.close();
-            });
+                    if (itemTypeIframe.checked) {
+                        createItem(
+                            document.getElementById('itemNameCreate').value, 
+                            "iframe",
+                            "", 
+                            document.getElementById('itemUrlCreate').value,
+                            "",
+                            ""
+                        );
+                    }
+                    createItemDialog.close();
+                });
+            }
 
         })
         .catch(err => alert(err));
 });
 
-function createItem(name, icon, url, category, tab_type){
+function createItem(name, item_type, icon, url, category, tab_type){
     fetch('/api/items', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             id: '0', // Temporal id
             name: name,
+            item_type,
             icon: icon,
             url: url,
             category: category,
@@ -357,6 +526,7 @@ function getItemData() {
             return {
                 id: data.id,
                 name: data.name,
+                item_type: data.item_type,
                 icon: data.icon,
                 url: data.url,
                 category: data.category,
@@ -456,14 +626,40 @@ async function renderDashboard(items, categories) {
         return;
     }
 
-    const categoriesWithItems = [...new Set(filteredItems.map(item => item.category))];
+    const regularItems = filteredItems.filter(item => item.item_type === "item");
+    const otherItems = filteredItems.filter(item => item.item_type !== "item");
+
+    const itemsWithCategory = regularItems.filter(item => item.category);
+    const itemsWithoutCategory = regularItems.filter(item => !item.category);
+
+    if (itemsWithoutCategory.length > 0) {
+        html.push(`
+            <div class="category" category="uncategorized">
+                <div class="category-title">
+                    <p>➤</p>
+                    <h3>Uncategorized</h3>
+                </div>
+                <div class="items-wrapper">
+        `);
+        
+        for (const item of itemsWithoutCategory) {
+            html.push(renderItemByType(item));
+        }
+        
+        html.push(`
+                </div>
+            </div>
+        `);
+    }
+
+    const categoriesWithItems = [...new Set(itemsWithCategory.map(item => item.category))];
     
     const categoriesToShow = categories.filter(category => 
         categoriesWithItems.includes(category)
     );
 
     for (const category of categoriesToShow) {
-        const categoryItems = filteredItems.filter(item => item.category === category);
+        const categoryItems = itemsWithCategory.filter(item => item.category === category);
         
         if (categoryItems.length > 0) {
             html.push(`
@@ -476,26 +672,59 @@ async function renderDashboard(items, categories) {
             `);
             
             for (const item of categoryItems) {
-                let target = item.tab_type ? "_blank" : "_self";
-                html.push(`
-                    <div class="item" itemid="${item.id}">
-                        <a href="${item.url}" target="${target}">
-                            <div class="content-wrapper">
-                                <p>${item.name}</p>
-                                <img src="${item.icon}" alt="${item.name} icon" width="100px" loading="lazy">
-                            </div>
-                        </a>
-                        <span class="status-ping" id="statusPing">•</span>
-                    </div>
-                `);
+                html.push(renderItemByType(item));
             }
+            
             html.push(`
                     </div>
                 </div>
             `);
         }
     }
+
+    for (const item of otherItems) {
+        html.push(renderItemByType(item));
+    }
+    
     itemsContainer.innerHTML = html.join("");
+}
+
+function renderItemByType(item) {
+    let target = item.tab_type ? "_blank" : "_self";
+    
+    switch(item.item_type) {
+        case "item":
+            return `
+                <div class="item" itemid="${item.id}">
+                    <a href="${item.url}" target="${target}">
+                        <div class="content-wrapper">
+                            <p>${item.name}</p>
+                            <img class="item-icon" src="${item.icon}" alt="${item.name} icon" loading="lazy">
+                        </div>
+                    </a>
+                    <span class="status-ping" id="statusPing">•</span>
+                </div>
+            `;
+        
+        case "iframe":
+            return `
+                <div class="iframe-item" itemid="${item.id}">
+                    <div class="iframe-header">
+                        <h2 class="iframe-title">${item.name}</h2>
+                    </div>
+                    <iframe 
+                        class="iframe-content" 
+                        src="${item.url}"
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; microphone; camera; display-capture"
+                        allowfullscreen
+                        onerror="this.style.display='none'; this.parentElement.innerHTML += '<p style=\'text-align:center; padding:20px;\'>❌ This site cannot be displayed in an iframe</p>'"
+                    ></iframe>
+                </div>
+            `;
+    }
 }
 
 async function updateDashboard() {
