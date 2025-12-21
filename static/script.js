@@ -842,6 +842,30 @@ async function getItemStatus() {
     }
 }
 
+function importDatabase() {
+    const fileInput = document.getElementById('fileInputImport');
+
+    if (fileInput.files.length === 0) return;
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    fetch('/api/import/database', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (configDialog) configDialog.close();
+            updateDashboard();
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(err => alert(err));
+}
+
 function getDefaultProfile() {
     let profile;
     if (existCookie("profile")) {

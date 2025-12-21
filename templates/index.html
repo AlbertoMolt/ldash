@@ -34,12 +34,19 @@
         <div class="config-wrapper dialog-wrapper">
             <h2>Configuration</h2>
             <label for="enablePingStatus">Enable ping status</label>
-            <input type="checkbox" id="enablePingStatus" name="enablePingStatus"><br>
+            <input type="checkbox" id="enablePingStatus" name="enablePingStatus">
 
-            <label for="defaultProfile">Default profile</label><br>
+            <label for="defaultProfile">Default profile</label>
             <select id="defaultProfile" name="defaultProfile"></select>
         </div>
-        <button onclick="reloadPage()" id="closeConfigDialog">Close</button>
+        <button onclick="reloadPage()" style="background-color: #4CAF50; margin-right: 15px;">Apply</button>
+
+        <a href="/api/export/database" class="btn" style="color: white;">
+            <button style="display: inline-flex; font-size: 1em; line-height: 1;">📤Export db</button>
+        </a>
+
+        <input type="file" id="fileInputImport" style="display: none;" onchange="importDatabase()">
+        <button class="btn-import-database" onclick="document.getElementById('fileInputImport').click()" style="display: inline-flex; font-size: 1em; line-height: 1;">📥Import db</button>
     </dialog>
 
     <dialog class="create-profile-dialog" id="createProfileDialog">

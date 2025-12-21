@@ -1,6 +1,6 @@
 import platform
 import subprocess
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, abort, render_template, request, jsonify, send_from_directory
 import csv
 from collections import defaultdict
 import os
@@ -214,6 +214,33 @@ def update_item(item_id):
 # ########################
 #        Other APIs
 # ########################
+
+# Export database file
+@app.route('/api/export/database', methods=['GET'])
+def export_database():
+    try:
+        return send_from_directory(
+            directory=os.path.dirname(DATABASE_FILE),
+            path=os.path.basename(DATABASE_FILE),
+            as_attachment=True
+        )
+    except FileNotFoundError:
+        abort(404)
+        
+# Import database file
+@app.route('/api/import/database', methods=['POST'])
+def import_database():
+    if 'file' not in request.files:
+        return jsonify({"success": False, "error": "No file part"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"success": False, "error": "No selected file"}), 400
+    
+    if file:
+        file.save(DATABASE_FILE)
+        reload_database()
+        return jsonify({"success": True})
 
 # Get all item's status
 @app.route('/api/items/status', methods=['GET'])
