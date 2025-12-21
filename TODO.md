@@ -6,10 +6,10 @@
 - [ ] Change colors (personalization)
 
 ## 💡 Should Have (Nice to have)
-- [x] Profile system (Currently ugly)
+- [x] Profile system
 - [ ] Shortcuts
 - [ ] Collapsible categories
-- [ ] iFrames
+- [x] iFrames
 
 ## 🚀 Could Have (Future)
 - [ ] ssh integration
