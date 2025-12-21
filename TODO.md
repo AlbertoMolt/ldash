@@ -13,7 +13,7 @@
 
 ## 🚀 Could Have (Future)
 - [ ] ssh integration
-- [ ] Export/import config
+- [x] Export/import config
 
 ## ❄️ Icebox (Probably never)
 - [ ] Widgets
