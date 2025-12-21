@@ -1,4 +1,9 @@
-id,name,icon,url,category,tab_type,profile
-1,Google,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google.svg,https://www.google.com/,External,true,default
-2,GitHub,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github-light.svg,https://github.com/,External,true,default
-3,JellyFin,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyfin.svg, ,Local,true,default
+id,name,item_type,icon,url,category,tab_type,profile
+1,Google,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google.svg,https://www.google.com/,External,true,default
+2,GitHub,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github-light.svg,https://github.com/,External,true,default
+3,Jellyfin,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyfin.svg,,Local,true,default
+4,Music,iframe,,https://open.spotify.com/embed/track/4PTG3Z6ehGkBFwjybzWkR8?utm_source=generator,,,default
+5,YouTube,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/youtube.png,https://www.youtube.com/,External,true,default
+6,Proxmox,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/proxmox.svg,,Local,true,default
+7,OpenMediaVault,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openmediavault.svg,,Local,true,default
+8,Spotify,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg,https://open.spotify.com/,External,true,default

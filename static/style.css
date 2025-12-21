@@ -1,14 +1,29 @@
+/* ====================================
+   ESTILOS GLOBALES
+   ==================================== */
 body {
     font-family: Arial, sans-serif;
     background-color: #141b33;
     color: white;
+    margin: 0;
+    padding: 0;
 }
 
+a:link { 
+    text-decoration: none;
+}
+
+/* ====================================
+   BOTONES
+   ==================================== */
 button {
     color: white;
     cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0);
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     background-color: #0b1021;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
 }
 
 button:hover {
@@ -16,49 +31,93 @@ button:hover {
     transition: all 0.15s ease-in-out;
 }
 
-.items-container {
-  display: flex;
-  flex-wrap: wrap;            /* permite varias filas */
-  justify-content: center;    /* centra cada fila horizontalmente */
-  align-items: flex-start;    /* alinea las .category por arriba */
-  gap: 15px;                  /* espacio constante entre categorías */
-  padding: 10px;
-  margin: 0 auto;
+.context-btn {
+    border-radius: 3px;
+    width: 100%;
 }
 
+/* ====================================
+   CONTENEDORES PRINCIPALES
+   ==================================== */
+.items-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.content-wrapper {
+    text-align: center;
+    color: white;
+}
+
+/* ====================================
+   CATEGORÍAS
+   ==================================== */
 .category {
     background-color: #0b1021;
     padding: 10px;
-    border: 5px solid #6f60eb;
+    border: 4px solid #6f60eb;
     border-radius: 10px;
     width: fit-content;
     box-sizing: border-box;
     align-self: start;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-a:link { 
-    text-decoration: none;
-} 
+.category-title {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background-color: #503fe4;
+    border: 1px solid rgba(0, 0, 0, 0);
+    transition: all 0.15s ease-in-out;
+    text-align: center;
+    border-radius: 5px;
+}
 
+.category-title:hover {
+    background-color: #4f3fe4a2;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.category-title h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.category-title p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ====================================
+   ITEMS
+   ==================================== */
 .items-wrapper {
     display: grid;
-    grid-template-columns: repeat(3, 162px); /* Exactamente 3 columnas de 160px + 2px de borde */
+    grid-template-columns: repeat(3, 170px);
     gap: 10px;
-    width: fit-content; /* Se ajusta al contenido */
-    min-height: 353px;
+    width: fit-content;
 }
 
 .item {
     border: 1px solid rgba(255, 0, 0, 0);
     border-radius: 5px;
     background-color: #141b33;
-    width: 160px;
+    width: 170px;
     height: 170px;
     transition: all 0.15s ease-in-out;
     z-index: 1000;
     overflow: hidden;
     position: relative;
-
 }
 
 .item:hover {
@@ -67,59 +126,128 @@ a:link {
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.content-wrapper{
-    text-align: center;
-    color: white;
+.item-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 80px;
+    max-height: 80px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
-.category-title{
+/* ====================================
+   IFRAME
+   ==================================== */
+.iframe-item {
+    background-color: #0b1021;
+    padding: 10px;
+    border: 4px solid #60d4eb;
+    border-radius: 10px;
+    width: 558px;
+    height: 428px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.iframe-header {
     cursor: pointer;
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 10px;
-    background-color: #503fe4;
+    padding: 8px;
+    background-color: #3fb9e4;
     border: 1px solid rgba(0, 0, 0, 0);
     transition: all 0.15s ease-in-out;
     text-align: center;
     border-radius: 5px;
 }
 
-.category-title:hover{
-    background-color: #4f3fe4a2;
+.iframe-title {
+    margin: 0;
+    font-size: 16px;
+}
+
+.iframe-header:hover {
+    background-color: #5dcce6;
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.toolbar{
-    display: block;
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    max-width: 40px;
-    gap: 10px;
+.iframe-content {
+    width: 530px;
+    height: 353.2px;
+    border: none;
+    border-radius: 5px;
+    background-color: transparent;
+    overflow: hidden;
+    position: relative;
 }
 
-.toolbar-btn{
-    width: 40px;
-    height: 40px;
-    font-size: 30px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    text-align: center;
+/* ====================================
+   TOOLBAR
+   ==================================== */
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    gap: 10px;
+    z-index: 2000;
+    align-items: end;
 }
 
 .profileSelector {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
-.customize-btn, .config-btn {
+.profileSelector label {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.profileSelector select {
+    padding: 6px;
+    border-radius: 5px;
+    background-color: #0b1021;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+.profileSelector select:hover {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.toolbar-btn {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    font-size: 24px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.customize-btn, 
+.config-btn {
     font-size: 20px;
 }
 
+/* ====================================
+   INDICADOR DE ESTADO
+   ==================================== */
 .status-ping {
     display: none;
     position: absolute;
     right: 10px;
-    bottom: 0;
+    bottom: 8px;
     margin: 0;
     font-size: 20px;
     color: red;
@@ -137,81 +265,119 @@ a:link {
 }
 
 @keyframes blink-online {
-    0% {color: #00ff00;}
-    50% {color: #00ff0083;}
-    100% {color: #00ff00;}
+    0% { color: #00ff00; }
+    50% { color: #00ff0083; }
+    100% { color: #00ff00; }
 }
 
 @keyframes blink-offline {
-    0% {color: red;}
-    50% {color: rgba(255, 0, 0, 0.5);}
-    100% {color: red;}
+    0% { color: red; }
+    50% { color: rgba(255, 0, 0, 0.5); }
+    100% { color: red; }
 }
 
-
-/*############################*/
-/*        CONTEXT MENU        */
-/*############################*/
-.context-menu{
+/* ====================================
+   MENÚ CONTEXTUAL
+   ==================================== */
+.context-menu {
     display: none;
     position: fixed;
     background-color: #1f294d;
-    width: auto;
-    height: auto;
-    top: 100px;
-    left: 200px;
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 1001;
+    width: 200px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #6f60eb;
+    z-index: 2001;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.context-content{
+.context-content {
     display: flex;
+    flex-direction: column;
 }
 
-.context-title{
+.context-title {
     text-align: center;
+    font-size: 18px;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgb(255, 255, 255);
 }
 
-.context-btn{
-    border-radius: 3px;
-}
-
-.context-toolbox{
+.context-toolbox {
     display: flex;
-    flex-direction: column; /* Coloca los hijos en columna */
-    gap: 10px; /* Espacio entre los botones */
+    flex-direction: column;
+    gap: 8px;
 }
 
-
-/*############################*/
-/*           DIALOGS          */
-/*############################*/
-dialog{
+/* ====================================
+   DIÁLOGOS
+   ==================================== */
+dialog {
     background-color: #1f294d;
     color: white;
-    border: none;
+    border: 2px solid #6f60eb;
     border-radius: 10px;
+    padding: 20px;
+    min-width: 320px;
 }
 
-dialog::backdrop{
+dialog::backdrop {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-.dialog-wrapper{
-    margin-bottom: 20px;
+dialog h2 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
 }
 
-.edit-item-dialog, .create-item-wrapper{
-    width: 300px;
+.dialog-wrapper {
+    margin-bottom: 16px;
 }
 
-input[type="text"], [type="url"]{
-    width: 100%;
-}
-
-.icon-wrapper{
+.edit-item-wrapper,
+.create-item-wrapper,
+.config-wrapper,
+.create-profile-wrapper {
     display: flex;
-    text-align: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
+input[type="text"], 
+input[type="url"],
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #0b1021;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus, 
+input[type="url"]:focus,
+select:focus {
+    outline: none;
+    border: 1px solid #6f60eb;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
