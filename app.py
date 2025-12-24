@@ -180,6 +180,7 @@ def create_item():
 def delete_item(item_id):
     
     for i, item in enumerate(data):
+        print(f"Comparando {type(item['id'])} {item['id']} con {type(item_id)} {item_id}")
         if item["id"] == item_id:
             data.pop(i)
             update_database()
@@ -187,6 +188,21 @@ def delete_item(item_id):
             return jsonify({"success": True})
     
     return jsonify({"success": False, "error": "Item not found"}), 404
+
+# Delete category
+@app.route('/api/items/categories/<string:category_name>&<string:profile_name>', methods=['DELETE'])
+def delete_category(category_name, profile_name):
+    global data
+    
+    new_data = [item for item in data if not (item["category"] == category_name and item["profile"] == profile_name)]
+    
+    if len(new_data) == len(data):
+        return jsonify({"success": False, "error": "No matches found"}), 404
+    
+    data = new_data
+    update_database()
+    return jsonify({"success": True})
+    
 
 # Edit item
 @app.route('/api/items/<int:item_id>', methods=['PUT'])
@@ -209,6 +225,24 @@ def update_item(item_id):
             return jsonify({"success": True})
     
     return jsonify({"success": False, "error": "Item not found"}), 404
+
+# Edit category
+@app.route('/api/items/categories/<string:category_name>&<string:profile_name>', methods=['PUT'])
+def update_category(category_name, profile_name):
+    data_received = request.get_json()
+    found = False
+
+    for item in data:
+        if item["category"] == category_name and item["profile"] == profile_name:
+            item["category"] = data_received["name"]
+            found = True
+    
+    if found:
+        update_database()
+        return jsonify({"success": True})
+        
+    return jsonify({"success": False, "error": "No items found for this category/profile"}), 404
+                
 # --------------------------------------------------
 
 # ########################
