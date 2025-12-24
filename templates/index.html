@@ -7,21 +7,21 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body">
-    <div class="items-container" id="itemsContainer"></div>
+    <div class="items-container" id="items-container"></div>
 
     <div class="toolbar">
-        <div class="profileSelector">
-            <select id="selectedProfile" name="selectedProfile" aria-label="Profile">
-                <option value="newProfile">-New profile-</option>
+        <div class="profile-selector">
+            <select id="selected-profile" name="selected-profile" aria-label="Profile">
+                <option value="new-profile">-New profile-</option>
             </select>
         </div>
 
-        <button class="toolbar-btn config-btn" id="configBtn">⚙️</button>
-        <button class="toolbar-btn" id="createItemBtn">+</button>
-        <button class="toolbar-btn customize-btn" id="customizeBtn">🎨</button>
+        <button class="toolbar-btn config-btn" id="config-btn">⚙️</button>
+        <button class="toolbar-btn" id="create-item-btn">+</button>
+        <button class="toolbar-btn customize-btn" id="customize-btn">🎨</button>
     </div>
 
-    <div class="context-menu" id="contextMenu">
+    <div class="context-menu" id="context-menu">
         <h1 class="context-title">Options</h1>
             <div class="context-toolbox" id="toolbox">
                 <button class="context-btn" id="edit-element-btn">✏️Edit</button>
@@ -30,40 +30,40 @@
         </div>
     </div>
 
-    <dialog class="config-dialog" id="configDialog">
-        <div class="config-wrapper dialog-wrapper" style="margin-bottom: 10px;">
-            <h2 style="border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Configuration</h2>
-            <label for="enablePingStatus">Enable ping status</label>
-            <input type="checkbox" id="enablePingStatus" name="enablePingStatus">
+    <dialog class="config-dialog" id="config-dialog">
+        <div class="config-wrapper dialog-wrapper">
+            <h2>Configuration</h2>
+            <label for="enable-ping-status">Enable ping status</label>
+            <input type="checkbox" id="enable-ping-status" name="enable-ping-status">
 
-            <label for="defaultProfile">Default profile</label>
-            <select id="defaultProfile" name="defaultProfile"></select>
+            <label for="default-profile">Default profile</label>
+            <select id="default-profile" name="default-profile"></select>
         </div>
-        <button onclick="reloadPage()" style="background-color: #4CAF50; margin-right: 15px;">Apply and Close</button>
+        <button class="apply-close" onclick="reloadPage()">Apply and Close</button>
 
-        <a href="/api/export/database" class="btn" style="color: white;">
-            <button style="display: inline-flex; font-size: 1em; line-height: 1;">📤Export db</button>
+        <a href="/api/export/database" class="btn">
+            <button class="export-db">📤Export db</button>
         </a>
 
-        <input type="file" id="fileInputImport" style="display: none;" onchange="importDatabase()">
-        <button class="btn-import-database" onclick="document.getElementById('fileInputImport').click()" style="display: inline-flex; font-size: 1em; line-height: 1;">📥Import db</button>
+        <input type="file" id="file-input-import" onchange="importDatabase()">
+        <button class="btn-import-database" onclick="document.getElementById('file-input-import').click()">📥Import db</button>
     </dialog>
 
-    <dialog class="create-profile-dialog" id="createProfileDialog">
+    <dialog class="create-profile-dialog" id="create-profile-dialog">
         <div class="create-profile-wrapper dialog-wrapper">
-            <label for="createProfile">New profile name</label>
-            <input type="text" id="createProfile" name="createProfile">
+            <label for="create-profile">New profile name</label>
+            <input type="text" id="create-profile-input" name="create-profile-input" placeholder="Profile name...">
         </div>
 
         <button type="button" onclick="createProfile()">Apply</button>
         <button type="button" onclick="cancelOperation()">Cancel</button>
     </dialog>
 
-    <dialog class="edit-item-dialog" id="edit-element-dialog"><p>Loading...</p></dialog>
+    <dialog id="edit-element-dialog"><p>Loading...</p></dialog>
 
-    <dialog class="delete-item-dialog" id="delete-element-dialog"><p>Loading...</p></dialog>
+    <dialog id="delete-element-dialog"><p>Loading...</p></dialog>
 
-    <dialog class="create-item-dialog" id="createItemDialog"></dialog>
+    <dialog id="create-item-dialog"><p>Loading...</p></dialog>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

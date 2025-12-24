@@ -112,6 +112,13 @@ button:hover {
     grid-template-columns: repeat(3, 170px);
     gap: 10px;
     width: fit-content;
+    transition: opacity 0.3s ease;
+}
+
+.items-wrapper.hidden {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
 }
 
 .item {
@@ -333,9 +340,8 @@ dialog {
 }
 
 dialog::backdrop {
-    backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
 }
 
 dialog h2 {
@@ -394,6 +400,43 @@ label {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* ====================================
+   CONFIGURACIÓN
+   ==================================== */
+.config-wrapper {
+    margin-bottom: 10px;
+}
+
+.config-wrapper h2 {
+    border-bottom: 1px solid #ffffffff;
+    padding-bottom: 10px;
+}
+
+button.apply-close {
+    background-color: #4CAF50;
+    margin-right: 15px;
+}
+
+.btn {
+    color: white;
+}
+
+button.export-db {
+    display: inline-flex;
+    font-size: 1em;
+    line-height: 1;
+}
+
+input#file-input-import {
+    display: none;
+}
+
+button.btn-import-database {
+    display: inline-flex;
+    font-size: 1em;
+    line-height: 1;
 }
 
 /* ====================================

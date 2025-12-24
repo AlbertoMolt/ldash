@@ -1,29 +1,25 @@
-const itemsContainer = document.getElementById('itemsContainer');
+const itemsContainer = document.getElementById('items-container');
+const contextMenu = document.getElementById('context-menu');
 
-const contextMenu = document.getElementById('contextMenu');
+const deleteElementDialog = document.getElementById('delete-element-dialog');
+const editElementDialog = document.getElementById('edit-element-dialog');
+const createItemDialog = document.getElementById('create-item-dialog');
+const configDialog = document.getElementById('config-dialog');
+const createProfileDialog = document.getElementById('create-profile-dialog');
 
-const deleteItemDialog = document.getElementById('deleteItemDialog');
-const editItemDialog = document.getElementById('editItemDialog');
-
-const createItemDialog = document.getElementById('createItemDialog');
-
-const configDialog = document.getElementById('configDialog');
-const createProfileDialog = document.getElementById('createProfileDialog');
-
-const selectedProfile = document.getElementById('selectedProfile');
-const defaultProfile = document.getElementById('defaultProfile');
-
-const enablePingStatus = document.getElementById('enablePingStatus');
+const selectedProfile = document.getElementById('selected-profile');
+const defaultProfile = document.getElementById('default-profile');
+const enablePingStatus = document.getElementById('enable-ping-status');
 
 
+//################################
 // GLOBAL VARs
+//################################
 let currentMouseX = 0;
 let currentMouseY = 0;
-
-let itemid = 0;
-
+let currentSelectedItemId = 0; // ID global del elemento seleccionado actualmente
+let currentSelectedCategory = ""; // Categoría global del elemento seleccionado actualmente
 let currentProfile = "";
-
 
 // Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
@@ -31,38 +27,79 @@ document.addEventListener('mousemove', function(e) {
     currentMouseY = e.clientY;
 });
 
-document.getElementById('configBtn').addEventListener('click', function(){
+document.getElementById('config-btn').addEventListener('click', function() {
     loadProfilesForConfig();
     configDialog.showModal();
+});
+
+document.getElementById('create-item-btn').addEventListener('click', function() {
+    createItemDialog.showModal();
 });
 
 //################################
 //          DELETE ITEM
 //################################
-document.getElementById('deleteItemBtn').addEventListener('click', function(){
-    deleteItemDialog.showModal();
+document.getElementById('delete-element-btn').addEventListener('click', function(){
+    deleteElementDialog.showModal();
 
-    getItemData()
-    .then(item => {
-        deleteItemDialog.innerHTML = `
-            <h2>Delete "${item.name}"</h2>
-            <p>Are you sure?<p>
-            <button type="button" id="confirmDelete" onclick="deleteItem()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Yes</button>
-            <button type="button" id="cancelDelete" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Cancel</button>
-        `
-    })
-    .catch(err => alert(err));
+    const item_id = currentSelectedItemId;
+    const category_name = currentSelectedCategory;
+
+    currentSelectedItemId = 0;
+    currentSelectedCategory = "";
+
+    if (category_name === "" && item_id !== 0) {
+        getItemData(item_id)
+        .then(item => {
+            deleteElementDialog.innerHTML = `
+                <h2>Delete ${item.item_type} "${item.name}"</h2>
+                <p>⚠️ Are you sure?<p>
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" onclick="deleteItem(${item_id})" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Yes</button>
+                    <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Cancel</button>
+                </div>
+            `;
+        })
+        .catch(err => alert(err));
+    }
+
+    if (category_name !== "" && item_id === 0) {
+        deleteElementDialog.innerHTML = `
+            <h2>Delete category "${category_name}"</h2>
+            <p>⚠️ Are you sure? <span style="text-decoration: underline;">All items</span> in this category will be <span style="text-decoration: underline;"">deleted</span>.<p>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="deleteCategory('${category_name}')" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Yes</button>
+                <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Cancel</button>
+            </div>
+        `;
+    }
 });
 
-function deleteItem(){
-    fetch(`/api/items/${itemid}`, {
+function deleteItem(item_id){
+    fetch(`/api/items/${item_id}`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'}
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            deleteItemDialog.close();
+            deleteElementDialog.close();
+            updateDashboard();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+}
+
+function deleteCategory(category_name){
+    fetch(`/api/items/categories/${category_name}&${currentProfile}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            deleteElementDialog.close();
             updateDashboard();
         } else {
             alert('Error: ' + data.error);
@@ -73,57 +110,60 @@ function deleteItem(){
 //################################
 //           EDIT ITEM
 //################################
-document.getElementById('editItemBtn').addEventListener('click', function(){
-    editItemDialog.showModal();
+document.getElementById('edit-element-btn').addEventListener('click', function(){
+    editElementDialog.showModal();
 
-    getItemData()
-        .then(item => {
-             getItemCategories()
-                .then(itemCategories => {
-                    const categoriesFiltered = itemCategories.filter(cat => cat !== item.category);
-                    const categoriesOptions = categoriesFiltered
-                        .map(cat => `<option value="${cat}">${cat}</option>`)
-                        .join("");
+    const item_id = currentSelectedItemId;
+    const category_name = currentSelectedCategory;
 
-                    const itemType = item.item_type;
+    currentSelectedItemId = 0;
+    currentSelectedCategory = "";
 
-                    switch (itemType) {
-                        case "item":
-                            editItemDialog.innerHTML = `
-                                <div class="edit-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
-                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit "${item.name}"</h2>
+    if (item_id !== 0 && category_name === "") {
+        getItemData(item_id)
+            .then(item => {
+                 getItemCategories()
+                    .then(itemCategories => {
+                        const categoriesFiltered = itemCategories.filter(cat => cat !== item.category);
+                        const categoriesOptions = categoriesFiltered
+                            .map(cat => `<option value="${cat}">${cat}</option>`)
+                            .join("");
+    
+                        const itemType = item.item_type;
+                            
+                        let dialogContent = "";
+    
+                        if (itemType === "item") {
+                            dialogContent = `
+                                <div class="edit-item-wrapper dialog-wrapper">
+                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit item "${item.name}"</h2>
                                     
                                     <div style="margin-bottom: 10px;">
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">Type: ${item.item_type}</p>
                                     </div>
-        
+            
                                     <div style="display: flex; flex-direction: column; gap: 15px;">
-
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
                                             <input type="text" id="itemNameEdit" value="${item.name}" style="width: 100%; padding: 8px; box-sizing: border-box;">
                                         </div>
-        
+            
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL</label>
                                             <div style="display: flex; gap: 10px; align-items: center;">
                                                 <input type="text" id="itemIcon" value="${item.icon}" style="flex-grow: 1; padding: 8px;">
                                                 <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center;">
-                                                    <img src="${item.icon}" 
-                                                        id="iconPreview" 
-                                                        width="30px" 
-                                                        height="30px" 
-                                                        style="object-fit: contain;">
+                                                    <img src="${item.icon}" id="iconPreview" width="30px" height="30px" style="object-fit: contain;">
                                                 </div>
                                             </div>
                                         </div>
-        
+            
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL</label>
                                             <input type="url" id="itemUrlEdit" value="${item.url}" style="width: 100%; padding: 8px; box-sizing: border-box;">
                                         </div>
-        
+            
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Category</label>
                                             <select id="itemCategoryEdit" style="width: 100%; padding: 8px;">
@@ -132,12 +172,12 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                                                 ${categoriesOptions}
                                             </select>
                                         </div>
-        
+            
                                         <div id="newCategoryWrapperEdit" style="display: none; background: #0b1021; padding: 10px; border-radius: 4px;">
                                             <label style="display: block; margin-bottom: 5px;">New category name</label>
                                             <input type="text" id="newCategoryEdit" style="width: 100%; padding: 8px; box-sizing: border-box;">
                                         </div>
-        
+            
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Opening method</label>
                                             <select id="openingMethodEdit" style="width: 100%; padding: 8px;">
@@ -146,132 +186,162 @@ document.getElementById('editItemBtn').addEventListener('click', function(){
                                             </select>
                                         </div>
                                     </div>
-        
+            
                                     <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
                                         <button type="button" id="applyItemBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
                                         <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
                                     </div>
-                                </div>
-                            `;
-                            break;
-                        case "iframe":
-                            editItemDialog.innerHTML = `
-                                <div class="edit-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
-                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit "${item.name}"</h2>
-                                    
+                                </div>`;
+                        } else if (itemType === "iframe") {
+                            dialogContent = `
+                                <div class="edit-item-wrapper dialog-wrapper">
+                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit iframe "${item.name}"</h2>
                                     <div style="margin-bottom: 10px;">
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">Type: ${item.item_type}</p>
                                     </div>
-        
                                     <div style="display: flex; flex-direction: column; gap: 15px;">
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
                                             <input type="text" id="itemNameEdit" value="${item.name}" style="width: 100%; padding: 8px; box-sizing: border-box;">
                                         </div>
-        
                                         <div>
                                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL</label>
                                             <input type="url" id="itemUrlEdit" value="${item.url}" style="width: 100%; padding: 8px; box-sizing: border-box;">
                                         </div>
-        
-                                        <div id="newCategoryWrapperEdit" style="display: none; background: #0b1021; padding: 10px; border-radius: 4px;">
-                                            <label style="display: block; margin-bottom: 5px;">New category name</label>
-                                            <input type="text" id="newCategoryEdit" style="width: 100%; padding: 8px; box-sizing: border-box;">
-                                        </div>
                                     </div>
-        
                                     <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
                                         <button type="button" id="applyItemBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
                                         <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
                                     </div>
-                                </div>
-                            `;
-                            break;
-                    }
-
-
-                    const itemCategoryEdit = document.getElementById('itemCategoryEdit');
-                    const newCategoryWrapperEdit = document.getElementById('newCategoryWrapperEdit');
-                    const newCategoryEdit = document.getElementById('newCategoryEdit');
-                    let selectedCategory = item.category; // De forma predeterminada, se le da el valor de la categoría vieja del item
-                    
-                    if (itemCategoryEdit) {
-                        itemCategoryEdit.addEventListener('change', () => {
-                            if (itemCategoryEdit.value === "newCategory") {
-                                newCategoryWrapperEdit.style.display = "block";
-                                newCategoryWrapperEdit.style.position = "static";
-                                selectedCategory = newCategoryEdit.value;
-                            } else {
-                                newCategoryWrapperEdit.style.display = "none";
-                                newCategoryWrapperEdit.style.position = "fixed";
-                                selectedCategory = itemCategoryEdit.value;
-                            }
-                        });
-    
-                        // Dar valor del input text al la categoría 
-                        newCategoryEdit.addEventListener('input', () => {
-                            if (itemCategoryEdit.value === "newCategory") {
-                                selectedCategory = newCategoryEdit.value;
-                            }
-                        });
-                    }
-
-                    const itemIcon = document.getElementById('itemIcon');
-                    if (itemIcon && item.item_type == "item") {
-                        itemIcon.addEventListener('input', () => {
-                            document.getElementById('iconPreview').src = itemIcon.value;
-                        });
-                    }
-
-                    const applyItemBtn = document.getElementById('applyItemBtn');
-                    if (applyItemBtn) {
-                        applyItemBtn.addEventListener('click', function(){
-                        switch(itemType) {
-                            case "item":
-                                let finalCategory = selectedCategory;
-
-                                if (itemCategoryEdit && itemCategoryEdit.value === "newCategory") {
-                                    finalCategory = newCategoryEdit.value.trim();
-                                    if (!finalCategory) {
-                                        alert("Please enter a category name");
-                                        return;
-                                    }
-                                }
-
-                                applyChanges(
-                                    document.getElementById('itemNameEdit').value,
-                                    "item",
-                                    document.getElementById('itemIcon').value, 
-                                    document.getElementById('itemUrlEdit').value,
-                                    finalCategory,
-                                    document.getElementById('openingMethodEdit').value
-                                );
-                                break;
-                            case "iframe":
-                                applyChanges(
-                                    document.getElementById('itemNameEdit').value,
-                                    "iframe",
-                                    "",
-                                    document.getElementById('itemUrlEdit').value,
-                                    "",
-                                    "",
-                                );
-                                break;
+                                </div>`;
                         }
-                        
-                        editItemDialog.close();
-                        });
-                    }
+    
+                        editElementDialog.innerHTML = dialogContent;
+    
+                        // Lógica de Inputs Dinámicos
+                        const itemCategoryEdit = document.getElementById('itemCategoryEdit');
+                        const newCategoryWrapperEdit = document.getElementById('newCategoryWrapperEdit');
+                        const newCategoryEdit = document.getElementById('newCategoryEdit');
+                        let selectedCategory = item.category;
+    
+                        if (itemCategoryEdit) {
+                            itemCategoryEdit.addEventListener('change', () => {
+                                if (itemCategoryEdit.value === "newCategory") {
+                                    newCategoryWrapperEdit.style.display = "block";
+                                    selectedCategory = newCategoryEdit.value;
+                                } else {
+                                    newCategoryWrapperEdit.style.display = "none";
+                                    selectedCategory = itemCategoryEdit.value;
+                                }
+                            });
+        
+                            newCategoryEdit.addEventListener('input', () => {
+                                if (itemCategoryEdit.value === "newCategory") {
+                                    selectedCategory = newCategoryEdit.value;
+                                }
+                            });
+                        }
+    
+                        const itemIcon = document.getElementById('itemIcon');
+                        if (itemIcon && item.item_type == "item") {
+                            itemIcon.addEventListener('input', () => {
+                                document.getElementById('iconPreview').src = itemIcon.value;
+                            });
+                        }
+    
+                        const applyItemBtn = document.getElementById('applyItemBtn');
+                        if (applyItemBtn) {
+                            applyItemBtn.addEventListener('click', function(){
+                                switch(itemType) {
+                                    case "item":
+                                        let finalCategory = selectedCategory;
+                                        if (itemCategoryEdit && itemCategoryEdit.value === "newCategory") {
+                                            finalCategory = newCategoryEdit.value.trim();
+                                            if (!finalCategory) {
+                                                alert("Please enter a category name");
+                                                return;
+                                            }
+                                        }
+    
+                                        updateItemDetails(
+                                            item_id,
+                                            document.getElementById('itemNameEdit').value,
+                                            "item",
+                                            document.getElementById('itemIcon').value, 
+                                            document.getElementById('itemUrlEdit').value,
+                                            finalCategory,
+                                            document.getElementById('openingMethodEdit').value
+                                        );
+                                        break;
+                                    case "iframe":
+                                        updateItemDetails(
+                                            item_id,
+                                            document.getElementById('itemNameEdit').value,
+                                            "iframe",
+                                            "",
+                                            document.getElementById('itemUrlEdit').value,
+                                            "",
+                                            ""
+                                        );
+                                        break;
+                                }
+                                editElementDialog.close();
+                            });
+                        }
+                    })
+                    .catch(err => alert(err));
+            })
+            .catch(err => alert(err));
+    }
+
+    if (category_name !== "" && item_id === 0) {
+        dialogContent = `
+            <div class="edit-item-wrapper dialog-wrapper">
+                <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit category "${category_name}"</h2>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
+                        <input type="text" id="categoryNameEdit" value="${category_name}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                    </div>
+                </div>
+                <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" id="applyCategoryBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
+                    <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                </div>
+            </div>`;
+        
+        editElementDialog.innerHTML = dialogContent;
+        
+        const applyCategoryBtn = document.getElementById('applyCategoryBtn');
+        if (applyCategoryBtn) {
+            applyCategoryBtn.addEventListener('click', function(){
+                category_name_edit = document.getElementById('categoryNameEdit').value;
+
+                fetch(`/api/items/categories/${category_name}&${currentProfile}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: category_name_edit
+                    })
                 })
-                .catch(err => alert(err));
-        })
-        .catch(err => alert(err));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateDashboard();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                });
+                editElementDialog.close();
+            })
+        }
+    }
 });
 
-function applyChanges(name, item_type, icon, url, category, tab_type){
-    if (itemid != 0) {
-        fetch(`/api/items/${itemid}`, {
+function updateItemDetails(item_id, name, item_type, icon, url, category, tab_type){
+    if (item_id != 0) {
+        fetch(`/api/items/${item_id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -298,9 +368,9 @@ function applyChanges(name, item_type, icon, url, category, tab_type){
 }
 
 //################################
-//         CREATE ITEM
+//        CREATE ITEM
 //################################
-document.getElementById("createItemBtn").addEventListener('click', function(){
+document.getElementById("create-item-btn").addEventListener('click', function(){
     createItemDialog.showModal();
 
     getItemCategories()
@@ -312,18 +382,15 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                     <h2 id="createItemTitle" style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Create item</h2>
 
                     <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-
                         <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Type</label>
-
                             <input type="radio" id="item-type-item" name="radio-item-type" value="item" required checked>
                             <label for="item-type-item">Item</label>
-
                             <input type="radio" id="item-type-iframe" name="radio-item-type" value="iframe">
                             <label for="item-type-iframe">Iframe</label>
                         </div>
                         
-                        <div">
+                        <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
                             <input type="text" id="itemNameCreate" placeholder="Item name..." style="width: 100%; padding: 8px; box-sizing: border-box;">
                         </div>
@@ -333,11 +400,7 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="text" id="itemIcon" placeholder="https://..." style="flex-grow: 1; padding: 8px;">
                                 <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center; min-width: 30px; min-height: 30px;">
-                                    <img src="/static/preview-icon.png" 
-                                        id="iconPreview" 
-                                        width="30px" 
-                                        height="30px" 
-                                        style="object-fit: contain;">
+                                    <img src="/static/preview-icon.png" id="iconPreview" width="30px" height="30px" style="object-fit: contain;">
                                 </div>
                             </div>
                         </div>
@@ -376,12 +439,18 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                 </div>
             `;
 
+            const createItemTitle = document.getElementById('createItemTitle');
+            const itemNameCreate = document.getElementById('itemNameCreate');
+            const itemUrlCreate = document.getElementById('itemUrlCreate');
+            
             const itemTypeItem = document.getElementById('item-type-item');
             const itemTypeIframe = document.getElementById('item-type-iframe');
 
             const itemCategoryCreate = document.getElementById('itemCategoryCreate');
             const newCategoryWrapperCreate = document.getElementById('newCategoryWrapperCreate');
             const newCategoryCreate = document.getElementById('newCategoryCreate');
+            const categoryWrapperCreate = document.getElementById('categoryWrapperCreate');
+            
             let selectedCategory = "";
 
             if (itemCategoryCreate && itemCategoryCreate.value === "newCategory") {
@@ -394,11 +463,9 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                 itemCategoryCreate.addEventListener('change', () => {
                     if (itemCategoryCreate.value === "newCategory") {
                         newCategoryWrapperCreate.style.display = "block";
-                        newCategoryWrapperCreate.style.position = "static";
                         selectedCategory = newCategoryCreate.value;
                     } else {
                         newCategoryWrapperCreate.style.display = "none";
-                        newCategoryWrapperCreate.style.position = "fixed";
                         selectedCategory = itemCategoryCreate.value;
                     }
                 });
@@ -428,6 +495,12 @@ document.getElementById("createItemBtn").addEventListener('click', function(){
                     if (e.target.value === 'item') {
                         if (iconWrapper) iconWrapper.style.display = 'block';
                         if (openingMethodWrapper) openingMethodWrapper.style.display = 'block';
+                        if (categoryWrapperCreate) categoryWrapperCreate.style.display = 'block';
+                        
+                        // Restaurar visibilidad del campo "nueva categoria" si estaba activo
+                        if (itemCategoryCreate.value === "newCategory") {
+                             newCategoryWrapperCreate.style.display = 'block';
+                        }
 
                         createItemTitle.innerHTML = "Create item";
                         itemNameCreate.placeholder = "Item name...";
@@ -492,7 +565,7 @@ function createItem(name, item_type, icon, url, category, tab_type){
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            id: '0', // Temporal id
+            id: '0', 
             name: name,
             item_type,
             icon: icon,
@@ -515,8 +588,8 @@ function createItem(name, item_type, icon, url, category, tab_type){
 //################################
 //       GENERAL FUNCTIONS
 //################################
-function getItemData() {
-    return fetch(`/api/items/${itemid}`, {
+function getItemData(item_id) {
+    return fetch(`/api/items/${item_id}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     })
@@ -545,7 +618,6 @@ function sleep(ms) {
 function setCookie(name, value, days) {
     const date = new Date();
     date.setTime(date.getTime() + (days*24*60*60*1000));
-    
     try {
         document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
     } catch(error) {
@@ -573,29 +645,19 @@ function reloadPage() {
 }
 
 function cancelOperation() {
-    //Edit dialog
-    editItemDialog.close();
-    editItemDialog.innerHTML = `
-        <p>Loading...</p>
-    `
+    editElementDialog.close();
+    editElementDialog.innerHTML = `<p>Loading...</p>`;
 
-    //Delete dialog
-    deleteItemDialog.close();
-    deleteItemDialog.innerHTML = `
-        <p>Loading...</p>
-    `
+    deleteElementDialog.close();
+    deleteElementDialog.innerHTML = `<p>Loading...</p>`;
 
     createItemDialog.close();
-
     configDialog.close();
-
     createProfileDialog.close();
 }
-//---------------------------------
 
 async function getItemsByCategory() {
     let request;
-
     if (currentProfile) {
         request = `/api/items?profile=${currentProfile}`
     } else {
@@ -633,12 +695,13 @@ async function renderDashboard(items, categories) {
     const itemsWithoutCategory = regularItems.filter(item => !item.category);
 
     if (itemsWithoutCategory.length > 0) {
+        // Uso de data-category en lugar de atributo personalizado
         html.push(`
-            <div class="category" category="uncategorized">
-                <div class="category-title">
+            <div class="category">
+                <div class="category-title category-button" data-category="uncategorized" role="button" tabindex="0">
                     <h3>Uncategorized</h3>
                 </div>
-                <div class="items-wrapper">
+            <div class="items-wrapper">
         `);
         
         for (const item of itemsWithoutCategory) {
@@ -652,21 +715,19 @@ async function renderDashboard(items, categories) {
     }
 
     const categoriesWithItems = [...new Set(itemsWithCategory.map(item => item.category))];
-    
-    const categoriesToShow = categories.filter(category => 
-        categoriesWithItems.includes(category)
-    );
+    const categoriesToShow = categories.filter(category => categoriesWithItems.includes(category));
 
     for (const category of categoriesToShow) {
         const categoryItems = itemsWithCategory.filter(item => item.category === category);
         
         if (categoryItems.length > 0) {
+            // Uso de data-category
             html.push(`
-                <div class="category" category="${category}">
-                    <div class="category-title">
+                <div class="category">
+                    <div class="category-title category-button" data-category="${category}" role="button" tabindex="0">
                         <h3>${category}</h3>
                     </div>
-                    <div class="items-wrapper">
+                <div class="items-wrapper">
             `);
             
             for (const item of categoryItems) {
@@ -690,13 +751,14 @@ async function renderDashboard(items, categories) {
 function renderItemByType(item) {
     let target = item.tab_type ? "_blank" : "_self";
     
+    // REFACTOR: Uso de data-id y data-type en lugar de atributos personalizados planos
     switch(item.item_type) {
         case "item":
             return `
-                <div class="item" itemid="${item.id}">
+                <div class="item" data-id="${item.id}" data-type="item" data-category="${item.category}" tabindex="0">
                     <a href="${item.url}" target="${target}">
                         <div class="content-wrapper">
-                            <p>${item.name}</p>
+                            <p tabindex="-1">${item.name}</p>
                             <img class="item-icon" src="${item.icon}" alt="${item.name} icon" loading="lazy">
                         </div>
                     </a>
@@ -706,8 +768,8 @@ function renderItemByType(item) {
         
         case "iframe":
             return `
-                <div class="iframe-item" itemid="${item.id}">
-                    <div class="iframe-header">
+                <div class="iframe-item" data-id="${item.id}" data-type="iframe" data-category="${item.category}">
+                    <div class="iframe-header" tabindex="0">
                         <h2 class="iframe-title">${item.name}</h2>
                     </div>
                     <iframe 
@@ -729,7 +791,6 @@ async function updateDashboard() {
     const items = await getItemsByCategory();
     const categories = await getItemCategories();
     await renderDashboard(items, categories);
-
     console.log(currentProfile)
 }
 
@@ -768,12 +829,11 @@ function getCurrentItemsProfiles(items) {
     for (let item of items) {
         itemsProfiles.push(item.profile)
     }
-
     return itemsProfiles;
 }
 
 async function loadProfilesUi(){
-    const selectedProfileElement = document.querySelector('#selectedProfile');
+    const selectedProfileElement = document.querySelector('#selected-profile');
     const profiles = await getItemProfiles()
 
     for (let profile of profiles) {
@@ -786,7 +846,7 @@ async function loadProfilesUi(){
 }
 
 async function loadProfilesForConfig(){
-    const defaultProfileElement = document.querySelector('#defaultProfile');
+    const defaultProfileElement = document.querySelector('#default-profile');
     const profiles = await getItemProfiles()
 
     for (let profile of profiles) {
@@ -817,7 +877,8 @@ async function getItemStatus() {
     
                 if (data.success && Array.isArray(data.status_item)) {
                     data.status_item.forEach(host => {
-                        const itemElement = document.querySelector(`.item[itemid="${host.id}"]`);
+                        // REFACTOR: Selector actualizado para usar data-id
+                        const itemElement = document.querySelector(`.item[data-id="${host.id}"]`);
                         if (itemElement) {
                             const statusPing = itemElement.querySelector('.status-ping');
                             if (statusPing) {
@@ -843,7 +904,7 @@ async function getItemStatus() {
 }
 
 function importDatabase() {
-    const fileInput = document.getElementById('fileInputImport');
+    const fileInput = document.getElementById('file-input-import');
 
     if (fileInput.files.length === 0) return;
 
@@ -859,6 +920,7 @@ function importDatabase() {
         if (data.success) {
             if (configDialog) configDialog.close();
             updateDashboard();
+            fileInput.value = "";
         } else {
             alert(data.error);
         }
@@ -878,9 +940,8 @@ function getDefaultProfile() {
 }
 
 function createProfile() {
-    const createProfileInput = document.getElementById("createProfile");
+    const createProfileInput = document.getElementById("create-profile-input");
     currentProfile = createProfileInput.value;
-
     createProfileDialog.close();
     updateDashboard();
 }
@@ -902,33 +963,83 @@ enablePingStatus.addEventListener('change', () => {
     setCookie("statusPing", enablePingStatus.checked, 365);
 });
 
+//################################
+//       COLLAPSE CATEGORY
+//################################
+document.addEventListener('click', (e) => {
+    const categoryBtn = e.target.closest('.category-button');
+
+    if (categoryBtn) {
+        const category = categoryBtn.dataset.category;
+        const itemWrapper = categoryBtn.nextElementSibling; 
+
+        if (itemWrapper && itemWrapper.classList.contains('items-wrapper')) {
+            const isHidden = itemWrapper.classList.toggle('hidden');
+            
+            localStorage.setItem('category-collapsed-' + category, isHidden);
+            console.log(`Categoría ${category} oculta: ${isHidden}`);
+        }
+    }
+});
+
+function restoreCategoryStates() {
+    const itemWrapper = document.querySelectorAll('.items-wrapper');
+
+    itemWrapper.forEach(wrapper => {
+        const category = wrapper.previousElementSibling.dataset.category;
+        const collapsed = localStorage.getItem('category-collapsed-' + category);
+
+        if (collapsed === "true") {
+            console.log(category + " colapsado");
+            wrapper.classList.add('hidden');
+        } else {
+            wrapper.classList.remove('hidden');
+        }
+    });
+}
+
+//################################
+//      CONTEXT MENU (NUEVO)
+//################################
 document.addEventListener("contextmenu", function(event) {
     try {
-        let item_selected = event.target.closest("div[itemid]").getAttribute("itemid");
-        
-        if (item_selected) {
+        // REFACTOR: Usamos closest buscando el atributo data-id
+        let itemWrapper = event.target.closest("[data-id]");
+        let categoryWrapper = event.target.closest("[data-category]");
+
+        if (itemWrapper) {
             event.preventDefault();
 
-            itemid = item_selected;
+            // REFACTOR: Acceso directo y limpio mediante dataset
+            currentSelectedItemId = Number(itemWrapper.dataset.id);
+            currentSelectedCategory = ""; // Clear category selection
+
+            contextMenu.style.display = 'block';
+            contextMenu.style.top = currentMouseY + 'px';
+            contextMenu.style.left = currentMouseX + 'px';
+        } else if (categoryWrapper) {
+            event.preventDefault();
+            currentSelectedCategory = categoryWrapper.dataset.category;
+            currentSelectedItemId = 0; // Clear item selection
 
             contextMenu.style.display = 'block';
             contextMenu.style.top = currentMouseY + 'px';
             contextMenu.style.left = currentMouseX + 'px';
         }
-    } catch (error) {}
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 document.addEventListener("click", function(event) {
-    // Verifica si el click fue dentro del menú contextual y en los botones
     if (!event.target.closest('#contextMenu') || event.target.closest('#toolbox')) {
         contextMenu.style.display = "none";
     }
 });
 
 window.onload = () => {
-    // Render status
     function getStatusConfig() {
-        const statusPingCheckBox = document.getElementById('enablePingStatus');
+        const statusPingCheckBox = document.getElementById('enable-ping-status');
         if (getCookie('statusPing') === "true") {
             statusPingCheckBox.checked = true;
         } else {
@@ -937,11 +1048,10 @@ window.onload = () => {
     }
     getStatusConfig();
     getItemStatus();
-
-    loadProfilesUi()
+    loadProfilesUi();
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
     currentProfile = getDefaultProfile();
-    updateDashboard()
+    updateDashboard();
 });
