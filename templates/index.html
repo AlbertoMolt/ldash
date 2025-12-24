@@ -24,22 +24,22 @@
     <div class="context-menu" id="contextMenu">
         <h1 class="context-title">Options</h1>
             <div class="context-toolbox" id="toolbox">
-                <button class="context-btn" id="editItemBtn">✏️Edit</button>
-                <button class="context-btn" id="deleteItemBtn">❌Delete</button>
+                <button class="context-btn" id="edit-element-btn">✏️Edit</button>
+                <button class="context-btn" id="delete-element-btn">❌Delete</button>
             </div>
         </div>
     </div>
 
     <dialog class="config-dialog" id="configDialog">
-        <div class="config-wrapper dialog-wrapper">
-            <h2>Configuration</h2>
+        <div class="config-wrapper dialog-wrapper" style="margin-bottom: 10px;">
+            <h2 style="border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Configuration</h2>
             <label for="enablePingStatus">Enable ping status</label>
             <input type="checkbox" id="enablePingStatus" name="enablePingStatus">
 
             <label for="defaultProfile">Default profile</label>
             <select id="defaultProfile" name="defaultProfile"></select>
         </div>
-        <button onclick="reloadPage()" style="background-color: #4CAF50; margin-right: 15px;">Apply</button>
+        <button onclick="reloadPage()" style="background-color: #4CAF50; margin-right: 15px;">Apply and Close</button>
 
         <a href="/api/export/database" class="btn" style="color: white;">
             <button style="display: inline-flex; font-size: 1em; line-height: 1;">📤Export db</button>
@@ -59,9 +59,9 @@
         <button type="button" onclick="cancelOperation()">Cancel</button>
     </dialog>
 
-    <dialog class="edit-item-dialog" id="editItemDialog"><p>Loading...</p></dialog>
+    <dialog class="edit-item-dialog" id="edit-element-dialog"><p>Loading...</p></dialog>
 
-    <dialog class="delete-item-dialog" id="deleteItemDialog"><p>Loading...</p></dialog>
+    <dialog class="delete-item-dialog" id="delete-element-dialog"><p>Loading...</p></dialog>
 
     <dialog class="create-item-dialog" id="createItemDialog"></dialog>
 

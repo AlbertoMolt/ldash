@@ -40,13 +40,14 @@ button:hover {
    CONTENEDORES PRINCIPALES
    ==================================== */
 .items-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 20px;
+    display: block;
+    /* 560px es el ancho mínimo para que tus categorías de 3 items no se deformen */
+    column-width: 560px; 
+    column-gap: 20px;
+    max-width: 1800px;
     margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .content-wrapper {
@@ -58,13 +59,18 @@ button:hover {
    CATEGORÍAS
    ==================================== */
 .category {
+    /* Cambiamos inline-block por block para evitar errores de alineación vertical */
+    display: block; 
+    /* Ancho exacto: (170*3) items + (10*2) gaps + (10*2) padding + (4*2) borde = 558px */
+    width: 558px;   
+    break-inside: avoid;
+    margin: 0 auto 20px auto; /* Centra la categoría en su columna y añade margen abajo */
+    
     background-color: #0b1021;
     padding: 10px;
     border: 4px solid #6f60eb;
     border-radius: 10px;
-    width: fit-content;
     box-sizing: border-box;
-    align-self: start;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
@@ -140,11 +146,15 @@ button:hover {
    IFRAME
    ==================================== */
 .iframe-item {
+    display: block;
+    width: 558px;
+    break-inside: avoid;
+    margin: 0 auto 20px auto;
+    
     background-color: #0b1021;
     padding: 10px;
     border: 4px solid #60d4eb;
     border-radius: 10px;
-    width: 558px;
     height: 428px;
     box-sizing: border-box;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -335,6 +345,10 @@ dialog h2 {
 
 .dialog-wrapper {
     margin-bottom: 16px;
+    font-family: sans-serif; 
+    padding: 20px; 
+    color: white; 
+    border-radius: 8px;
 }
 
 .edit-item-wrapper,
@@ -380,4 +394,15 @@ label {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* ====================================
+   RESPONSIVE
+   ==================================== */
+@media (max-width: 1200px) {
+    .items-container { column-count: 2; } /* 2 columnas en tablets */
+}
+
+@media (max-width: 800px) {
+    .items-container { column-count: 1; } /* 1 columna en móviles */
 }
