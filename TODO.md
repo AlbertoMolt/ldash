@@ -8,7 +8,7 @@
 ## 💡 Should Have (Nice to have)
 - [x] Profile system
 - [ ] Shortcuts
-- [ ] Collapsible categories
+- [x] Collapsible categories
 - [x] iFrames
 
 ## 🚀 Could Have (Future)

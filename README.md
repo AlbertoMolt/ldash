@@ -16,7 +16,6 @@ A (very simple) lightweight web dashboard to organize and access your self-hoste
 - Service status checks
 - Color customization
 - Keyboard shortcuts
-- Collapsible categories
 
 ## Installation
 
