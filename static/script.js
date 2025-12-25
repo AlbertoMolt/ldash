@@ -17,11 +17,10 @@ const enablePingStatus = document.getElementById('enable-ping-status');
 //################################
 let currentMouseX = 0;
 let currentMouseY = 0;
-let currentSelectedItemId = 0; // ID global del elemento seleccionado actualmente
-let currentSelectedCategory = ""; // Categoría global del elemento seleccionado actualmente
+let currentSelectedItemId = 0;
+let currentSelectedCategory = "";
 let currentProfile = "";
 
-// Mantener las coordenadas actualizadas
 document.addEventListener('mousemove', function(e) {
     currentMouseX = e.clientX;
     currentMouseY = e.clientY;
@@ -88,7 +87,7 @@ function deleteItem(item_id){
         } else {
             alert('Error: ' + data.error);
         }
-    })
+    });
 }
 
 function deleteCategory(category_name){
@@ -104,7 +103,7 @@ function deleteCategory(category_name){
         } else {
             alert('Error: ' + data.error);
         }
-    })
+    });
 }
 
 //################################
@@ -219,7 +218,6 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
     
                         editElementDialog.innerHTML = dialogContent;
     
-                        // Lógica de Inputs Dinámicos
                         const itemCategoryEdit = document.getElementById('itemCategoryEdit');
                         const newCategoryWrapperEdit = document.getElementById('newCategoryWrapperEdit');
                         const newCategoryEdit = document.getElementById('newCategoryEdit');
@@ -368,7 +366,7 @@ function updateItemDetails(item_id, name, item_type, icon, url, category, tab_ty
 }
 
 //################################
-//        CREATE ITEM
+//         CREATE ITEM
 //################################
 document.getElementById("create-item-btn").addEventListener('click', function(){
     createItemDialog.showModal();
@@ -497,7 +495,6 @@ document.getElementById("create-item-btn").addEventListener('click', function(){
                         if (openingMethodWrapper) openingMethodWrapper.style.display = 'block';
                         if (categoryWrapperCreate) categoryWrapperCreate.style.display = 'block';
                         
-                        // Restaurar visibilidad del campo "nueva categoria" si estaba activo
                         if (itemCategoryCreate.value === "newCategory") {
                              newCategoryWrapperCreate.style.display = 'block';
                         }
@@ -684,8 +681,12 @@ async function renderDashboard(items, categories) {
     const filteredItems = items.filter(item => item.profile === currentProfile);
     
     if (filteredItems.length === 0) {
-        itemsContainer.innerHTML = "<p>No items were found in this profile. Create an item to use.</p>";
+        itemsContainer.style.width = "50%";
+        itemsContainer.innerHTML = `<p style="text-align:center;">No items were found in this profile. Create an item to use.</p>`;
         return;
+    } else {
+        itemsContainer.removeAttribute("style");
+        itemsContainer.innerHTML = "";
     }
 
     const regularItems = filteredItems.filter(item => item.item_type === "item");
@@ -695,10 +696,9 @@ async function renderDashboard(items, categories) {
     const itemsWithoutCategory = regularItems.filter(item => !item.category);
 
     if (itemsWithoutCategory.length > 0) {
-        // Uso de data-category en lugar de atributo personalizado
         html.push(`
             <div class="category">
-                <div class="category-title category-button" data-category="uncategorized" role="button" tabindex="0">
+                <div class="category-header category-button" data-category="uncategorized" role="button" tabindex="0">
                     <h3>Uncategorized</h3>
                 </div>
             <div class="items-wrapper">
@@ -721,10 +721,9 @@ async function renderDashboard(items, categories) {
         const categoryItems = itemsWithCategory.filter(item => item.category === category);
         
         if (categoryItems.length > 0) {
-            // Uso de data-category
             html.push(`
                 <div class="category">
-                    <div class="category-title category-button" data-category="${category}" role="button" tabindex="0">
+                    <div class="category-header category-button" data-category="${category}" role="button" tabindex="0">
                         <h3>${category}</h3>
                     </div>
                 <div class="items-wrapper">
@@ -751,7 +750,6 @@ async function renderDashboard(items, categories) {
 function renderItemByType(item) {
     let target = item.tab_type ? "_blank" : "_self";
     
-    // REFACTOR: Uso de data-id y data-type en lugar de atributos personalizados planos
     switch(item.item_type) {
         case "item":
             return `
@@ -769,7 +767,7 @@ function renderItemByType(item) {
         case "iframe":
             return `
                 <div class="iframe-item" data-id="${item.id}" data-type="iframe" data-category="${item.category}">
-                    <div class="iframe-header" tabindex="0">
+                    <div class="iframe-header iframe-button" tabindex="0">
                         <h2 class="iframe-title">${item.name}</h2>
                     </div>
                     <iframe 
@@ -791,7 +789,8 @@ async function updateDashboard() {
     const items = await getItemsByCategory();
     const categories = await getItemCategories();
     await renderDashboard(items, categories);
-    console.log(currentProfile)
+        
+    restoreCollapsableElementsStates();
 }
 
 async function getItemProfiles() {
@@ -877,7 +876,6 @@ async function getItemStatus() {
     
                 if (data.success && Array.isArray(data.status_item)) {
                     data.status_item.forEach(host => {
-                        // REFACTOR: Selector actualizado para usar data-id
                         const itemElement = document.querySelector(`.item[data-id="${host.id}"]`);
                         if (itemElement) {
                             const statusPing = itemElement.querySelector('.status-ping');
@@ -947,7 +945,7 @@ function createProfile() {
 }
 
 selectedProfile.addEventListener('change', async () =>{
-    if (selectedProfile.value === "newProfile") {
+    if (selectedProfile.value === "_new%profile_") {
         createProfileDialog.showModal();
     } else {
         currentProfile = selectedProfile.value;
@@ -964,8 +962,10 @@ enablePingStatus.addEventListener('change', () => {
 });
 
 //################################
-//       COLLAPSE CATEGORY
+//        COLLAPSE ITEMS
 //################################
+
+// CATEGORIES
 document.addEventListener('click', (e) => {
     const categoryBtn = e.target.closest('.category-button');
 
@@ -975,44 +975,61 @@ document.addEventListener('click', (e) => {
 
         if (itemWrapper && itemWrapper.classList.contains('items-wrapper')) {
             const isHidden = itemWrapper.classList.toggle('hidden');
-            
             localStorage.setItem('category-collapsed-' + category, isHidden);
-            console.log(`Categoría ${category} oculta: ${isHidden}`);
         }
     }
 });
 
-function restoreCategoryStates() {
-    const itemWrapper = document.querySelectorAll('.items-wrapper');
+// IFRAMES
+document.addEventListener('click', (e) => {
+    const iframeBtn = e.target.closest('.iframe-button');
 
-    itemWrapper.forEach(wrapper => {
+    if (iframeBtn) {
+        const iframe = iframeBtn.nextElementSibling; 
+
+        if (iframe && iframe.classList.contains('iframe-content')) {
+            const isHidden = iframe.classList.toggle('hidden');
+            localStorage.setItem('iframe-collapsed-' + iframe.dataset.id, isHidden);
+        }
+    }
+});
+
+function restoreCollapsableElementsStates() {
+    document.querySelectorAll('.items-wrapper').forEach(wrapper => {
         const category = wrapper.previousElementSibling.dataset.category;
         const collapsed = localStorage.getItem('category-collapsed-' + category);
 
         if (collapsed === "true") {
-            console.log(category + " colapsado");
             wrapper.classList.add('hidden');
         } else {
             wrapper.classList.remove('hidden');
         }
     });
+
+    document.querySelectorAll('.iframe-content').forEach(iframe => {
+        const collapsed = localStorage.getItem('iframe-collapsed-' + iframe.dataset.id);
+
+        if (collapsed === "true") {
+            iframe.classList.add('hidden');
+        } else {
+            iframe.classList.remove('hidden');
+        }
+    });
 }
 
 //################################
-//      CONTEXT MENU (NUEVO)
+//         CONTEXT MENU
 //################################
 document.addEventListener("contextmenu", function(event) {
     try {
-        // REFACTOR: Usamos closest buscando el atributo data-id
         let itemWrapper = event.target.closest("[data-id]");
         let categoryWrapper = event.target.closest("[data-category]");
 
         if (itemWrapper) {
             event.preventDefault();
 
-            // REFACTOR: Acceso directo y limpio mediante dataset
             currentSelectedItemId = Number(itemWrapper.dataset.id);
-            currentSelectedCategory = ""; // Clear category selection
+            currentSelectedCategory = "";
 
             contextMenu.style.display = 'block';
             contextMenu.style.top = currentMouseY + 'px';
@@ -1020,7 +1037,7 @@ document.addEventListener("contextmenu", function(event) {
         } else if (categoryWrapper) {
             event.preventDefault();
             currentSelectedCategory = categoryWrapper.dataset.category;
-            currentSelectedItemId = 0; // Clear item selection
+            currentSelectedItemId = 0;
 
             contextMenu.style.display = 'block';
             contextMenu.style.top = currentMouseY + 'px';
