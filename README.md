@@ -34,9 +34,10 @@ Open your browser at [http://localhost:5000](http://localhost:5000)
 Services are configured in CSV files inside the `data/` folder:
 
 ```csv
-name,url,icon,category
-Portainer,http://localhost:9000,🐳,Docker
-Jellyfin,http://localhost:8096,🎬,Media
+id,name,item_type,icon,url,category,tab_type,profile
+1,Portainer,item,https://icon.png,http://localhost:9000,Local,true,default
+2,Jellyfin,item,https://icon.png,http://localhost:8096,Local,true,default
+3,Frigate,iframe,,https://localhost:5000,,,default
 ```
 
 ## Project status
