@@ -455,3 +455,11 @@ button.btn-import-database {
 @media (max-width: 800px) {
     .items-container { column-count: 1; } /* 1 columna en móviles */
 }
+
+/* ====================================
+   FLIP ANIMATION
+   ==================================== */
+.category,
+.iframe-item {
+    will-change: transform;
+}

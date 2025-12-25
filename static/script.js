@@ -753,15 +753,15 @@ function renderItemByType(item) {
     switch(item.item_type) {
         case "item":
             return `
+            <a href="${item.url}" target="${target}">
                 <div class="item" data-id="${item.id}" data-type="item" data-category="${item.category}" tabindex="0">
-                    <a href="${item.url}" target="${target}">
                         <div class="content-wrapper">
                             <p tabindex="-1">${item.name}</p>
                             <img class="item-icon" src="${item.icon}" alt="${item.name} icon" loading="lazy">
                         </div>
-                    </a>
                     <span class="status-ping" id="statusPing">•</span>
                 </div>
+            </a>
             `;
         
         case "iframe":
@@ -974,8 +974,10 @@ document.addEventListener('click', (e) => {
         const itemWrapper = categoryBtn.nextElementSibling; 
 
         if (itemWrapper && itemWrapper.classList.contains('items-wrapper')) {
-            const isHidden = itemWrapper.classList.toggle('hidden');
-            localStorage.setItem('category-collapsed-' + category, isHidden);
+            flipElement(() => {
+                const isHidden = itemWrapper.classList.toggle('hidden');
+                localStorage.setItem('category-collapsed-' + category, isHidden);
+            });
         }
     }
 });
@@ -988,8 +990,10 @@ document.addEventListener('click', (e) => {
         const iframe = iframeBtn.nextElementSibling; 
 
         if (iframe && iframe.classList.contains('iframe-content')) {
-            const isHidden = iframe.classList.toggle('hidden');
-            localStorage.setItem('iframe-collapsed-' + iframe.dataset.id, isHidden);
+            flipElement(() => {
+                const isHidden = iframe.classList.toggle('hidden');
+                localStorage.setItem('iframe-collapsed-' + iframe.dataset.id, isHidden);
+            });
         }
     }
 });
@@ -1072,3 +1076,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentProfile = getDefaultProfile();
     updateDashboard();
 });
+
+// ################################
+//        FLIP ANIMATION
+// ################################
+function flipElement(callback) {
+    const elements = [...document.querySelectorAll('.category, .iframe-item')];
+    const first = new Map();
+
+    elements.forEach(el => {
+        first.set(el, el.getBoundingClientRect());
+    });
+
+    callback();
+
+    requestAnimationFrame(() => {
+        elements.forEach(el => {
+            const last = el.getBoundingClientRect();
+            const prev = first.get(el);
+            if (!prev) return;
+
+            const dx = prev.left - last.left;
+            const dy = prev.top - last.top;
+
+            if (dx || dy) {
+                el.style.transform = `translate(${dx}px, ${dy}px)`;
+                el.style.transition = 'none';
+
+                requestAnimationFrame(() => {
+                    el.style.transform = '';
+                    el.style.transition =
+                        'transform 420ms cubic-bezier(.22,.61,.36,1)';
+                });
+            }
+        });
+    });
+}
