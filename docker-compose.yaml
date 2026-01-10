@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  ldash:
+    image: albertomoltrasio/ldash:latest
+    container_name: ldash
+    ports:
+      - "6780:6780"
+    environment:
+      - PORT=6780
+    restart: unless-stopped
