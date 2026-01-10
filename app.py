@@ -9,10 +9,10 @@ import time
 import threading
 from urllib.parse import urlparse
 from waitress import serve
-import psutil # TODO: ELIMINAR ESTA LIBRERÍA, Y DEL VENV TAMBIÉN
 
 
 DATABASE_FILE = "data/database.csv"
+HOST = "0.0.0.0"
 
 current_os = platform.system()
 
@@ -136,11 +136,6 @@ def get_items_ids():
 
 def get_usable_id():
     return max(get_items_ids()) + 1
-
-def get_memory_usage():
-    process = psutil.Process(os.getpid())
-    memory_info = process.memory_info()
-    return f"RSS: {memory_info.rss / 1024 / 1024:.1f} MB"
 
 def get_port():
     with open('config.json') as f:
@@ -372,8 +367,20 @@ if __name__ == "__main__":
     host_status = threading.Thread(target=host_status_checker, daemon=True)
     host_status.start()
 
-    print("✅ LDASH Started")
-    
-    print(get_memory_usage())
+    print(r"""
+    __    ____  ___   _____ __  __
+   / /   / __ \/   | / ___// / / /
+  / /   / / / / /| | \__ \/ /_/ / 
+ / /___/ /_/ / ___ |___/ / __  /  
+/_____/_____/_/  |_/____/_/ /_/   
+    """)
+    print("=" * 45)
+    print(f"  ✅ LDASH Started Successfully")
+    print(f"  🌐 Running on: http://{HOST}:{get_port()}")
+    print(f"  📊 Loaded {len(data)} items • {len(get_item_profiles())} profiles")
+    print(f"  🔄 Monitoring: {'✓' if monitor_changes.is_alive() else '✗'}")
+    print(f"  🏓 Status check: {'✓' if host_status.is_alive() else '✗'}")
+    print("=" * 45)
+    print("  Press Ctrl+C to stop\n")
      
-    app.run(host="0.0.0.0", port=get_port(), debug=True)
+    serve(app, host=HOST, port=get_port(), threads=4)
