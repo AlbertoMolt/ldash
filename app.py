@@ -4,6 +4,7 @@ from flask import Flask, abort, render_template, request, jsonify, send_from_dir
 import csv
 from collections import defaultdict
 import os
+import json
 import time
 import threading
 from urllib.parse import urlparse
@@ -29,7 +30,6 @@ host_list_status = []
 if not os.path.exists(DATABASE_FILE):
     print("Error: " + "Database file not found!")
     # TODO: Añadir generación automática de la base de datos
-
 
 def monitor_database_changes():
     global last_modification_time
@@ -141,6 +141,11 @@ def get_memory_usage():
     process = psutil.Process(os.getpid())
     memory_info = process.memory_info()
     return f"RSS: {memory_info.rss / 1024 / 1024:.1f} MB"
+
+def get_port():
+    with open('config.json') as f:
+        config = json.load(f)
+    return config['port']
 
 def get_hosts():
     return [{"itemid": item["id"], "host": extract_host(item["url"])} for item in data]
@@ -367,9 +372,8 @@ if __name__ == "__main__":
     host_status = threading.Thread(target=host_status_checker, daemon=True)
     host_status.start()
 
-    print("✅ Started")
+    print("✅ LDASH Started")
     
     print(get_memory_usage())
      
-    app.run(host="0.0.0.0", debug=True)
-    #serve(app, host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=get_port(), debug=True)
