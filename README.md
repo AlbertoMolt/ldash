@@ -2,7 +2,7 @@
 
 A (very simple) lightweight web dashboard to organize and access your self-hosted services from one place.
 
-🔗 [Live demo](https://ldash.onrender.com/)
+🔗 [Live demo](https://ldash.exofake.com/)
 
 ## Features
 
