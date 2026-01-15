@@ -149,7 +149,7 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
                                         </div>
             
                                         <div>
-                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL</label>
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL <span style="font-weight: normal; font-style: italic; color: rgba(255, 255, 255, 0.2); font-size: 0.8rem;"> It can also be an emoji</span></label>
                                             <div style="display: flex; gap: 10px; align-items: center;">
                                                 <input type="text" id="itemIcon" value="${item.icon}" style="flex-grow: 1; padding: 8px;">
                                                 <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center;">
@@ -394,7 +394,7 @@ document.getElementById("create-item-btn").addEventListener('click', function(){
                         </div>
 
                         <div id="iconURLWrapperCreate">
-                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL</label>
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL <span style="font-weight: normal; font-style: italic; color: rgba(255, 255, 255, 0.2); font-size: 0.8rem;"> It can also be an emoji</span></label>
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="text" id="itemIcon" placeholder="https://..." style="flex-grow: 1; padding: 8px;">
                                 <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center; min-width: 30px; min-height: 30px;">
@@ -752,13 +752,26 @@ function renderItemByType(item) {
     
     switch(item.item_type) {
         case "item":
+            let icon_element = `
+                <img class="item-icon" src="${item.icon}" alt="${item.name} icon" loading="lazy">
+            `;
+
+            // Check if icon is an emoji
+            if (/\p{Extended_Pictographic}/u.test(item.icon)) {
+                icon_element = `
+                    <span class="item-icon emoji-icon" aria-hidden="true">
+                        ${item.icon}
+                    </span>
+                `;
+            }
+
             return `
             <a href="${item.url}" target="${target}">
                 <div class="item" data-id="${item.id}" data-type="item" data-category="${item.category}" tabindex="0">
-                        <div class="content-wrapper">
-                            <p tabindex="-1">${item.name}</p>
-                            <img class="item-icon" src="${item.icon}" alt="${item.name} icon" loading="lazy">
-                        </div>
+                    <div class="content-wrapper">
+                        <p tabindex="-1">${item.name}</p>
+                        ${icon_element}
+                    </div>
                     <span class="status-ping" id="statusPing">•</span>
                 </div>
             </a>
@@ -987,7 +1000,7 @@ document.addEventListener('click', (e) => {
     const iframeBtn = e.target.closest('.iframe-button');
 
     if (iframeBtn) {
-        const iframe = iframeBtn.nextElementSibling; 
+        const iframe = iframeBtn.nextElementSibling;
 
         if (iframe && iframe.classList.contains('iframe-content')) {
             flipElement(() => {

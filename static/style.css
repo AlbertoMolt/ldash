@@ -147,6 +147,22 @@ button:hover {
     max-width: 80px;
     max-height: 80px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-icon {
+    font-size: 5rem; 
+
+    line-height: 1em;
+    height: 1em;
+    width: 1em;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 
 /* ====================================
