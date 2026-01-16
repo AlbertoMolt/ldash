@@ -7,3 +7,4 @@ id,name,item_type,icon,url,category,tab_type,profile
 6,Proxmox,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/proxmox.svg,,Local,true,default
 7,OpenMediaVault,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openmediavault.svg,,Local,true,default
 8,Spotify,item,https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg,https://open.spotify.com/,External,true,default
+9,Give me a star!,item,⭐,https://github.com/AlbertoMolt/ldash,External,true,default
