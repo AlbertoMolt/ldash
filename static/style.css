@@ -3,10 +3,11 @@
    ==================================== */
 body {
     font-family: Arial, sans-serif;
-    background-color: #141b33;
     color: white;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    overflow: hidden
 }
 
 a:link { 
@@ -82,8 +83,7 @@ button:hover {
     gap: 8px;
     margin-bottom: 10px;
     padding: 8px;
-    background-color: #503fe4;
-    border: 1px solid rgba(0, 0, 0, 0);
+    background: #503fe4;
     transition: all 0.15s ease-in-out;
     text-align: center;
     border-radius: 5px;
