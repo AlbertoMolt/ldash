@@ -1,35 +1,70 @@
 /* ====================================
+   VARS
+   ==================================== */
+:root {
+    --color-primary: #6f60eb;
+    --color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, black);
+
+    --color-category: #6f60eb;
+    --color-category-header: #503fe4;
+    --color-category-header-hover: color-mix(in srgb, var(--color-category-header) 50%, black);
+
+    --color-iframe: #60d4eb;
+    --color-iframe-header: #3fb9e4;
+    --color-iframe-header-hover: color-mix(in srgb, var(--color-iframe-header) 50%, black);
+
+    --bg-main: #141b33;
+    --bg-secondary: #0b1021;
+    --bg-menu: #1f294d;
+    --bg-item: #141b33;
+
+    --color-text: white;
+    --color-success: #4CAF50;
+    --color-border: rgba(255, 255, 255, 0.2);
+    --color-border-hover: rgba(255, 255, 255, 0.5);
+    --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-context: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ====================================
    ESTILOS GLOBALES
    ==================================== */
 body {
     font-family: Arial, sans-serif;
-    color: white;
+    color: var(--color-text);
     margin: 0;
     padding: 0;
     height: 100vh;
     overflow: hidden;
-    background: #141b33;
+    background: var(--bg-main);
 }
 
 a:link { 
     text-decoration: none;
 }
 
+.title {
+    border-bottom: 1px solid var(--color-text);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
 /* ====================================
    BOTONES
    ==================================== */
 button {
-    color: white;
+    color: var(--color-text);
     cursor: pointer;
     padding: 8px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background-color: #0b1021;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-border);
+    background-color: var(--bg-secondary);
+    box-shadow: var(--shadow-default);
     border-radius: 5px;
 }
 
 button:hover {
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--color-border-hover);
     transition: all 0.15s ease-in-out;
 }
 
@@ -54,7 +89,7 @@ button:hover {
 
 .content-wrapper {
     text-align: center;
-    color: white;
+    color: var(--color-text);
 }
 
 /* ====================================
@@ -68,12 +103,12 @@ button:hover {
     break-inside: avoid;
     margin: 0 auto 20px auto; /* Centra la categoría en su columna y añade margen abajo */
     
-    background-color: #0b1021;
+    background-color: var(--bg-secondary);
     padding: 10px;
-    border: 4px solid #6f60eb;
+    border: 4px solid var(--color-category);
     border-radius: 10px;
     box-sizing: border-box;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-default);
 }
 
 .category-header {
@@ -84,15 +119,16 @@ button:hover {
     gap: 8px;
     margin-bottom: 10px;
     padding: 8px;
-    background: #503fe4;
+    background: var(--color-category-header);
+    border: 1px solid rgba(0, 0, 0, 0);
     transition: all 0.15s ease-in-out;
     text-align: center;
     border-radius: 5px;
 }
 
 .category-header:hover {
-    background-color: #4f3fe4a2;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: var(--color-category-header-hover);
+    border: 1px solid var(--color-border-hover);
 }
 
 .category-header h3 {
@@ -125,7 +161,7 @@ button:hover {
 .item {
     border: 1px solid rgba(255, 0, 0, 0);
     border-radius: 5px;
-    background-color: #141b33;
+    background-color: var(--bg-item);
     width: 170px;
     height: 170px;
     transition: all 0.15s ease-in-out;
@@ -137,7 +173,7 @@ button:hover {
 .item:hover {
     scale: 1.07;
     z-index: 1001;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--color-border-hover);
 }
 
 .item-icon {
@@ -175,13 +211,13 @@ button:hover {
     break-inside: avoid;
     margin: 0 auto 20px auto;
     
-    background-color: #0b1021;
+    background-color: var(--bg-secondary);
     padding: 10px;
-    border: 4px solid #60d4eb;
+    border: 4px solid var(--color-iframe);
     border-radius: 10px;
     height: fit-content;
     box-sizing: border-box;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-default);
     display: flex;
     flex-direction: column;
 }
@@ -194,7 +230,7 @@ button:hover {
     gap: 8px;
     margin-bottom: 10px;
     padding: 8px;
-    background-color: #3fb9e4;
+    background-color: var(--color-iframe-header);
     border: 1px solid rgba(0, 0, 0, 0);
     transition: all 0.15s ease-in-out;
     text-align: center;
@@ -207,8 +243,8 @@ button:hover {
 }
 
 .iframe-header:hover {
-    background-color: #5dcce6;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: var(--color-iframe-header-hover);
+    border: 1px solid var(--color-border-hover);
 }
 
 .iframe-content {
@@ -254,14 +290,14 @@ button:hover {
 .profileSelector select {
     padding: 6px;
     border-radius: 5px;
-    background-color: #0b1021;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
     cursor: pointer;
 }
 
 .profileSelector select:hover {
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--color-border-hover);
 }
 
 .toolbar-btn {
@@ -322,13 +358,13 @@ button:hover {
 .context-menu {
     display: none;
     position: fixed;
-    background-color: #1f294d;
+    background-color: var(--bg-menu);
     width: 200px;
     padding: 12px;
     border-radius: 8px;
-    border: 2px solid #6f60eb;
+    border: 2px solid var(--color-primary);
     z-index: 2001;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-context);
 }
 
 .context-content {
@@ -340,8 +376,6 @@ button:hover {
     text-align: center;
     font-size: 18px;
     margin: 0 0 12px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgb(255, 255, 255);
 }
 
 .context-toolbox {
@@ -354,17 +388,19 @@ button:hover {
    DIÁLOGOS
    ==================================== */
 dialog {
-    background-color: #1f294d;
-    color: white;
-    border: 2px solid #6f60eb;
+    background-color: var(--bg-menu);
+    color: var(--color-text);
+    border: 2px solid var(--color-primary);
     border-radius: 10px;
     padding: 20px;
     min-width: 320px;
+    z-index: 2003;
 }
 
 dialog::backdrop {
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
+    z-index: 2002;
 }
 
 dialog h2 {
@@ -376,7 +412,7 @@ dialog h2 {
     margin-bottom: 16px;
     font-family: sans-serif; 
     padding: 20px; 
-    color: white; 
+    color: var(--color-text); 
     border-radius: 8px;
 }
 
@@ -395,9 +431,9 @@ select {
     width: 100%;
     padding: 8px;
     border-radius: 5px;
-    background-color: #0b1021;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
     box-sizing: border-box;
 }
 
@@ -405,7 +441,7 @@ input[type="text"]:focus,
 input[type="url"]:focus,
 select:focus {
     outline: none;
-    border: 1px solid #6f60eb;
+    border: 1px solid var(--color-primary);
 }
 
 input[type="checkbox"] {
@@ -432,18 +468,13 @@ label {
     margin-bottom: 10px;
 }
 
-.config-wrapper h2 {
-    border-bottom: 1px solid #ffffffff;
-    padding-bottom: 10px;
-}
-
 button.apply-close {
-    background-color: #4CAF50;
+    background-color: var(--color-success);
     margin-right: 15px;
 }
 
 .btn {
-    color: white;
+    color: var(--color-text);
 }
 
 button.export-db {
@@ -460,6 +491,117 @@ button.btn-import-database {
     display: inline-flex;
     font-size: 1em;
     line-height: 1;
+}
+
+/* ====================================
+   CUSTOMIZE COLORS
+   ==================================== */
+.customize-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.color-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+.section-title {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 4px;
+}
+
+.color-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.color-item label {
+    flex: 1;
+    font-size: 14px;
+}
+
+input[type="color"] {
+    cursor: pointer;
+    border: 2px solid var(--color-border);
+    border-radius: 5px;
+    background-color: transparent;
+    width: 45px;
+    height: 35px;
+    transition: all 0.15s ease-in-out;
+}
+
+input[type="color"]:hover {
+    border-color: var(--color-border-hover);
+    transform: scale(1.05);
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 3px;
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+}
+
+.dialog-actions button {
+    flex: 1;
+}
+
+#reset-colors-btn {
+    background-color: #e74c3c;
+}
+
+#reset-colors-btn:hover {
+    background-color: #c0392b;
+}
+
+/* ====================================
+   SCROLL
+   ==================================== */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+/* Fondo de la pista del scrollbar */
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 10px;
+}
+
+/* El "pulgar" que arrastras */
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary); 
+    border-radius: 10px;
+}
+
+/* Hover sobre el pulgar */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-hover);
 }
 
 /* ====================================

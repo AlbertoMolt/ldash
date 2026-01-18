@@ -6,6 +6,7 @@ const editElementDialog = document.getElementById('edit-element-dialog');
 const createItemDialog = document.getElementById('create-item-dialog');
 const configDialog = document.getElementById('config-dialog');
 const createProfileDialog = document.getElementById('create-profile-dialog');
+const customizeDialog = document.getElementById('customize-dialog');
 
 const selectedProfile = document.getElementById('selected-profile');
 const defaultProfile = document.getElementById('default-profile');
@@ -135,7 +136,7 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
                         if (itemType === "item") {
                             dialogContent = `
                                 <div class="edit-item-wrapper dialog-wrapper">
-                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit item "${item.name}"</h2>
+                                    <h2 class="title">Edit item "${item.name}"</h2>
                                     
                                     <div style="margin-bottom: 10px;">
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
@@ -194,7 +195,7 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
                         } else if (itemType === "iframe") {
                             dialogContent = `
                                 <div class="edit-item-wrapper dialog-wrapper">
-                                    <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit iframe "${item.name}"</h2>
+                                    <h2 class="title">Edit iframe "${item.name}"</h2>
                                     <div style="margin-bottom: 10px;">
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">ID: ${item.id}</p>
                                         <p style="color: rgba(255, 255, 255, 0.2); font-style: italic; font-size: 0.8rem;">Type: ${item.item_type}</p>
@@ -296,7 +297,7 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
     if (category_name !== "" && item_id === 0) {
         dialogContent = `
             <div class="edit-item-wrapper dialog-wrapper">
-                <h2 style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Edit category "${category_name}"</h2>
+                <h2 class="title">Edit category "${category_name}"</h2>
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
@@ -377,7 +378,7 @@ document.getElementById("create-item-btn").addEventListener('click', function(){
 
             createItemDialog.innerHTML = `
                 <div class="create-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
-                    <h2 id="createItemTitle" style="margin-top: 0; border-bottom: 1px solid #ffffffff; padding-bottom: 10px;">Create item</h2>
+                    <h2 class="title" id="createItemTitle" style="margin-top: 0; padding-bottom: 10px;">Create item</h2>
 
                     <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
                         <div>
@@ -649,8 +650,10 @@ function cancelOperation() {
     deleteElementDialog.innerHTML = `<p>Loading...</p>`;
 
     createItemDialog.close();
+
     configDialog.close();
     createProfileDialog.close();
+    customizeDialog.close();;
 }
 
 async function getItemsByCategory() {
@@ -1125,3 +1128,118 @@ function flipElement(callback) {
         });
     });
 }
+
+// ################################
+//      COLOR PERSONALIZATION
+// ################################
+const customizeWrapper = document.getElementById('customize-wrapper');
+
+const colorPrimary = document.getElementById('color-primary');
+const colorBgMain = document.getElementById('color-bg-main');
+const colorBgSecondary = document.getElementById('color-bg-secondary');
+const colorBgMenu = document.getElementById('color-bg-menu');
+const colorBgItem = document.getElementById('color-bg-item');
+const colorText = document.getElementById('color-text');
+const colorCategory = document.getElementById('color-category');
+const colorCategoryHeader = document.getElementById('color-category-header');
+const colorIframe = document.getElementById('color-iframe');
+const colorIframeHeader = document.getElementById('color-iframe-header');
+
+document.getElementById('save-colors-btn').addEventListener('click', saveColors);
+document.getElementById('cancel-customize-btn').addEventListener('click', cancelOperation);
+document.getElementById('reset-colors-btn').addEventListener('click', resetColors);
+
+const defaultColors = {
+    'color-primary': '#6f60eb',
+    'bg-main': '#141b33',
+    'bg-secondary': '#0b1021',
+    'bg-menu': '#1f294d',
+    'bg-item': '#141b33',
+    'color-text': '#ffffff',
+    'color-category': '#6f60eb',
+    'color-category-header': '#503fe4',
+    'color-iframe': '#60d4eb',
+    'color-iframe-header': '#3fb9e4'
+};
+
+const colorInputs = {
+    'color-primary': colorPrimary,
+    'bg-main': colorBgMain,
+    'bg-secondary': colorBgSecondary,
+    'bg-menu': colorBgMenu,
+    'bg-item': colorBgItem,
+    'color-text': colorText,
+    'color-category': colorCategory,
+    'color-category-header': colorCategoryHeader,
+    'color-iframe': colorIframe,
+    'color-iframe-header': colorIframeHeader
+};
+
+function loadColors() {
+    for (let [varName, defaultValue] of Object.entries(defaultColors)) {
+        let storedValue = localStorage.getItem(varName);
+        
+        if (!storedValue) {
+            storedValue = defaultValue;
+            localStorage.setItem(varName, defaultValue);
+        }
+        
+        document.documentElement.style.setProperty('--' + varName, storedValue);
+    }
+}
+
+function saveColors() {
+    const colors = {
+        'color-primary': colorPrimary.value,
+        'bg-main': colorBgMain.value,
+        'bg-secondary': colorBgSecondary.value,
+        'bg-menu': colorBgMenu.value,
+        'bg-item': colorBgItem.value,
+        'color-text': colorText.value,
+        'color-category': colorCategory.value,
+        'color-category-header': colorCategoryHeader.value,
+        'color-iframe': colorIframe.value,
+        'color-iframe-header': colorIframeHeader.value
+    };
+
+    for (let [varName, value] of Object.entries(colors)) {
+        localStorage.setItem(varName, value);
+        document.documentElement.style.setProperty('--' + varName, value);
+    }
+}
+
+function resetColors() {
+    for (let [varName, defaultValue] of Object.entries(defaultColors)) {        
+        if (colorInputs[varName]) {
+            colorInputs[varName].value = defaultValue;
+        }
+    }
+}
+
+loadColors();
+
+document.getElementById('customize-btn').addEventListener('click', function(){
+    customizeDialog.showModal();
+
+    let colorPrimaryValue = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+    let colorBgMainValue = getComputedStyle(document.documentElement).getPropertyValue('--bg-main').trim();
+    let colorBgSecondaryValue = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim();
+    let colorBgMenuValue = getComputedStyle(document.documentElement).getPropertyValue('--bg-menu').trim();
+    let colorBgItem = getComputedStyle(document.documentElement).getPropertyValue('--bg-item').trim();
+    let colorTextValue = getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim();
+    let colorCategoryValue = getComputedStyle(document.documentElement).getPropertyValue('--color-category').trim();
+    let colorCategoryHeaderValue = getComputedStyle(document.documentElement).getPropertyValue('--color-category-header').trim();
+    let colorIframeValue = getComputedStyle(document.documentElement).getPropertyValue('--color-iframe').trim();
+    let colorIframeHeaderValue = getComputedStyle(document.documentElement).getPropertyValue('--color-iframe-header').trim();
+
+    colorPrimary.value = colorPrimaryValue;
+    colorBgMain.value = colorBgMainValue;
+    colorBgSecondary.value = colorBgSecondaryValue;
+    colorBgMenu.value = colorBgMenuValue;
+    colorBgItem.value = colorBgItem;
+    colorText.value = colorTextValue;
+    colorCategory.value = colorCategoryValue;
+    colorCategoryHeader.value = colorCategoryHeaderValue;
+    colorIframe.value = colorIframeValue;
+    colorIframeHeader.value = colorIframeHeaderValue;
+});

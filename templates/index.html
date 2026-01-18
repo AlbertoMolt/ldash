@@ -22,7 +22,7 @@
     </div>
 
     <div class="context-menu" id="context-menu">
-        <h1 class="context-title">Options</h1>
+        <h1 class="context-title title">Options</h1>
             <div class="context-toolbox" id="toolbox">
                 <button class="context-btn" id="edit-element-btn">✏️Edit</button>
                 <button class="context-btn" id="delete-element-btn">❌Delete</button>
@@ -32,7 +32,7 @@
 
     <dialog class="config-dialog" id="config-dialog">
         <div class="config-wrapper dialog-wrapper">
-            <h2>Configuration</h2>
+            <h2 class="config-title title">Configuration</h2>
             <label for="enable-ping-status">Enable ping status</label>
             <input type="checkbox" id="enable-ping-status" name="enable-ping-status">
 
@@ -59,12 +59,80 @@
         <button type="button" onclick="cancelOperation()">Cancel</button>
     </dialog>
 
+    <dialog class="customize-dialog" id="customize-dialog">
+        <div class="customize-wrapper dialog-wrapper">
+            <h2 class="title">Customize colors</h2>
+
+            <div class="color-section">
+                <h3 class="section-title">General</h3>
+                <div class="color-item">
+                    <label>Primary:</label>
+                    <input id="color-primary" type="color">
+                </div>
+                <div class="color-item">
+                    <label>Text color:</label>
+                    <input id="color-text" type="color">
+                </div>
+            </div>
+
+            <div class="color-section">
+                <h3 class="section-title">Backgrounds</h3>
+                <div class="color-item">
+                    <label>Main background:</label>
+                    <input id="color-bg-main" type="color">
+                </div>
+                <div class="color-item">
+                    <label>Secondary background:</label>
+                    <input id="color-bg-secondary" type="color">
+                </div>
+                <div class="color-item">
+                    <label>Menu background:</label>
+                    <input id="color-bg-menu" type="color">
+                </div>
+                <div class="color-item">
+                    <label>Item background:</label>
+                    <input id="color-bg-item" type="color">
+                </div>
+            </div>
+
+            <div class="color-section">
+                <h3 class="section-title">Categories</h3>
+                <div class="color-item">
+                    <label>Category border:</label>
+                    <input id="color-category" type="color">
+                </div>
+                <div class="color-item">
+                    <label>Category header:</label>
+                    <input id="color-category-header" type="color">
+                </div>
+            </div>
+
+            <div class="color-section">
+                <h3 class="section-title">Iframes</h3>
+                <div class="color-item">
+                    <label>Iframe border:</label>
+                    <input id="color-iframe" type="color">
+                </div>
+                <div class="color-item">
+                    <label>Iframe header:</label>
+                    <input id="color-iframe-header" type="color">
+                </div>
+            </div>
+
+            <div class="dialog-actions">
+                <button id="save-colors-btn">Apply</button>
+                <button id="cancel-customize-btn">Close</button>
+                <button id="reset-colors-btn">Reset to default</button>
+            </div>
+        </div>
+    </dialog>
+
     <dialog id="edit-element-dialog"><p>Loading...</p></dialog>
 
     <dialog id="delete-element-dialog"><p>Loading...</p></dialog>
 
     <dialog id="create-item-dialog"><p>Loading...</p></dialog>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
