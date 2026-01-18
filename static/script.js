@@ -54,7 +54,7 @@ document.getElementById('delete-element-btn').addEventListener('click', function
             deleteElementDialog.innerHTML = `
                 <h2>Delete ${item.item_type} "${item.name}"</h2>
                 <p>⚠️ Are you sure?<p>
-                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <div class="dialog-actions">
                     <button type="button" onclick="deleteItem(${item_id})" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Yes</button>
                     <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Cancel</button>
                 </div>
@@ -67,7 +67,7 @@ document.getElementById('delete-element-btn').addEventListener('click', function
         deleteElementDialog.innerHTML = `
             <h2>Delete category "${category_name}"</h2>
             <p>⚠️ Are you sure? <span style="text-decoration: underline;">All items</span> in this category will be <span style="text-decoration: underline;"">deleted</span>.<p>
-            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div class="dialog-actions">
                 <button type="button" onclick="deleteCategory('${category_name}')" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Yes</button>
                 <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Cancel</button>
             </div>
@@ -187,9 +187,9 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
                                         </div>
                                     </div>
             
-                                    <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
-                                        <button type="button" id="applyItemBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
-                                        <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                                    <div class="dialog-actions">
+                                        <button type="button" class="success-btn" id="applyItemBtn">Apply</button>
+                                        <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
                                     </div>
                                 </div>`;
                         } else if (itemType === "iframe") {
@@ -210,9 +210,9 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
                                             <input type="url" id="itemUrlEdit" value="${item.url}" style="width: 100%; padding: 8px; box-sizing: border-box;">
                                         </div>
                                     </div>
-                                    <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
-                                        <button type="button" id="applyItemBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
-                                        <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                                    <div class="dialog-actions">
+                                        <button type="button" class="success-btn" id="applyItemBtn">Apply</button>
+                                        <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
                                     </div>
                                 </div>`;
                         }
@@ -304,9 +304,9 @@ document.getElementById('edit-element-btn').addEventListener('click', function()
                         <input type="text" id="categoryNameEdit" value="${category_name}" style="width: 100%; padding: 8px; box-sizing: border-box;">
                     </div>
                 </div>
-                <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" id="applyCategoryBtn" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px;">Apply</button>
-                    <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                <div class="dialog-actions">
+                    <button type="button" class="success-btn" id="applyCategoryBtn">Apply</button>
+                    <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
                 </div>
             </div>`;
         
@@ -431,9 +431,9 @@ document.getElementById("create-item-btn").addEventListener('click', function(){
                         </div>
                     </div>
 
-                    <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
-                        <button type="button" id="createItemBtnDialog" style="padding: 10px 20px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold;">Create</button>
-                        <button type="button" onclick="cancelOperation()" style="padding: 10px 20px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+                    <div class="dialog-actions">
+                        <button type="button" class="success-btn" id="createItemBtnDialog">Create</button>
+                        <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
                     </div>
                 </div>
             `;
@@ -586,6 +586,12 @@ function createItem(name, item_type, icon, url, category, tab_type){
 //################################
 //       GENERAL FUNCTIONS
 //################################
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'cancel-btn' || e.target.classList.contains('cancel-btn')) {
+        cancelOperation();
+    }
+});
+
 function getItemData(item_id) {
     return fetch(`/api/items/${item_id}`, {
         method: 'GET',
@@ -1146,7 +1152,6 @@ const colorIframe = document.getElementById('color-iframe');
 const colorIframeHeader = document.getElementById('color-iframe-header');
 
 document.getElementById('save-colors-btn').addEventListener('click', saveColors);
-document.getElementById('cancel-customize-btn').addEventListener('click', cancelOperation);
 document.getElementById('reset-colors-btn').addEventListener('click', resetColors);
 
 const defaultColors = {

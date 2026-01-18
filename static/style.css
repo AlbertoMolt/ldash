@@ -20,6 +20,7 @@
 
     --color-text: white;
     --color-success: #4CAF50;
+    --color-cancel: #e74c3c;
     --color-border: rgba(255, 255, 255, 0.2);
     --color-border-hover: rgba(255, 255, 255, 0.5);
     --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -36,7 +37,6 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    overflow: hidden;
     background: var(--bg-main);
 }
 
@@ -413,6 +413,18 @@ dialog h2 {
     border-radius: 8px;
 }
 
+.dialog-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+}
+
+.dialog-actions button {
+    flex: 1;
+}
+
 .edit-item-wrapper,
 .create-item-wrapper,
 .config-wrapper,
@@ -467,7 +479,6 @@ label {
 
 button.apply-close {
     background-color: var(--color-success);
-    margin-right: 15px;
 }
 
 .btn {
@@ -491,6 +502,17 @@ button.btn-import-database {
 }
 
 /* ====================================
+   CUSTOM BUTTONS
+   ==================================== */
+.success-btn {
+    background-color: var(--color-success);
+}
+
+.cancel-btn {
+    background-color: var(--color-cancel);
+}
+
+/* ====================================
    CUSTOMIZE COLORS
    ==================================== */
 .customize-wrapper {
@@ -499,26 +521,6 @@ button.btn-import-database {
     gap: 16px;
     max-height: 70vh;
     overflow-y: auto;
-}
-
-.color-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    background-color: var(--bg-secondary);
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
-}
-
-.section-title {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: var(--color-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 4px;
 }
 
 .color-item {
@@ -555,18 +557,6 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 input[type="color"]::-webkit-color-swatch {
     border: none;
     border-radius: 3px;
-}
-
-.dialog-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-    padding-top: 12px;
-    border-top: 1px solid var(--color-border);
-}
-
-.dialog-actions button {
-    flex: 1;
 }
 
 #reset-colors-btn {
@@ -615,4 +605,27 @@ input[type="color"]::-webkit-color-swatch {
 .category,
 .iframe-item {
     will-change: transform;
+}
+
+/* ====================================
+   SECTIONS
+   ==================================== */
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+.section-title {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 4px;
 }

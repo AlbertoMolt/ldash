@@ -38,32 +38,35 @@
 
             <label for="default-profile">Default profile</label>
             <select id="default-profile" name="default-profile"></select>
+
+            <button class="apply-close" onclick="reloadPage()">Apply and Close</button>
+    
+            <div class="dialog-actions"> 
+                <input type="file" id="file-input-import" onchange="importDatabase()">
+                <button class="btn-import-database" onclick="document.getElementById('file-input-import').click()">📥Import db</button>
+                <a href="/api/export/database" class="btn">
+                    <button class="export-db">📤Export db</button>
+                </a>
+            </div>
         </div>
-        <button class="apply-close" onclick="reloadPage()">Apply and Close</button>
-
-        <a href="/api/export/database" class="btn">
-            <button class="export-db">📤Export db</button>
-        </a>
-
-        <input type="file" id="file-input-import" onchange="importDatabase()">
-        <button class="btn-import-database" onclick="document.getElementById('file-input-import').click()">📥Import db</button>
     </dialog>
 
     <dialog class="create-profile-dialog" id="create-profile-dialog">
         <div class="create-profile-wrapper dialog-wrapper">
             <label for="create-profile">New profile name</label>
             <input type="text" id="create-profile-input" name="create-profile-input" placeholder="Profile name...">
+            <div class="dialog-actions">
+                <button type="button" class="success-btn" onclick="createProfile()">Apply</button>
+                <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
+            </div>
         </div>
-
-        <button type="button" onclick="createProfile()">Apply</button>
-        <button type="button" onclick="cancelOperation()">Cancel</button>
     </dialog>
 
     <dialog class="customize-dialog" id="customize-dialog">
         <div class="customize-wrapper dialog-wrapper">
             <h2 class="title">Customize colors</h2>
 
-            <div class="color-section">
+            <div class="section">
                 <h3 class="section-title">General</h3>
                 <div class="color-item">
                     <label>Primary:</label>
@@ -75,7 +78,7 @@
                 </div>
             </div>
 
-            <div class="color-section">
+            <div class="section">
                 <h3 class="section-title">Backgrounds</h3>
                 <div class="color-item">
                     <label>Main background:</label>
@@ -95,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="color-section">
+            <div class="section">
                 <h3 class="section-title">Categories</h3>
                 <div class="color-item">
                     <label>Category border:</label>
@@ -107,7 +110,7 @@
                 </div>
             </div>
 
-            <div class="color-section">
+            <div class="section">
                 <h3 class="section-title">Iframes</h3>
                 <div class="color-item">
                     <label>Iframe border:</label>
@@ -121,7 +124,7 @@
 
             <div class="dialog-actions">
                 <button id="save-colors-btn">Apply</button>
-                <button id="cancel-customize-btn">Close</button>
+                <button id="cancel-btn">Close</button>
                 <button id="reset-colors-btn">Reset to default</button>
             </div>
         </div>
