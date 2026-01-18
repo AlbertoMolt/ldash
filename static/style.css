@@ -78,7 +78,6 @@ button:hover {
    ==================================== */
 .items-container {
     display: block;
-    /* 560px es el ancho mínimo para que tus categorías de 3 items no se deformen */
     column-width: 560px; 
     column-gap: 20px;
     max-width: 1800px;
@@ -96,12 +95,10 @@ button:hover {
    CATEGORÍAS
    ==================================== */
 .category {
-    /* Cambiamos inline-block por block para evitar errores de alineación vertical */
     display: block; 
-    /* Ancho exacto: (170*3) items + (10*2) gaps + (10*2) padding + (4*2) borde = 558px */
     width: 558px;   
     break-inside: avoid;
-    margin: 0 auto 20px auto; /* Centra la categoría en su columna y añade margen abajo */
+    margin: 0 auto 20px auto;
     
     background-color: var(--bg-secondary);
     padding: 10px;
@@ -322,8 +319,8 @@ button:hover {
 .status-ping {
     display: none;
     position: absolute;
-    right: 10px;
-    bottom: 8px;
+    right: 8px;
+    bottom: 0px;
     margin: 0;
     font-size: 20px;
     color: red;
@@ -587,19 +584,16 @@ input[type="color"]::-webkit-color-swatch {
     width: 12px;
 }
 
-/* Fondo de la pista del scrollbar */
 ::-webkit-scrollbar-track {
     background: var(--bg-secondary);
     border-radius: 10px;
 }
 
-/* El "pulgar" que arrastras */
 ::-webkit-scrollbar-thumb {
     background: var(--color-primary); 
     border-radius: 10px;
 }
 
-/* Hover sobre el pulgar */
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary-hover);
 }
