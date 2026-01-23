@@ -18,6 +18,11 @@ RUN apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers \
 
 COPY . .
 
+RUN mkdir -p /app/data && \
+    if [ -f /app/database.csv ]; then cp /app/database.csv /app/data/database.csv; fi
+
+VOLUME ["/app/data"]
+
 EXPOSE ${PORT}
 
 CMD ["sh", "-c", "python /app/generate_config.py && python app.py"]

@@ -6,6 +6,11 @@ services:
     container_name: ldash
     ports:
       - "6780:6780"
+    volumes:
+      - ldash_data:/app/data
     environment:
       - PORT=6780
     restart: unless-stopped
+
+volumes:
+  ldash_data:
