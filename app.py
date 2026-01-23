@@ -18,7 +18,7 @@ current_os = platform.system()
 
 database_header_list = ["id", "name", "item_type", "icon", "url", "category", "tab_type", "profile"]
 
-last_modification_time = os.path.getmtime(DATABASE_FILE)
+os.makedirs("data", exist_ok=True)
 
 app = Flask(__name__)
 
@@ -28,8 +28,13 @@ grouped_data = {}
 host_list_status = []
 
 if not os.path.exists(DATABASE_FILE):
-    print("Error: " + "Database file not found!")
-    # TODO: Añadir generación automática de la base de datos
+    print("Database file not found!")
+    print("Creating empty database file...")
+    with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=database_header_list)
+        writer.writeheader()
+
+last_modification_time = os.path.getmtime(DATABASE_FILE)
 
 def monitor_database_changes():
     global last_modification_time
@@ -379,7 +384,6 @@ if __name__ == "__main__":
     print(f"  🌐 Running on: http://{HOST}:{get_port()}")
     print(f"  📊 Loaded {len(data)} items • {len(get_item_profiles())} profiles")
     print(f"  🔄 Monitoring: {'✓' if monitor_changes.is_alive() else '✗'}")
-    print(f"  🏓 Status check: {'✓' if host_status.is_alive() else '✗'}")
     print("=" * 45)
     print("  Press Ctrl+C to stop\n")
      
