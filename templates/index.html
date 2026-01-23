@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ldash</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-<body">
+<body>
+    <div class="search-bar" id="search-bar">
+        <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        <button class="search-btn" id="search-btn">🔍</button>
+    </div>
+
     <div class="items-container" id="items-container"></div>
 
     <div class="toolbar">
@@ -16,9 +21,9 @@
             </select>
         </div>
 
-        <button class="toolbar-btn config-btn" id="config-btn">⚙️</button>
-        <button class="toolbar-btn" id="create-item-btn">+</button>
-        <button class="toolbar-btn customize-btn" id="customize-btn">🎨</button>
+        <button class="toolbar-btn config-btn" id="config-btn" title="Configuration">⚙️</button>
+        <button class="toolbar-btn" id="create-item-btn" title="Create Item">+</button>
+        <button class="toolbar-btn customize-btn" id="customize-btn" title="Customize">🎨</button>
     </div>
 
     <div class="context-menu" id="context-menu">
@@ -39,13 +44,36 @@
             <label for="default-profile">Default profile</label>
             <select id="default-profile" name="default-profile"></select>
 
-            <button class="apply-close" onclick="reloadPage()">Apply and Close</button>
+            <div class="section">
+                <h3 class="section-title">Search Bar</h3>
+                <div class="section-content">
+                    <label>Enable search bar</label>
+                    <input type="checkbox" id="enable-search-bar" name="enable-search-bar">
+                </div>
+                <div class="section-content">
+                    <label>Enable autofocus</label>
+                    <input type="checkbox" id="enable-autofocus-search-bar" name="enable-autofocus-search-bar">
+                </div>
+                <div class="section-content">
+                    <label for="search-bar-opening-method">Opening method</label>
+                    <select id="search-bar-opening-method" name="search-bar-opening-method">
+                        <option value="_blank">New tab</option>
+                        <option value="_self">Same tab</option>
+                    </select>
+                </div>
+                <div class="section-content">
+                    <label>Search endpoint</label>
+                    <input type="text" id="search-endpoint" name="search-endpoint">
+                </div>
+            </div>
+
+            <button class="apply-close" id="apply-config-btn">Apply</button>
     
-            <div class="dialog-actions"> 
-                <input type="file" id="file-input-import" onchange="importDatabase()">
-                <button class="btn-import-database" onclick="document.getElementById('file-input-import').click()">📥Import db</button>
-                <a href="/api/export/database" class="btn">
-                    <button class="export-db">📤Export db</button>
+            <input type="file" id="file-input-import">
+            <div class="dialog-actions">
+                <button class="db-transfer-btn" id="import-db-btn">📥Import db</button>
+                <a href="/api/export/database">
+                    <button class="db-transfer-btn">📤Export db</button>
                 </a>
             </div>
         </div>
@@ -68,11 +96,11 @@
 
             <div class="section">
                 <h3 class="section-title">General</h3>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Primary:</label>
                     <input id="color-primary" type="color">
                 </div>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Text color:</label>
                     <input id="color-text" type="color">
                 </div>
@@ -80,19 +108,19 @@
 
             <div class="section">
                 <h3 class="section-title">Backgrounds</h3>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Main background:</label>
                     <input id="color-bg-main" type="color">
                 </div>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Secondary background:</label>
                     <input id="color-bg-secondary" type="color">
                 </div>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Menu background:</label>
                     <input id="color-bg-menu" type="color">
                 </div>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Item background:</label>
                     <input id="color-bg-item" type="color">
                 </div>
@@ -100,11 +128,11 @@
 
             <div class="section">
                 <h3 class="section-title">Categories</h3>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Category border:</label>
                     <input id="color-category" type="color">
                 </div>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Category header:</label>
                     <input id="color-category-header" type="color">
                 </div>
@@ -112,18 +140,18 @@
 
             <div class="section">
                 <h3 class="section-title">Iframes</h3>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Iframe border:</label>
                     <input id="color-iframe" type="color">
                 </div>
-                <div class="color-item">
+                <div class="section-content">
                     <label>Iframe header:</label>
                     <input id="color-iframe-header" type="color">
                 </div>
             </div>
 
             <div class="dialog-actions">
-                <button id="save-colors-btn">Apply</button>
+                <button class="success-btn" id="save-colors-btn">Apply</button>
                 <button id="cancel-btn">Close</button>
                 <button id="reset-colors-btn">Reset to default</button>
             </div>

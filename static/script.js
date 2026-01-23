@@ -923,31 +923,6 @@ async function getItemStatus() {
     }
 }
 
-function importDatabase() {
-    const fileInput = document.getElementById('file-input-import');
-
-    if (fileInput.files.length === 0) return;
-
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
-
-    fetch('/api/import/database', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            if (configDialog) configDialog.close();
-            updateDashboard();
-            fileInput.value = "";
-        } else {
-            alert(data.error);
-        }
-    })
-    .catch(err => alert(err));
-}
-
 function getDefaultProfile() {
     let profile;
     if (existCookie("profile")) {
@@ -982,6 +957,7 @@ defaultProfile.addEventListener('change', async() =>{
 enablePingStatus.addEventListener('change', () => {
     setCookie("statusPing", enablePingStatus.checked, 365);
 });
+
 
 //################################
 //        COLLAPSE ITEMS
@@ -1046,6 +1022,7 @@ function restoreCollapsableElementsStates() {
 //################################
 //         CONTEXT MENU
 //################################
+
 document.addEventListener("contextmenu", function(event) {
     try {
         let itemWrapper = event.target.closest("[data-id]");
@@ -1080,28 +1057,11 @@ document.addEventListener("click", function(event) {
     }
 });
 
-window.onload = () => {
-    function getStatusConfig() {
-        const statusPingCheckBox = document.getElementById('enable-ping-status');
-        if (getCookie('statusPing') === "true") {
-            statusPingCheckBox.checked = true;
-        } else {
-            statusPingCheckBox.checked = false;
-        }
-    }
-    getStatusConfig();
-    getItemStatus();
-    loadProfilesUi();
-};
-
-document.addEventListener("DOMContentLoaded", async () => {
-    currentProfile = getDefaultProfile();
-    updateDashboard();
-});
 
 // ################################
 //        FLIP ANIMATION
 // ################################
+
 function flipElement(callback) {
     const elements = [...document.querySelectorAll('.category, .iframe-item')];
     const first = new Map();
@@ -1134,6 +1094,40 @@ function flipElement(callback) {
         });
     });
 }
+
+// ################################
+//        DATABASE TRANSFER
+// ################################
+const fileInput = document.getElementById('file-input-import');
+const importDbBtn = document.getElementById('import-db-btn');
+
+importDbBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.onchange = function() {
+    if (fileInput.files.length === 0) return;
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    fetch('/api/import/database', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (configDialog) configDialog.close();
+            updateDashboard();
+            fileInput.value = "";
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(err => alert(err));
+}
+
 
 // ################################
 //      COLOR PERSONALIZATION
@@ -1221,8 +1215,6 @@ function resetColors() {
     }
 }
 
-loadColors();
-
 document.getElementById('customize-btn').addEventListener('click', function(){
     customizeDialog.showModal();
 
@@ -1247,4 +1239,181 @@ document.getElementById('customize-btn').addEventListener('click', function(){
     colorCategoryHeader.value = colorCategoryHeaderValue;
     colorIframe.value = colorIframeValue;
     colorIframeHeader.value = colorIframeHeaderValue;
+});
+
+
+// ################################
+//           SEARCH BAR
+// ################################
+
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+
+const defaultSearchEndponint = "https://www.google.com/search?q=";
+const defaultSearchBarOpeningMethod = "_blank";
+
+let searchEndpoint = defaultSearchEndponint;
+let searchBarOpeningMethod = defaultSearchBarOpeningMethod;
+
+searchInput.addEventListener('keydown', () => {
+    if (event.key === 'Enter') {
+        search(searchInput.value);
+    }
+});
+
+searchBtn.addEventListener('click', () => {
+    search(searchInput.value);
+});
+
+function search(query) {
+    window.open(searchEndpoint + query, searchBarOpeningMethod);
+    searchInput.value = "";
+}
+
+function loadSearchBar() {
+    // Enable searchbar
+    let svEnableSearchBar = localStorage.getItem('enable-search-bar');
+    if (svEnableSearchBar === "true") {
+        searchBar.style.display = "flex";
+    } else {
+        searchBar.style.display = "none";
+    }
+    if (svEnableSearchBar === null) {
+        localStorage.setItem('enable-search-bar', 'true');
+        searchBar.style.display = "flex";
+    }
+
+    // Enable autofocus in searchbar
+    let svEnableAutofocus = localStorage.getItem('enable-autofocus-search-bar');
+    if (svEnableAutofocus === "true") {
+        searchInput.focus();
+    } else {
+        searchInput.removeAttribute('autofocus');
+    }
+    if (svEnableAutofocus === null) {
+        localStorage.setItem('enable-autofocus-search-bar', 'true');
+        searchInput.focus();
+    }
+
+    // Opening method
+    let svOpeningMethod = localStorage.getItem('search-bar-opening-method');
+    if (svOpeningMethod === "_blank") {
+        searchBarOpeningMethod = "_blank";
+    } else {
+        searchBarOpeningMethod = "_self";
+    }
+    if (svOpeningMethod === null) {
+        localStorage.setItem('search-bar-opening-method', '_blank');
+        searchBarOpeningMethod = "_blank";
+    }
+}
+
+function loadSearchEndpoint() {
+    let storedValue = localStorage.getItem('search-endpoint');
+    if (storedValue) {
+        searchEndpoint = storedValue;
+    } else {
+        searchEndpoint = defaultSearchEndponint;
+        localStorage.setItem('search-endpoint', defaultSearchEndponint);
+    }
+}
+
+// ################################
+//     CONFIG / SETTINGS DIALOG
+// ################################
+
+const applySettingsBtn = document.getElementById('apply-config-btn');
+
+
+applySettingsBtn.addEventListener('click', () => {
+    saveSearchBarConfig();
+    
+    reloadPage();
+});
+
+const enableSearchBarCheckBox = document.getElementById('enable-search-bar');
+const enableAutofocusSearchBarCheckBox = document.getElementById('enable-autofocus-search-bar');
+const openingSearchBarMethodSelect = document.getElementById('search-bar-opening-method');
+
+const statusPingCheckBox = document.getElementById('enable-ping-status');
+
+function loadConfigInputState() {
+    // SearchBar
+    //      Enable searchbar
+    if (localStorage.getItem('enable-search-bar') === "true") {
+        enableSearchBarCheckBox.checked = true;
+    } else {
+        enableSearchBarCheckBox.checked = false;
+    }
+    if (document.getElementById('search-endpoint')) {
+        document.getElementById('search-endpoint').value = searchEndpoint;
+    }
+    //      Enable autofocus
+    if (localStorage.getItem('enable-autofocus-search-bar') === "true") {
+        enableAutofocusSearchBarCheckBox.checked = true;
+    } else {
+        enableAutofocusSearchBarCheckBox.checked = false;
+    }
+    //      Opening method
+    if (localStorage.getItem('search-bar-opening-method') === "_blank") {
+        openingSearchBarMethodSelect.value = "_blank";
+    } else {
+        openingSearchBarMethodSelect.value = "_self";
+    }
+
+    // Ping status
+    if (getCookie('statusPing') === "true") {
+        statusPingCheckBox.checked = true;
+    } else {
+        statusPingCheckBox.checked = false;
+    }
+}
+
+// SAVE CONFIG FUNCTIONS
+function saveSearchBarConfig() {
+    // State
+    if (enableSearchBarCheckBox.checked) {
+        localStorage.setItem('enable-search-bar', 'true');
+    } else {
+        localStorage.setItem('enable-search-bar', 'false');
+    }
+
+    // Endpoint
+    const searchEndpoint = document.getElementById('search-endpoint').value;
+    if (searchEndpoint) {
+        localStorage.setItem('search-endpoint', searchEndpoint);
+    }
+
+    // Autofocus
+    if (enableAutofocusSearchBarCheckBox.checked) {
+        localStorage.setItem('enable-autofocus-search-bar', 'true');
+    } else {
+        localStorage.setItem('enable-autofocus-search-bar', 'false');
+    }
+
+    // Opening method
+    if (openingSearchBarMethodSelect.value === "_blank") {
+        localStorage.setItem('search-bar-opening-method', '_blank');
+    } else {
+        localStorage.setItem('search-bar-opening-method', '_self');
+    }
+}
+
+// ################################
+//       APP INITIALIZATION
+// ################################
+
+window.onload = () => {
+    getItemStatus();
+    loadProfilesUi();
+    loadColors();
+    loadSearchEndpoint();
+    loadSearchBar();
+    loadConfigInputState();
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+    currentProfile = getDefaultProfile();
+    updateDashboard();
 });
