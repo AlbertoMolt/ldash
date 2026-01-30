@@ -22,7 +22,6 @@ os.makedirs("data", exist_ok=True)
 
 app = Flask(__name__)
 
-# Variables globales para los datos
 data = []
 grouped_data = {}
 host_list_status = []
@@ -382,7 +381,7 @@ if __name__ == "__main__":
     print("=" * 45)
     print(f"  ✅ LDASH Started Successfully")
     print(f"  🌐 Running on: http://{HOST}:{get_port()}")
-    print(f"  📊 Loaded {len(data)} items • {len(get_item_profiles())} profiles")
+    print(f"  💾 Loaded {len(data)} items • {len(get_item_profiles())} profiles")
     print(f"  🔄 Monitoring: {'✓' if monitor_changes.is_alive() else '✗'}")
     print("=" * 45)
     print("  Press Ctrl+C to stop\n")
