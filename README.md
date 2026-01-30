@@ -54,7 +54,7 @@ Open your browser at [http://localhost:6780](http://localhost:6780)
 ## ⚙️ Configuration
 
 ### 💾 Database
-Items are configured in a `database.csv` file inside the `data/` folder:
+Items are configured in the `database.csv` file inside the `data/` folder:
 
 ```csv
 id,name,item_type,icon,url,category,tab_type,profile
