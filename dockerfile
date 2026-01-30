@@ -1,6 +1,6 @@
 FROM python:3.11-alpine
 
-LABEL manteiner="AlbertoMoltrasio"
+LABEL maintainer="AlbertoMoltrasio"
 LABEL description="A lightweight dashboard"
 
 WORKDIR /app
@@ -23,6 +23,6 @@ RUN mkdir -p /app/data && \
 
 VOLUME ["/app/data"]
 
-EXPOSE ${PORT}
+EXPOSE 6780
 
-CMD ["sh", "-c", "python /app/generate_config.py && python app.py"]
+CMD ["python", "app.py"]

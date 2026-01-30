@@ -5,9 +5,7 @@ services:
     image: albertomoltrasio/ldash:latest
     container_name: ldash
     ports:
-      - "6780:6780"
+      - "6780:6780" # <- Port forward
     volumes:
       - ./data:/app/data  # <- DB bind mount
-    environment:
-      - PORT=6780
     restart: unless-stopped
