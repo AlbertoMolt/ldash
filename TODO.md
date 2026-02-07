@@ -10,7 +10,7 @@
 - [ ] Shortcuts
 - [x] Collapsible categories
 - [x] iFrames
-- [ ] Drag and drop items
+- [x] Drag and drop items
 
 ## 🚀 Could Have (Future)
 - [ ] ssh integration
