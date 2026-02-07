@@ -21,9 +21,10 @@
             </select>
         </div>
 
-        <button class="toolbar-btn config-btn" id="config-btn" title="Configuration">⚙️</button>
+        <button class="toolbar-btn" id="config-btn" title="Configuration">⚙️</button>
         <button class="toolbar-btn" id="create-item-btn" title="Create Item">+</button>
-        <button class="toolbar-btn customize-btn" id="customize-btn" title="Customize">🎨</button>
+        <button class="toolbar-btn" id="customize-btn" title="Customize">🎨</button>
+        <button class="toolbar-btn" id="organize-btn" title="Organize">✥</button>
     </div>
 
     <div class="context-menu" id="context-menu">
@@ -32,7 +33,11 @@
                 <button class="context-btn" id="edit-element-btn">✏️Edit</button>
                 <button class="context-btn" id="delete-element-btn">❌Delete</button>
             </div>
-        </div>
+    </div>
+    
+    <div class="organize-mode-actions" id="organize-mode-actions">
+        <button class="success-btn" id="apply-organize-btn">✓</button>
+        <button class="cancel-btn" id="cancel-organize-btn">✕</button>
     </div>
 
     <dialog class="config-dialog" id="config-dialog">
@@ -157,7 +162,7 @@
             </div>
         </div>
     </dialog>
-
+    
     <dialog id="edit-element-dialog"><p>Loading...</p></dialog>
 
     <dialog id="delete-element-dialog"><p>Loading...</p></dialog>

@@ -22,6 +22,10 @@ let currentSelectedItemId = 0;
 let currentSelectedCategory = "";
 let currentProfile = "";
 
+let organizeModeEnabled = false;
+
+let domSnapshot = null;
+
 document.addEventListener('mousemove', function(e) {
     currentMouseX = e.clientX;
     currentMouseY = e.clientY;
@@ -35,6 +39,16 @@ document.getElementById('config-btn').addEventListener('click', function() {
 document.getElementById('create-item-btn').addEventListener('click', function() {
     createItemDialog.showModal();
 });
+
+function saveDomSnapshot() {
+    domSnapshot = itemsContainer.innerHTML;
+}
+
+function restoreDomSnapshot() {
+    if (domSnapshot) {
+        itemsContainer.innerHTML = domSnapshot;
+    }
+}
 
 //################################
 //          DELETE ITEM
@@ -364,6 +378,23 @@ function updateItemDetails(item_id, name, item_type, icon, url, category, tab_ty
     } else {
         console.error("ID item undefined")
     }
+}
+
+function updateItemCategory(item_id, category_name) {
+    fetch(`/api/items/${item_id}/category`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            category: category_name
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
 }
 
 //################################
@@ -706,8 +737,8 @@ async function renderDashboard(items, categories) {
 
     if (itemsWithoutCategory.length > 0) {
         html.push(`
-            <div class="category">
-                <div class="category-header category-button" data-category="uncategorized" role="button" tabindex="0">
+            <div class="category" data-category="uncategorized">
+                <div class="category-header category-button" role="button" tabindex="0">
                     <h3>Uncategorized</h3>
                 </div>
             <div class="items-wrapper">
@@ -731,8 +762,8 @@ async function renderDashboard(items, categories) {
         
         if (categoryItems.length > 0) {
             html.push(`
-                <div class="category">
-                    <div class="category-header category-button" data-category="${category}" role="button" tabindex="0">
+                <div class="category" data-category="${category}">
+                    <div class="category-header category-button" role="button" tabindex="0">
                         <h3>${category}</h3>
                     </div>
                 <div class="items-wrapper">
@@ -775,15 +806,15 @@ function renderItemByType(item) {
             }
 
             return `
-            <a href="${item.url}" target="${target}">
-                <div class="item" data-id="${item.id}" data-type="item" data-category="${item.category}" tabindex="0">
-                    <div class="content-wrapper">
-                        <p tabindex="-1">${item.name}</p>
+            <div class="item-card" data-id="${item.id}" data-type="item" data-category="${item.category}">
+                <a href="${item.url}" target="${target}">
+                    <div class="item-content" tabindex="0">
+                        <p class="item-title">${item.name}</p>
                         ${icon_element}
+                        <span class="status-ping" id="statusPing">•</span>
                     </div>
-                    <span class="status-ping" id="statusPing">•</span>
-                </div>
-            </a>
+                </a>
+            </div>
             `;
         
         case "iframe":
@@ -898,7 +929,7 @@ async function getItemStatus() {
     
                 if (data.success && Array.isArray(data.status_item)) {
                     data.status_item.forEach(host => {
-                        const itemElement = document.querySelector(`.item[data-id="${host.id}"]`);
+                        const itemElement = document.querySelector(`.item-card[data-id="${host.id}"]`);
                         if (itemElement) {
                             const statusPing = itemElement.querySelector('.status-ping');
                             if (statusPing) {
@@ -968,7 +999,8 @@ document.addEventListener('click', (e) => {
     const categoryBtn = e.target.closest('.category-button');
 
     if (categoryBtn) {
-        const category = categoryBtn.dataset.category;
+        const categoryDiv = categoryBtn.closest('.category');
+        const category = categoryDiv.dataset.category;
         const itemWrapper = categoryBtn.nextElementSibling; 
 
         if (itemWrapper && itemWrapper.classList.contains('items-wrapper')) {
@@ -997,13 +1029,14 @@ document.addEventListener('click', (e) => {
 });
 
 function restoreCollapsableElementsStates() {
-    document.querySelectorAll('.items-wrapper').forEach(wrapper => {
-        const category = wrapper.previousElementSibling.dataset.category;
+    document.querySelectorAll('.category').forEach(categoryDiv => {
+        const category = categoryDiv.dataset.category;
+        const wrapper = categoryDiv.querySelector('.items-wrapper');
         const collapsed = localStorage.getItem('category-collapsed-' + category);
 
-        if (collapsed === "true") {
+        if (collapsed === "true" && wrapper) {
             wrapper.classList.add('hidden');
-        } else {
+        } else if (wrapper) {
             wrapper.classList.remove('hidden');
         }
     });
@@ -1019,6 +1052,7 @@ function restoreCollapsableElementsStates() {
     });
 }
 
+
 //################################
 //         CONTEXT MENU
 //################################
@@ -1026,7 +1060,7 @@ function restoreCollapsableElementsStates() {
 document.addEventListener("contextmenu", function(event) {
     try {
         let itemWrapper = event.target.closest("[data-id]");
-        let categoryWrapper = event.target.closest("[data-category]");
+        let categoryWrapper = event.target.closest(".category");
 
         if (itemWrapper) {
             event.preventDefault();
@@ -1319,6 +1353,7 @@ function loadSearchEndpoint() {
     }
 }
 
+
 // ################################
 //     CONFIG / SETTINGS DIALOG
 // ################################
@@ -1399,6 +1434,155 @@ function saveSearchBarConfig() {
         localStorage.setItem('search-bar-opening-method', '_self');
     }
 }
+
+
+// ################################
+//         DRAG AND DROP
+// ################################
+
+const organizeBtn = document.getElementById('organize-btn');
+const organizeModeActions = document.getElementById('organize-mode-actions');
+
+let listItemsMoved = new Map();
+
+organizeBtn.addEventListener('click', () => {
+    if (!organizeModeEnabled) {
+        saveDomSnapshot();
+    }
+
+    organizeModeEnabled = !organizeModeEnabled;
+    
+    if (organizeModeEnabled) {
+        enableShakeMode();
+        organizeModeActions.style.display = "flex";
+    } else {
+        restoreDomSnapshot();
+        disableShakeMode();
+        organizeModeActions.style.display = "none";
+    }
+});
+
+document.getElementById('apply-organize-btn').addEventListener('click', async () => {
+    domSnapshot = null;
+    disableShakeMode();
+    organizeModeEnabled = false;
+    organizeModeActions.style.display = "none";
+    
+    // Array de promesas
+    const updatePromises = [];
+    listItemsMoved.forEach((newCategory, itemId) => {
+        updatePromises.push(updateItemCategory(itemId, newCategory));
+    });
+    
+    // Espera a que se completen todas las promesas
+    await Promise.all(updatePromises);
+    
+    listItemsMoved.clear();
+    updateDashboard();
+});
+
+document.getElementById('cancel-organize-btn').addEventListener('click', () => {
+    restoreDomSnapshot();
+    disableShakeMode();
+    organizeModeEnabled = false;
+    organizeModeActions.style.display = "none";
+});
+
+function enableShakeMode() {
+    const items = document.querySelectorAll('.item-card');
+    items.forEach(item => item.classList.add('shaking'));
+}
+
+function disableShakeMode() {
+    const items = document.querySelectorAll('.item-card');
+    items.forEach(item => item.classList.remove('shaking'));
+}
+
+let draggingItem = null;
+let originalParent = null;
+let originalNextSibling = null;
+
+let offsetX = 0;
+let offsetY = 0;
+
+function onItemDrag(e) {
+    if (draggingItem) {
+        draggingItem.style.left = (e.clientX - offsetX) + "px";
+        draggingItem.style.top = (e.clientY - offsetY) + "px";
+    }
+}
+
+function onItemDrop(item, category) {
+    const itemsWrapper = category.querySelector('.items-wrapper');
+    itemsWrapper.appendChild(item);
+    item.style.left = "";
+    item.style.top = "";
+
+    item.dataset.category = category.dataset.category;
+    listItemsMoved.set(item.dataset.id, category.dataset.category);
+}
+
+document.addEventListener('mousedown', (e) => {
+    if (!organizeModeEnabled) return;
+    
+    const itemCard = e.target.closest(".item-card");
+    
+    if (itemCard) {
+        e.preventDefault();
+        
+        const rect = itemCard.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        originalParent = itemCard.parentElement;
+        originalNextSibling = itemCard.nextElementSibling;
+
+        draggingItem = itemCard;
+        
+        itemCard.style.left = rect.left + "px";
+        itemCard.style.top = rect.top + "px";
+        itemCard.style.width = rect.width + "px";
+        itemCard.style.height = rect.height + "px";
+        
+        itemCard.classList.add("dragging");
+        document.body.appendChild(itemCard);
+        
+        document.addEventListener("mousemove", onItemDrag);
+    }
+});
+ 
+document.addEventListener('mouseup', (e) => {
+    if (!organizeModeEnabled) return;
+    
+    if (draggingItem) {
+        const categoryDropped = e.target.closest(".category");
+        
+        document.removeEventListener("mousemove", onItemDrag);
+        draggingItem.classList.remove("dragging");
+        
+        draggingItem.style.left = "";
+        draggingItem.style.top = "";
+        draggingItem.style.width = "";
+        draggingItem.style.height = "";
+        
+        if (categoryDropped && draggingItem.dataset.category !== categoryDropped.dataset.category) {
+            onItemDrop(draggingItem, categoryDropped);
+        } else {
+            if (originalNextSibling) {
+                originalParent.insertBefore(draggingItem, originalNextSibling);
+            } else {
+                originalParent.appendChild(draggingItem);
+            }
+        }
+
+        draggingItem = null;
+        originalParent = null;
+        originalNextSibling = null;
+        offsetX = 0;
+        offsetY = 0;
+    }
+});
+
 
 // ################################
 //       APP INITIALIZATION
