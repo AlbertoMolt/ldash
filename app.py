@@ -51,29 +51,25 @@ def reload_database():
     data = []
     try:
         with open(DATABASE_FILE, "r", encoding="utf-8") as file:
-            reader = csv.reader(file)
-            for line in reader:
-                if any(item.strip() != "" for item in line):
-                    data.append(line)
-            try:
-                del data[0] # Eliminar primera linea
-            except:
-                print("Database header not found, writing it...")
-                with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
-                    writer = csv.DictWriter(file, fieldnames=database_header_list)
-                    writer.writeheader()
-                    
-                reload_database()
-    except:
-        print("Error: " + "Database file not found!")
+            reader = csv.DictReader(file)
+            for row in reader:
+                if any(value.strip() != "" for value in row.values()):
+                    # Convertir id a int
+                    row['id'] = int(row['id'])
+                    data.append(row)
+    except FileNotFoundError:
+        print("Error: Database file not found!")
+        return []
+    except Exception as e:
+        print(f"Error loading database: {e}")
+        return []
 
-    # Actualizar datos agrupados también
+    # Actualizar datos agrupados
     try:
-        data = set_dictionary(data)
         grouped_data = group_by_category(data)
-    except:
-        # TODO: añadir una excepción para manejar si el archivo está vacío
-        ...
+    except Exception as e:
+        print(f"Error grouping data: {e}")
+    
     return data
 
 def update_database():
@@ -92,22 +88,6 @@ def group_by_category(data):
         category = item["category"]
         grouped[category].append(item)
     return grouped
-
-def set_dictionary(data):
-    items = []
-    for item in data:
-        data_dict = {
-            "id": int(item[0]),
-            "name": item[1],
-            "item_type": item[2],
-            "icon": item[3],
-            "url": item[4],
-            "category": item[5],
-            "tab_type": item[6],
-            "profile": item[7]
-        }
-        items.append(data_dict)
-    return items
 
 def ping_host(host, timeout=5): # TODO: Reemplazar esto porque da muchos falsos positivos
     system_name = platform.system()
@@ -139,7 +119,8 @@ def get_items_ids():
     return [item["id"] for item in data]
 
 def get_usable_id():
-    return max(get_items_ids()) + 1
+    ids = get_items_ids()
+    return max(ids) + 1 if ids else 1
 
 def get_port():
     with open('config.json') as f:
@@ -224,6 +205,28 @@ def update_item(item_id):
                 "category": data_received["category"],
                 "tab_type": data_received["tab_type"],
                 "profile": data_received["profile"]
+            }
+            update_database()
+            return jsonify({"success": True})
+    
+    return jsonify({"success": False, "error": "Item not found"}), 404
+
+# Edit item's category
+@app.route('/api/items/<int:item_id>/category', methods=['PUT'])
+def update_item_category(item_id):
+    data_received = request.get_json()
+
+    for i, item in enumerate(data):
+        if item["id"] == item_id:
+            data[i] = {
+                "id": item_id,
+                "name": item["name"],
+                "item_type": item["item_type"],
+                "icon": item["icon"],
+                "url": item["url"],
+                "category": data_received["category"],
+                "tab_type": item["tab_type"],
+                "profile": item["profile"]
             }
             update_database()
             return jsonify({"success": True})
