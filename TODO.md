@@ -2,7 +2,7 @@
 
 ## 🔥 Must Have (Core features)
 - [x] Full funcional CRUD
-- [ ] Status checks (The option currently exist in the interface, but it doesn't work 😢)
+- [x] Status checks
 - [x] Color customization
 
 ## 💡 Should Have (Nice to have)

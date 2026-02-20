@@ -165,8 +165,8 @@ button:hover {
     z-index: 1000;
     overflow: hidden;
     position: relative;
+    transform-origin: 50% 50%;
 }
-
 .item-card:hover {
     scale: 1.07;
     z-index: 1001;
@@ -224,22 +224,12 @@ button:hover {
 }
 
 .item-card.shaking {
-    animation: shake-float 0.4s ease-in-out infinite;
+    animation: shake-float 0.8s ease-in-out infinite;
 }
 
 @keyframes shake-float {
-    0%, 100% {
-        transform: rotate(-1.5deg) translateY(0px);
-    }
-    25% {
-        transform: rotate(1.5deg) translateY(-2px);
-    }
-    50% {
-        transform: rotate(-1.5deg) translateY(0px);
-    }
-    75% {
-        transform: rotate(1.5deg) translateY(-2px);
-    }
+    0%, 100% { border-color: transparent; }
+    50% { border-color: var(--color-primary); }
 }
 
 /* ====================================
@@ -255,11 +245,11 @@ button:hover {
 }
 
 .organize-mode-actions {
-    position: absolute;
+    position: fixed;
     left: 50%;
     top: 90%;
     transform: translate(-50%, -50%);
-    padding: 7px;
+    padding: 10px;
     gap: 10px;
     display: none;
     border-radius: 10px;
@@ -268,6 +258,17 @@ button:hover {
     box-shadow: var(--shadow-default);
     justify-content: center;
     align-items: center;
+}
+
+.organize-mode-actions-btn {
+    width: 60px;
+    height: 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 /* ====================================
@@ -379,6 +380,7 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
 }
 
 .customize-btn,
@@ -390,35 +392,66 @@ button:hover {
    INDICADOR DE ESTADO
    ==================================== */
 .status-ping {
-    display: none;
     position: absolute;
     right: 8px;
     bottom: 0px;
     margin: 0;
     font-size: 20px;
-    color: red;
-    animation: blink-offline 3s infinite;
+    color: #4f4f4f;
+}
+
+.status-ping::after {
+    content: attr(data-tooltip, "Undefined");
+    position: absolute;
+    bottom: 20px;
+    right: 0;
+    background: var(--bg-menu);
+    color: var(--color-text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    animation: none !important; 
+}
+
+.status-ping:hover::after {
+    opacity: 1;
 }
 
 .status-ping.online {
-    color: #00ff00;
     animation: blink-online 3s infinite;
 }
 
+.status-ping.partial {
+    animation: blink-partial 3s infinite;
+}
+
 .status-ping.offline {
-    color: red;
     animation: blink-offline 3s infinite;
 }
 
+.status-ping.undefined {
+    color: #444444;
+}
+
 @keyframes blink-online {
-    0% { color: #00ff00; }
-    50% { color: #00ff0083; }
+    0%   { color: #00ff00; }
+    50%  { color: #00ff0050; }
     100% { color: #00ff00; }
 }
 
+@keyframes blink-partial {
+    0%   { color: #ff7300; }
+    50%  { color: #ff730050; }
+    100% { color: #ff7300; }
+}
+
 @keyframes blink-offline {
-    0% { color: red; }
-    50% { color: rgba(255, 0, 0, 0.5); }
+    0%   { color: red; }
+    50%  { color: rgba(255, 0, 0, 0.3); }
     100% { color: red; }
 }
 

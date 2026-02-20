@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ldash</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="search-bar" id="search-bar">
@@ -14,7 +14,7 @@
 
     <div class="items-container" id="items-container"></div>
 
-    <div class="toolbar">
+    <div class="toolbar" id="toolbar">
         <div class="profile-selector">
             <select id="selected-profile" name="selected-profile" aria-label="Profile">
                 <option value="_new%profile_">-New profile-</option>
@@ -24,20 +24,20 @@
         <button class="toolbar-btn" id="config-btn" title="Configuration">⚙️</button>
         <button class="toolbar-btn" id="create-item-btn" title="Create Item">+</button>
         <button class="toolbar-btn" id="customize-btn" title="Customize">🎨</button>
-        <button class="toolbar-btn" id="organize-btn" title="Organize">✥</button>
+        <button class="toolbar-btn" id="organize-btn" title="Organize">⇅</button>
     </div>
 
     <div class="context-menu" id="context-menu">
         <h1 class="context-title title">Options</h1>
-            <div class="context-toolbox" id="toolbox">
+            <div class="context-toolbox">
                 <button class="context-btn" id="edit-element-btn">✏️Edit</button>
                 <button class="context-btn" id="delete-element-btn">❌Delete</button>
             </div>
     </div>
     
     <div class="organize-mode-actions" id="organize-mode-actions">
-        <button class="success-btn" id="apply-organize-btn">✓</button>
-        <button class="cancel-btn" id="cancel-organize-btn">✕</button>
+        <button class="success-btn organize-mode-actions-btn" id="apply-organize-btn">✔</button>
+        <button class="cancel-btn organize-mode-actions-btn" id="cancel-organize-btn">✖</button>
     </div>
 
     <dialog class="config-dialog" id="config-dialog">
@@ -169,6 +169,6 @@
 
     <dialog id="create-item-dialog"><p>Loading...</p></dialog>
 
-    <script src="/static/script.js"></script>
+    <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>
