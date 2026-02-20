@@ -12,6 +12,6 @@ def update_status():
     network.update_status_cache(payload)
     return jsonify({"success": True})
 
-@internal_bp.route("/internal/database/data", methods=["GET"])
+@internal_bp.route("/internal/database/id_url_mapping", methods=["GET"])
 def get_item_id_url_mapping():
     return jsonify([{"id": item["id"], "url": item["url"]} for item in database.data])

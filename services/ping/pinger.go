@@ -34,7 +34,7 @@ func getConfig() Config {
 }
 
 var config = getConfig()
-var host = fmt.Sprintf("http://localhost:%d", config.Port)
+var host = fmt.Sprintf("http://127.0.0.1:%d", config.Port)
 
 func main() {
 	for {
@@ -90,15 +90,19 @@ func updateStatus(items []item) {
 }
 
 func getData() []dbItem {
-	resp, err := http.Get(host + "/internal/database/data")
-	if err != nil {
-		fmt.Printf("Error getting database: %s\n", err)
-		return nil
+	var resp *http.Response
+	var err error
+
+	for {
+		resp, err = http.Get(host + "/internal/database/id_url_mapping")
+		if err == nil {
+			break
+		}
+		time.Sleep(2 * time.Second)
 	}
+
 	defer resp.Body.Close()
-
 	body, _ := io.ReadAll(resp.Body)
-
 	var items []dbItem
 	json.Unmarshal(body, &items)
 	return items
