@@ -11,10 +11,9 @@ A (very simple) lightweight web dashboard to organize and access your self-hoste
 - **🌈 Color customization:** All dashboard colors are customizable.
 - **🔍 Search bar:** Fully customizable search endpoint.
 - **🖼️ Widgets:** Technically just iframes, but hey, they work!
-- **✥ Drag-and-drop:** Organize items easily.
+- **⇅ Drag-and-drop:** Organize items easily.
 
 ### Coming Soon
-- Service status checks
 - Keyboard shortcuts
 
 ## 🚀 Installation
