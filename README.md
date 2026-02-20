@@ -14,7 +14,6 @@ A (very simple) lightweight web dashboard to organize and access your self-hoste
 - **⇅ Drag-and-drop:** Organize items easily.
 
 ### Coming Soon
-- Service status checks
 - Keyboard shortcuts
 
 ## 🚀 Installation
