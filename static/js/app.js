@@ -23,6 +23,8 @@ import { initCreateDialog } from './modules/dialogs/createDialog.js';
 import { initContextMenu } from './modules/contextMenu.js';
 import { initCollapse } from './modules/collapse.js';
 import { initDragAndDrop } from './modules/dragAndDrop.js';
+import { initShortcuts } from './modules/shortcuts.js';
+
 
 // --- Track mouse position ---
 document.addEventListener('mousemove', (e) => {
@@ -42,6 +44,8 @@ initConfig();
 initCustomization();
 initSearchBar();
 initProfileListeners();
+initShortcuts();
+
 
 // --- Load persisted settings ---
 window.onload = () => {
