@@ -1,0 +1,43 @@
+<dialog class="config-dialog" id="config-dialog">
+    <div class="config-wrapper dialog-wrapper">
+        <h2 class="config-title title">Configuration</h2>
+        <label for="enable-ping-status">Enable ping status</label>
+        <input type="checkbox" id="enable-ping-status" name="enable-ping-status">
+
+        <label for="default-profile">Default profile</label>
+        <select id="default-profile" name="default-profile"></select>
+
+        <div class="section">
+            <h3 class="section-title">Search Bar</h3>
+            <div class="section-content">
+                <label>Enable search bar</label>
+                <input type="checkbox" id="enable-search-bar" name="enable-search-bar">
+            </div>
+            <div class="section-content">
+                <label>Enable autofocus</label>
+                <input type="checkbox" id="enable-autofocus-search-bar" name="enable-autofocus-search-bar">
+            </div>
+            <div class="section-content">
+                <label for="search-bar-opening-method">Opening method</label>
+                <select id="search-bar-opening-method" name="search-bar-opening-method">
+                    <option value="_blank">New tab</option>
+                    <option value="_self">Same tab</option>
+                </select>
+            </div>
+            <div class="section-content">
+                <label>Search endpoint</label>
+                <input type="text" id="search-endpoint" name="search-endpoint">
+            </div>
+        </div>
+
+        <button class="apply-close" id="apply-config-btn">Apply</button>
+
+        <input type="file" id="file-input-import">
+        <div class="dialog-actions">
+            <button class="db-transfer-btn" id="import-db-btn">📥Import db</button>
+            <a href="/api/export/database">
+                <button class="db-transfer-btn">📤Export db</button>
+            </a>
+        </div>
+    </div>
+</dialog>
