@@ -8,15 +8,16 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 )
 
-type dbItem struct {
+type DbItem struct {
 	Id  int    `json:"id"`
 	Url string `json:"url"`
 }
 
-type item struct {
+type Item struct {
 	Id           int `json:"id"`
 	Status       int `json:"status"`
 	ResponseTime int `json:"response_time"`
@@ -43,21 +44,27 @@ func main() {
 	}
 }
 
-func checkAllUrls(data []dbItem) {
-	var items []item
+func checkAllUrls(data []DbItem) {
+	var items []Item
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 
 	for _, dbItem := range data {
-		conData := ping(dbItem.Url)
-
-		newItem := item{
-			Id:           dbItem.Id,
-			Status:       conData[0],
-			ResponseTime: conData[1],
-		}
-
-		items = append(items, newItem)
+		wg.Add(1)
+		go func(d DbItem) {
+			defer wg.Done()
+			conData := ping(d.Url)
+			mu.Lock()
+			items = append(items, Item{
+				Id:           d.Id,
+				Status:       conData[0],
+				ResponseTime: conData[1],
+			})
+			mu.Unlock()
+		}(dbItem)
 	}
 
+	wg.Wait()
 	updateStatus(items)
 }
 
@@ -82,14 +89,14 @@ func ping(url string) []int {
 	return []int{resp.StatusCode, int(duration.Milliseconds())}
 }
 
-func updateStatus(items []item) {
+func updateStatus(items []Item) {
 	jsonData, _ := json.Marshal(items)
 	http.Post(host+"/internal/status/update",
 		"application/json",
 		bytes.NewBuffer(jsonData))
 }
 
-func getData() []dbItem {
+func getData() []DbItem {
 	var resp *http.Response
 	var err error
 
@@ -103,7 +110,7 @@ func getData() []dbItem {
 
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
-	var items []dbItem
+	var items []DbItem
 	json.Unmarshal(body, &items)
 	return items
 }
