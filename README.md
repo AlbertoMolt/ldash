@@ -12,9 +12,10 @@ A (very simple) lightweight web dashboard to organize and access your self-hoste
 - **🔍 Search bar:** Fully customizable search endpoint.
 - **🖼️ Widgets:** Technically just iframes, but hey, they work!
 - **⇅ Drag-and-drop:** Organize items easily.
+- **📍 Status checks:** Checks every 5 minutes each service state (item's url).
 
 ### Coming Soon
-- Keyboard shortcuts
+- Keyboard shortcuts (Actually, there is one, pressing "C" key opens the creation item menu.)
 
 ## 🚀 Installation
 
@@ -63,7 +64,11 @@ id,name,item_type,icon,url,category,tab_type,profile
 ```
 
 ### 🌐 Network
-The default port is 6780. If you need to change it, you can set the PORT environment variable or change the port mapping in your `docker-compose.yaml`.
+The default port is `6780`.
+
+In the docker container case, you can change it in the `docker-compose.yaml` file.
+
+In the native installation case, there is a `config.json` file where you can change the port.
 
 ## ⚠️ Project status
 
