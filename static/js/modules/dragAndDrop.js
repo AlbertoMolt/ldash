@@ -17,6 +17,7 @@ let offsetY = 0;
 export function initDragAndDrop() {
     const organizeBtn = document.getElementById('organize-btn');
     const organizeModeActions = document.getElementById('organize-mode-actions');
+    const toolbar = document.getElementById('toolbar');
 
     organizeBtn.addEventListener('click', () => {
         if (!state.organizeModeEnabled) {
@@ -28,40 +29,48 @@ export function initDragAndDrop() {
         if (state.organizeModeEnabled) {
             enableShakeMode();
             organizeModeActions.style.display = "flex";
-            document.getElementById('toolbar').style.display = "none";
+
+            toolbar.style.display = "none";
+            toolbar.setAttribute("disabled", "");
         } else {
             restoreDomSnapshot();
             disableShakeMode();
             organizeModeActions.style.display = "none";
-            document.getElementById('toolbar').style.display = "flex";
+
+            toolbar.style.display = "flex";
+            toolbar.removeAttribute = "disabled";
         }
     });
 
     document.getElementById('apply-organize-btn').addEventListener('click', async () => {
         state.domSnapshot = null;
-        disableShakeMode();
-        state.organizeModeEnabled = false;
-        organizeModeActions.style.display = "none";
-        document.getElementById('toolbar').style.display = "flex";
 
         const updatePromises = [];
         listItemsMoved.forEach((newCategory, itemId) => {
             updatePromises.push(apiUpdateItemCategory(itemId, newCategory));
         });
-
         await Promise.all(updatePromises);
-        listItemsMoved.clear();
-        updateDashboard();
+        
+        endOrganizeMode();
     });
 
     document.getElementById('cancel-organize-btn').addEventListener('click', () => {
+        endOrganizeMode();
+    });
+
+    function endOrganizeMode() {
+        const toolbar = document.getElementById('toolbar');
+
         disableShakeMode();
         state.organizeModeEnabled = false;
         organizeModeActions.style.display = "none";
-        document.getElementById('toolbar').style.display = "flex";
+
+        toolbar.style.display = "flex";
+        toolbar.removeAttribute = "disabled";
+
         listItemsMoved.clear();
         updateDashboard();
-    });
+    }
 
     // Drag start
     document.addEventListener('mousedown', (e) => {
