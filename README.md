@@ -19,7 +19,11 @@ that gets out of your way. **~30 MB of RAM. Nearly 0% CPU.**
 - **📍 Status checks:** Checks every 5 minutes each service state (item's url).
 
 ### Coming Soon
+<<<<<<< HEAD
 - Keyboard shortcuts *(actually there's already one — press `C` to open the item creation menu)*
+=======
+- Keyboard shortcuts (Actually, there is one, pressing "C" key opens the creation item menu.)
+>>>>>>> 3ddba0e45360d940359a75775f26c6f25d071104
 
 ## 🚀 Installation
 
@@ -66,7 +70,15 @@ id,name,item_type,icon,url,category,tab_type,profile
 ```
 
 ### 🌐 Network
+<<<<<<< HEAD
 Default port is `6780`. You can change it in the `docker-compose.yaml` (Docker) or in `config.json` (native).
+=======
+The default port is `6780`.
+
+In the docker container case, you can change it in the `docker-compose.yaml` file.
+
+In the native installation case, there is a `config.json` file where you can change the port.
+>>>>>>> 3ddba0e45360d940359a75775f26c6f25d071104
 
 ## ⚠️ Project status
 Functional but very much a work in progress. See [TODO.md](TODO.md) for pending improvements.
