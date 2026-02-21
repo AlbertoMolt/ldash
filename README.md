@@ -2,7 +2,7 @@
 A (very) lightweight web dashboard to organize and access your self-hosted services from one place.
 
 If you were using Homarr or Dashy but got tired of how heavy and feature-bloated they are,
-ldash is for you. No complex setup, no unnecessary dependencies — just a fast dashboard
+ldash is for you. No complex setup, no unnecessary dependencies, just a fast dashboard
 that gets out of your way. **~30 MB of RAM. Nearly 0% CPU.**
 
 🔗 [Live demo](https://ldash.exofake.com/)
