@@ -55,17 +55,6 @@ def update_database():
     print("Database updated!")
 
 
-def monitor_database_changes():
-    global last_modification_time
-    while True:
-        current_modification_time = os.path.getmtime(DATABASE_FILE)
-        if last_modification_time != current_modification_time:
-            reload_database()
-            print("Data changed! Reloading...")
-            last_modification_time = current_modification_time
-        time.sleep(5)
-
-
 def _group_by_category(items):
     grouped = defaultdict(list)
     for item in items:

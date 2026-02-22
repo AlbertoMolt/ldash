@@ -401,7 +401,7 @@ button:hover {
 }
 
 .status-ping::after {
-    content: attr(data-tooltip, "Undefined");
+    content: attr(data-tooltip, "Pinging...");
     position: absolute;
     bottom: 20px;
     right: 0;
