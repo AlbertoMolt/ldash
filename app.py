@@ -1,7 +1,5 @@
 import sys
-
-from gevent import monkey
-monkey.patch_all()
+import logging
 
 from flask import Flask
 from flask_socketio import SocketIO
@@ -14,13 +12,18 @@ from src.config import HOST, get_port
 from src.routes import api_bp, crud_bp
 from src.logger import log, LogLevel
 
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+
+import flask.cli
+flask.cli.show_server_banner = lambda *args, **kwargs: None
+
 setproctitle.setproctitle('ldash')
 
 app = Flask(__name__)
 
 socketio = SocketIO(app, 
     cors_allowed_origins="*", 
-    async_mode='gevent',
+    async_mode='threading',
     logger=False,
     engineio_logger=False)
 
@@ -39,11 +42,11 @@ if __name__ == "__main__":
     db_monitor_service.start()
     
     print(r"""
-    __    ____  ___   _____ __  __
-   / /   / __ \/   | / ___// / / /
-  / /   / / / / /| | \__ \/ /_/ / 
- / /___/ /_/ / ___ |___/ / __  /  
-/_____/_____/_/  |_/____/_/ /_/   
+     __    ____  ___   _____ __  __
+    / /   / __ \/   | / ___// / / /
+   / /   / / / / /| | \__ \/ /_/ / 
+  / /___/ /_/ / ___ |___/ / __  /  
+ /_____/_____/_/  |_/____/_/ /_/   
     """)
     print("=" * 60)
     print(f"  ✅ LDASH Started Successfully")
@@ -59,14 +62,9 @@ if __name__ == "__main__":
     print("=" * 60)
     print("  Press Ctrl+C to stop\n")
     
-    try:
-        socketio.run(app, 
-            host=HOST, 
-            port=get_port(), 
-            debug=False,
-            use_reloader=False)
-    except KeyboardInterrupt:
-        print("\n\nShutting down LDASH...")
-        pinger_service.stop()
-        db_monitor_service.stop()
-        print("✅ LDASH stopped successfully")
+    socketio.run(app, 
+        host=HOST, 
+        port=get_port(), 
+        debug=False,
+        use_reloader=False,
+        allow_unsafe_werkzeug=True)
