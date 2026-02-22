@@ -18,9 +18,6 @@ that gets out of your way. **~30 MB of RAM. Nearly 0% CPU.**
 - **⇅ Drag-and-drop:** Organize items easily.
 - **📍 Status checks:** Checks every 5 minutes each service state (item's url).
 
-### Coming Soon
-- Keyboard shortcuts *(actually there's already one — press `C` to open the item creation menu)*
-
 ## 🚀 Installation
 
 ### 🐋 Docker (recommended)
