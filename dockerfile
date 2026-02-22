@@ -3,7 +3,13 @@ WORKDIR /app
 
 # Install dependencies
 COPY requirements.txt .
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers \
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    musl-dev \
+    linux-headers \
+    libffi-dev \
+    openssl-dev \
+    python3-dev \
     && pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
     && apk del .build-deps
