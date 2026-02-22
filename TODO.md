@@ -7,8 +7,8 @@
 
 ## 💡 Should Have (Nice to have)
 - [x] Profile system
-- [ ] Shortcuts
-- [x] Collapsible categories
+- [x] Shortcuts
+- [x] Collapsable categories
 - [x] iFrames
 - [x] Drag and drop items
 
