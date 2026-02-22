@@ -1,29 +1,16 @@
-FROM python:3.11-alpine
+FROM python:3.11-slim
 WORKDIR /app
 
-# Install dependencies
 COPY requirements.txt .
-RUN apk add --no-cache --virtual .build-deps \
-    gcc \
-    g++ \
-    musl-dev \
-    linux-headers \
-    libffi-dev \
-    openssl-dev \
-    python3-dev \
-    && pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apk del .build-deps
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY . .
 
-# Environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PORT=6780
 
-# Create data directory
 RUN mkdir -p /app/data && \
     if [ -f /app/database.csv ]; then cp /app/database.csv /app/data/database.csv; fi
 
