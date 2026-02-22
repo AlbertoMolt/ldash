@@ -2,8 +2,25 @@ FROM python:3.11-slim
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gcc \
+        g++ \
+        make \
+        python3-dev \
+        libffi-dev \
+        libevent-dev \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get purge -y --auto-remove \
+        gcc \
+        g++ \
+        make \
+        python3-dev \
+        libffi-dev \
+        libevent-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
