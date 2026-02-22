@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN apk add --no-cache --virtual .build-deps \
     gcc \
+    g++ \
     musl-dev \
     linux-headers \
     libffi-dev \
