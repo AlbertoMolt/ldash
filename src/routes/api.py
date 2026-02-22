@@ -6,6 +6,7 @@ from src import database
 import src.models as models
 import src.network as network
 from src.config import DATABASE_FILE
+from src import network
 
 api_bp = Blueprint("api", __name__)
 
@@ -32,9 +33,11 @@ def import_database():
     file = request.files["file"]
     if file.filename == "":
         return jsonify({"success": False, "error": "No selected file"}), 400
-
     file.save(DATABASE_FILE)
+    
     database.reload_database()
+    network.force_status_check()
+    
     return jsonify({"success": True})
 
 

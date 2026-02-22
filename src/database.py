@@ -2,6 +2,7 @@ import csv
 import os
 import time
 from collections import defaultdict
+from src.logger import log, LogLevel
 
 from src.config import DATABASE_FILE, DATABASE_HEADER_LIST
 
@@ -11,14 +12,11 @@ data = []
 grouped_data = {}
 
 if not os.path.exists(DATABASE_FILE):
-    print("Database file not found!")
-    print("Creating empty database file...")
+    log(LogLevel.WARNING, "Database file not found")
+    log(LogLevel.WARNING, "Creating empty database file")
     with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=DATABASE_HEADER_LIST)
         writer.writeheader()
-
-last_modification_time = os.path.getmtime(DATABASE_FILE)
-
 
 def reload_database():
     global data, grouped_data
@@ -31,19 +29,18 @@ def reload_database():
                     row["id"] = int(row["id"])
                     data.append(row)
     except FileNotFoundError:
-        print("Error: Database file not found!")
+        log(LogLevel.ERROR, "Database file not found")
         return []
     except Exception as e:
-        print(f"Error loading database: {e}")
+        log(LogLevel.ERROR, f"Error loading database: {e}")
         return []
 
     try:
         grouped_data = _group_by_category(data)
     except Exception as e:
-        print(f"Error grouping data: {e}")
+        log(LogLevel.ERROR, f"Error grouping data: {e}")
 
     return data
-
 
 def update_database():
     with open(DATABASE_FILE, "w", newline="", encoding="utf-8") as file:
@@ -51,10 +48,9 @@ def update_database():
         writer.writeheader()
         writer.writerows(data)
 
+    log(LogLevel.INFO, "Database updated")
     reload_database()
-    print("Database updated!")
-
-
+    
 def _group_by_category(items):
     grouped = defaultdict(list)
     for item in items:

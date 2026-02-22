@@ -1,24 +1,39 @@
-import setproctitle
+from gevent import monkey
+monkey.patch_all()
 
 from flask import Flask
-from waitress import serve
+from flask_socketio import SocketIO
+import setproctitle
 
-from services import pinger_service, db_monitor_service
-from src import database, models
+from services import pinger_service
+from services import db_monitor_service
+from src import database, models, network
 from src.config import HOST, get_port
 from src.routes import api_bp, crud_bp
+from src.logger import log, LogLevel
 
 setproctitle.setproctitle('ldash')
 
 app = Flask(__name__)
+
+socketio = SocketIO(app, 
+    cors_allowed_origins="*", 
+    async_mode='gevent',
+    logger=False,
+    engineio_logger=False)
+
+network.init_socketio(socketio)
+
 app.register_blueprint(crud_bp)
 app.register_blueprint(api_bp)
 
+
 if __name__ == "__main__":
+    log(LogLevel.INFO, "LDASH Starting...")
+    
     database.reload_database()
     
-    # Services initialization
-    pinger_service.start()    
+    pinger_service.start()
     db_monitor_service.start()
     
     print(r"""
@@ -42,4 +57,8 @@ if __name__ == "__main__":
     print("=" * 60)
     print("  Press Ctrl+C to stop\n")
     
-    serve(app, host=HOST, port=get_port(), threads=8)
+    socketio.run(app, 
+        host=HOST, 
+        port=get_port(), 
+        debug=False,
+        use_reloader=False)

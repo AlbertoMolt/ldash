@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from src import database
 import src.models as models
+from src import network
 
 crud_bp = Blueprint("crud", __name__)
 
@@ -14,6 +15,9 @@ def create_item():
 
     database.data.append(new_item_data)
     database.update_database()
+    
+    if new_item_data.get("url") != "":
+        network.force_item_status_check(new_item_data["id"])
 
     return jsonify({"success": True})
 
@@ -64,6 +68,10 @@ def update_item(item_id):
                 "profile": data_received["profile"],
             }
             database.update_database()
+            
+            if data_received.get("url") != "":
+                network.force_item_status_check(item_id)
+            
             return jsonify({"success": True})
 
     return jsonify({"success": False, "error": "Item not found"}), 404
