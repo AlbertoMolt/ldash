@@ -68,6 +68,14 @@ export function fetchItemStatus(signal) {
         .then(handleResponse);
 }
 
+export function apiForceCheckItemStatus(itemId) {
+    return fetch(`/api/items/${itemId}/status/forceCheck`, {
+        method: 'POST',
+        headers: JSON_HEADERS,
+    })
+    .then(handleResponse);
+}
+
 export function apiCreateItem(name, itemType, icon, url, category, tabType) {
     return fetch('/api/items', {
         method: 'POST',

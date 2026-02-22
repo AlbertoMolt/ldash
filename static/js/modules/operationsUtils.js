@@ -2,7 +2,9 @@
 //       DIALOG UTILITIES
 // ================================
 
-import { elements } from '../dom.js';
+import state from './state.js';
+import { elements } from './dom.js';
+import { cancelOrganizeMode } from './dragAndDrop.js';
 
 export function cancelOperation() {
     const { editElementDialog, deleteElementDialog, createItemDialog, configDialog, createProfileDialog, customizeDialog } = elements;
@@ -17,6 +19,12 @@ export function cancelOperation() {
     configDialog.close();
     createProfileDialog.close();
     customizeDialog.close();
+
+    elements.contextMenu.style.display = "none";
+
+    if (state.organizeModeEnabled) {
+        cancelOrganizeMode();
+    }
 }
 
 export function initCancelButtons() {

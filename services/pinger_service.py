@@ -37,7 +37,7 @@ def check_item(itemid):
     if not data:
         return
     
-    log(LogLevel.INFO, f"Checking item {itemid} status")
+    log(LogLevel.INFO, f"Pinging item {itemid}")
     
     for item in data:
         if item['id'] == itemid:

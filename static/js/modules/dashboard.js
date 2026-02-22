@@ -48,7 +48,7 @@ function renderDashboard(items, categories) {
     // Uncategorized items
     if (itemsWithoutCategory.length > 0) {
         html.push(`
-            <div class="category" data-category="uncategorized">
+            <div class="category" data-type="category" data-category="uncategorized">
                 <div class="category-header category-button" role="button" tabindex="0">
                     <h3>Uncategorized</h3>
                 </div>
@@ -68,7 +68,7 @@ function renderDashboard(items, categories) {
         const categoryItems = itemsWithCategory.filter(item => item.category === category);
         if (categoryItems.length > 0) {
             html.push(`
-                <div class="category" data-category="${category}">
+                <div class="category" data-name="${category}" data-type="category" data-category="${category}">
                     <div class="category-header category-button" role="button" tabindex="0">
                         <h3>${category}</h3>
                     </div>
@@ -102,20 +102,20 @@ function renderItemByType(item) {
             }
 
             return `
-                <div class="item-card" data-id="${item.id}" data-type="item" data-category="${item.category}">
+                <div class="item-card" data-id="${item.id}" data-name="${item.name}" data-type="item" data-typeitem="item" data-category="${item.category}">
                     <a href="${item.url}" target="${target}">
                         <div class="item-content" tabindex="0">
                             <p class="item-title">${item.name}</p>
                             ${iconElement}
-                            <span class="status-ping" id="statusPing">•</span>
                         </div>
                     </a>
+                    <button class="status-btn" id="statusBtn" tabindex="0" title="Ping now"><span class="status-ping" id="statusPing">•</span></button>
                 </div>
             `;
         }
         case "iframe":
             return `
-                <div class="iframe-item" data-id="${item.id}" data-type="iframe" data-category="${item.category}">
+                <div class="iframe-item" data-id="${item.id}" data-name="${item.name}" data-type="item" data-typeitem="iframe" data-category="${item.category}">
                     <div class="iframe-header iframe-button" tabindex="0">
                         <h2 class="iframe-title">${item.name}</h2>
                     </div>

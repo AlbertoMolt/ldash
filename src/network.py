@@ -28,6 +28,9 @@ def update_item_status(item_id, status, response_time):
 def get_items_status():
     return list(items_status_cache.values())
 
+def get_item_status(item_id):
+    return items_status_cache.get(item_id)
+
 def force_status_check():
     log(LogLevel.INFO, "Forcing status check")
     

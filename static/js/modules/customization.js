@@ -68,20 +68,18 @@ function resetColors() {
     }
 }
 
-export function initCustomization() {
+export function openColorCustomization() {
+    elements.customizeDialog.showModal();
+
+    const inputs = getColorInputs();
+    const root = getComputedStyle(document.documentElement);
+
+    for (const [varName, input] of Object.entries(inputs)) {
+        if (input) {
+            input.value = root.getPropertyValue('--' + varName).trim();
+        }
+    }
+
     document.getElementById('save-colors-btn').addEventListener('click', saveColors);
     document.getElementById('reset-colors-btn').addEventListener('click', resetColors);
-
-    document.getElementById('customize-btn').addEventListener('click', () => {
-        elements.customizeDialog.showModal();
-
-        const inputs = getColorInputs();
-        const root = getComputedStyle(document.documentElement);
-
-        for (const [varName, input] of Object.entries(inputs)) {
-            if (input) {
-                input.value = root.getPropertyValue('--' + varName).trim();
-            }
-        }
-    });
 }

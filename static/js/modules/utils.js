@@ -2,6 +2,13 @@
 //         UTILITY FUNCTIONS
 // ================================
 
+export const openingMethods = {
+    _blank : "_blank",
+    _self : "_self",
+    _parent : "_parent",
+    _top : "_top"
+}
+
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -33,4 +40,8 @@ export function existCookie(name) {
 
 export function reloadPage() {
     location.reload();
+}
+
+export function openUrl(itemUrl, openingMethod) {
+    window.open(itemUrl, openingMethod);
 }

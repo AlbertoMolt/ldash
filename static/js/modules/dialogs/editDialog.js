@@ -2,34 +2,24 @@
 //          EDIT DIALOG
 // ================================
 
-import state from '../state.js';
 import { elements } from '../dom.js';
 import { fetchItemData, fetchItemCategories, apiUpdateItem, apiUpdateCategoryName } from '../api.js';
 import { updateDashboard } from '../dashboard.js';
 
-export function initEditDialog() {
-    document.getElementById('edit-element-btn').addEventListener('click', () => {
-        const { editElementDialog } = elements;
-        editElementDialog.showModal();
+export function openEditDialog(target) {
+    const { editElementDialog } = elements;
+    editElementDialog.showModal();
 
-        const itemId = state.currentSelectedItemId;
-        const categoryName = state.currentSelectedCategory;
+    if (target.dataset.type === "item" && target.dataset.id !== "0") {
+        buildItemEditDialog(target.dataset.id, editElementDialog);
+    }
 
-        state.currentSelectedItemId = 0;
-        state.currentSelectedCategory = "";
-
-        if (itemId !== 0 && categoryName === "") {
-            buildItemEditDialog(itemId, editElementDialog);
-        }
-
-        if (categoryName !== "" && itemId === 0) {
-            buildCategoryEditDialog(categoryName, editElementDialog);
-        }
-    });
+    if (target.dataset.type === "category" && target.dataset.category !== "") {
+        buildCategoryEditDialog(target.dataset.category, editElementDialog);
+    }
 }
 
 // --- Item edit form ---
-
 function buildItemEditDialog(itemId, dialog) {
     fetchItemData(itemId)
         .then(item => fetchItemCategories().then(cats => ({ item, cats })))
@@ -203,7 +193,6 @@ function attachItemEditListeners(item, itemId, itemType, dialog) {
 }
 
 // --- Category edit form ---
-
 function buildCategoryEditDialog(categoryName, dialog) {
     dialog.innerHTML = `
         <div class="edit-item-wrapper dialog-wrapper">

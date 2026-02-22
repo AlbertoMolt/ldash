@@ -52,6 +52,24 @@ def get_status():
     return jsonify({"success": True, "items_status": results})
 
 
+# Get item status by id
+@api_bp.route("/api/items/<int:item_id>/status", methods=["GET"])
+def get_status_by_id(item_id):
+    result = network.get_item_status(item_id)
+    
+    if not result:
+        return jsonify({"success": False, "error": "No status data available"}), 404
+
+    return jsonify({"success": True, "items_status": result})
+
+
+# Force status check of a item by id
+@api_bp.route("/api/items/<int:item_id>/status/forceCheck", methods=["POST"])
+def force_item_status_check(item_id):
+    network.force_item_status_check(item_id)
+    return jsonify({"success": True})
+
+
 # Get item by id
 @api_bp.route("/api/items/<int:item_id>", methods=["GET"])
 def get_item(item_id):

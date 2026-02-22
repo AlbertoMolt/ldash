@@ -3,6 +3,7 @@
 // ================================
 
 import { fetchItemStatus } from './api.js';
+import { apiForceCheckItemStatus } from './api.js';
 import { sleep } from './utils.js';
 
 let socket = null;
@@ -53,7 +54,8 @@ function updateStatusUI(statuses) {
         const el = document.querySelector(`.item-card[data-id="${itemStatus.id}"]`);
         if (!el) return;
 
-        const ping = el.querySelector('.status-ping');
+        const pingBtn = el.querySelector('.status-btn');
+        const ping = pingBtn.querySelector('.status-ping');
         if (!ping) return;
 
         const isOnline = itemStatus.status > 0 && itemStatus.status < 400;
@@ -69,7 +71,7 @@ function updateStatusUI(statuses) {
             ping.classList.add('offline');
         }
 
-        ping.dataset.tooltip = isOnline
+        pingBtn.dataset.tooltip = isOnline
             ? `Online (${itemStatus.status}) - ${itemStatus.response_time}ms`
             : isPartial
                 ? `Partial (${itemStatus.status}) - ${itemStatus.response_time}ms`
@@ -101,3 +103,18 @@ function stopPolling() {
         isPolling = false;
     }
 }
+
+
+document.addEventListener('click', (e) => {
+    const statusBtn = e.target.closest('.status-btn');
+
+    if (!statusBtn) return
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const item = statusBtn.closest('.item-card');
+    apiForceCheckItemStatus(item.dataset.id);
+
+    statusBtn.tooltip = "Pinging...";
+});

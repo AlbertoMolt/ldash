@@ -14,33 +14,30 @@ let originalNextSibling = null;
 let offsetX = 0;
 let offsetY = 0;
 
-export function initDragAndDrop() {
-    const organizeBtn = document.getElementById('organize-btn');
+export function startOrganizeMode() {
     const organizeModeActions = document.getElementById('organize-mode-actions');
     const toolbar = document.getElementById('toolbar');
 
-    organizeBtn.addEventListener('click', () => {
-        if (!state.organizeModeEnabled) {
-            saveDomSnapshot();
-        }
+    if (!state.organizeModeEnabled) {
+        saveDomSnapshot();
+    }
 
-        state.organizeModeEnabled = !state.organizeModeEnabled;
+    state.organizeModeEnabled = !state.organizeModeEnabled;
 
-        if (state.organizeModeEnabled) {
-            enableShakeMode();
-            organizeModeActions.style.display = "flex";
+    if (state.organizeModeEnabled) {
+        enableShakeMode();
+        organizeModeActions.style.display = "flex";
 
-            toolbar.style.display = "none";
-            toolbar.setAttribute("disabled", "");
-        } else {
-            restoreDomSnapshot();
-            disableShakeMode();
-            organizeModeActions.style.display = "none";
+        toolbar.style.display = "none";
+        toolbar.setAttribute("disabled", "");
+    } else {
+        restoreDomSnapshot();
+        disableShakeMode();
+        organizeModeActions.style.display = "none";
 
-            toolbar.style.display = "flex";
-            toolbar.removeAttribute = "disabled";
-        }
-    });
+        toolbar.style.display = "flex";
+        toolbar.removeAttribute = "disabled";
+    }
 
     document.getElementById('apply-organize-btn').addEventListener('click', async () => {
         state.domSnapshot = null;
@@ -74,6 +71,7 @@ export function initDragAndDrop() {
 
     // Drag start
     document.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
         if (!state.organizeModeEnabled) return;
         const itemCard = e.target.closest(".item-card");
         if (!itemCard) return;
@@ -126,6 +124,24 @@ export function initDragAndDrop() {
         offsetX = 0;
         offsetY = 0;
     });
+}
+
+export function cancelOrganizeMode() {
+    if (!state.organizeModeEnabled) return;
+    
+    const toolbar = document.getElementById('toolbar');
+    const organizeModeActions = document.getElementById('organize-mode-actions');
+
+    restoreDomSnapshot();
+    disableShakeMode();
+    state.organizeModeEnabled = false;
+    organizeModeActions.style.display = "none";
+
+    toolbar.style.display = "flex";
+    toolbar.removeAttribute = "disabled";
+
+    listItemsMoved.clear();
+    updateDashboard();
 }
 
 function saveDomSnapshot() {

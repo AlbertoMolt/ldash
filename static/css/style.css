@@ -187,6 +187,7 @@ button:hover {
     position: relative;
     padding: 10px;
     box-sizing: border-box;
+    z-index: 2;
 }
 
 .item-title {
@@ -392,16 +393,30 @@ button:hover {
    INDICADOR DE ESTADO
    ==================================== */
 .status-ping {
-    position: absolute;
-    right: 8px;
-    bottom: 0px;
-    margin: 0;
     font-size: 20px;
     color: #4f4f4f;
 }
 
-.status-ping::after {
-    content: attr(data-tooltip, "Pinging...");
+.status-btn {
+    display: block;
+    height: 25px !important;
+    width: 25px !important;
+    padding: 0 !important;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    margin: 0;
+    font-size: 20px;
+    color: #4f4f4f;
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    z-index: 1002 !important;
+    cursor: pointer; /* ← AÑADIR ESTO también */
+}
+
+.status-btn::after {
+    content: attr(data-tooltip, "Undefined");
     position: absolute;
     bottom: 20px;
     right: 0;
@@ -412,9 +427,12 @@ button:hover {
     font-size: 11px;
     white-space: nowrap;
     opacity: 0;
-    pointer-events: none;
+    pointer-events: none; /* ← Esto hace que el tooltip no interfiera */
     transition: opacity 0.2s;
-    animation: none !important; 
+}
+
+.status-btn:hover::after {
+    opacity: 1;
 }
 
 .status-ping:hover::after {
@@ -485,6 +503,15 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.context-btn-agrupation-open {
+    display: flex;
+    gap: 5px;
+}
+
+.context-btn {
+    padding: 7px !important;
 }
 
 /* ====================================

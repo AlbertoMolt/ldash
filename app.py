@@ -1,3 +1,5 @@
+import sys
+
 from gevent import monkey
 monkey.patch_all()
 
@@ -57,8 +59,14 @@ if __name__ == "__main__":
     print("=" * 60)
     print("  Press Ctrl+C to stop\n")
     
-    socketio.run(app, 
-        host=HOST, 
-        port=get_port(), 
-        debug=False,
-        use_reloader=False)
+    try:
+        socketio.run(app, 
+            host=HOST, 
+            port=get_port(), 
+            debug=False,
+            use_reloader=False)
+    except KeyboardInterrupt:
+        print("\n\nShutting down LDASH...")
+        pinger_service.stop()
+        db_monitor_service.stop()
+        print("✅ LDASH stopped successfully")
