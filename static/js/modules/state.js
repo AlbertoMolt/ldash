@@ -8,6 +8,8 @@ const state = {
     currentProfile: "",
     organizeModeEnabled: false,
     domSnapshot: null,
+    dialogOpen: false,
+    disableDialogs: false,
 };
 
 export default state;

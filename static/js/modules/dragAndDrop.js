@@ -14,133 +14,54 @@ let originalNextSibling = null;
 let offsetX = 0;
 let offsetY = 0;
 
-export function startOrganizeMode() {
-    const organizeModeActions = document.getElementById('organize-mode-actions');
-    const toolbar = document.getElementById('toolbar');
-
-    if (!state.organizeModeEnabled) {
-        saveDomSnapshot();
-    }
-
-    state.organizeModeEnabled = !state.organizeModeEnabled;
-
-    if (state.organizeModeEnabled) {
-        enableShakeMode();
-        organizeModeActions.style.display = "flex";
-
-        toolbar.style.display = "none";
-        toolbar.setAttribute("disabled", "");
-    } else {
-        restoreDomSnapshot();
-        disableShakeMode();
-        organizeModeActions.style.display = "none";
-
-        toolbar.style.display = "flex";
-        toolbar.removeAttribute = "disabled";
-    }
+export function initDragAndDrop() {
+    document.addEventListener('mousedown', onDragStart);
+    document.addEventListener('mouseup', onDragEnd);
 
     document.getElementById('apply-organize-btn').addEventListener('click', async () => {
-        state.domSnapshot = null;
-
         const updatePromises = [];
         listItemsMoved.forEach((newCategory, itemId) => {
             updatePromises.push(apiUpdateItemCategory(itemId, newCategory));
         });
         await Promise.all(updatePromises);
-        
         endOrganizeMode();
     });
 
     document.getElementById('cancel-organize-btn').addEventListener('click', () => {
+        restoreDomSnapshot();
         endOrganizeMode();
     });
+}
 
-    function endOrganizeMode() {
-        const toolbar = document.getElementById('toolbar');
+export function startOrganizeMode() {
+    if (state.dialogOpen) return;
 
-        disableShakeMode();
-        state.organizeModeEnabled = false;
-        organizeModeActions.style.display = "none";
+    saveDomSnapshot();
+    state.organizeModeEnabled = true;
+    state.disableDialogs = true;
 
-        toolbar.style.display = "flex";
-        toolbar.removeAttribute = "disabled";
-
-        listItemsMoved.clear();
-        updateDashboard();
-    }
-
-    // Drag start
-    document.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return;
-        if (!state.organizeModeEnabled) return;
-        const itemCard = e.target.closest(".item-card");
-        if (!itemCard) return;
-
-        e.preventDefault();
-        const rect = itemCard.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-
-        originalParent = itemCard.parentElement;
-        originalNextSibling = itemCard.nextElementSibling;
-        draggingItem = itemCard;
-
-        itemCard.style.left = rect.left + "px";
-        itemCard.style.top = rect.top + "px";
-        itemCard.style.width = rect.width + "px";
-        itemCard.style.height = rect.height + "px";
-        itemCard.classList.add("dragging");
-        document.body.appendChild(itemCard);
-
-        document.addEventListener("mousemove", onItemDrag);
-    });
-
-    // Drop
-    document.addEventListener('mouseup', (e) => {
-        if (!state.organizeModeEnabled || !draggingItem) return;
-
-        const categoryDropped = e.target.closest(".category");
-        document.removeEventListener("mousemove", onItemDrag);
-        draggingItem.classList.remove("dragging");
-
-        draggingItem.style.left = "";
-        draggingItem.style.top = "";
-        draggingItem.style.width = "";
-        draggingItem.style.height = "";
-
-        if (categoryDropped && draggingItem.dataset.category !== categoryDropped.dataset.category) {
-            onItemDrop(draggingItem, categoryDropped);
-        } else {
-            if (originalNextSibling) {
-                originalParent.insertBefore(draggingItem, originalNextSibling);
-            } else {
-                originalParent.appendChild(draggingItem);
-            }
-        }
-
-        draggingItem = null;
-        originalParent = null;
-        originalNextSibling = null;
-        offsetX = 0;
-        offsetY = 0;
-    });
+    enableShakeMode();
+    document.getElementById('organize-mode-actions').style.display = "flex";
+    document.getElementById('toolbar').style.display = "none";
 }
 
 export function cancelOrganizeMode() {
     if (!state.organizeModeEnabled) return;
-    
-    const toolbar = document.getElementById('toolbar');
-    const organizeModeActions = document.getElementById('organize-mode-actions');
-
     restoreDomSnapshot();
-    disableShakeMode();
+    endOrganizeMode();
+}
+
+function endOrganizeMode() {
     state.organizeModeEnabled = false;
-    organizeModeActions.style.display = "none";
+    state.disableDialogs = false;
+    state.domSnapshot = null;
 
-    toolbar.style.display = "flex";
-    toolbar.removeAttribute = "disabled";
-
+    disableShakeMode();
     listItemsMoved.clear();
+
+    document.getElementById('organize-mode-actions').style.display = "none";
+    document.getElementById('toolbar').style.display = "flex";
+
     updateDashboard();
 }
 
@@ -168,6 +89,60 @@ function disableShakeMode() {
         const dot = item.querySelector('.status-ping');
         if (dot) dot.style.display = '';
     });
+}
+
+function onDragStart(e) {
+    if (e.button !== 0) return;
+    if (!state.organizeModeEnabled) return;
+    const itemCard = e.target.closest(".item-card");
+    if (!itemCard) return;
+
+    e.preventDefault();
+    const rect = itemCard.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    originalParent = itemCard.parentElement;
+    originalNextSibling = itemCard.nextElementSibling;
+    draggingItem = itemCard;
+
+    itemCard.style.left = rect.left + "px";
+    itemCard.style.top = rect.top + "px";
+    itemCard.style.width = rect.width + "px";
+    itemCard.style.height = rect.height + "px";
+    itemCard.classList.add("dragging");
+    document.body.appendChild(itemCard);
+
+    document.addEventListener("mousemove", onItemDrag);
+}
+
+function onDragEnd(e) {
+    if (!state.organizeModeEnabled || !draggingItem) return;
+
+    const categoryDropped = e.target.closest(".category");
+    document.removeEventListener("mousemove", onItemDrag);
+    draggingItem.classList.remove("dragging");
+
+    draggingItem.style.left = "";
+    draggingItem.style.top = "";
+    draggingItem.style.width = "";
+    draggingItem.style.height = "";
+
+    if (categoryDropped && draggingItem.dataset.category !== categoryDropped.dataset.category) {
+        onItemDrop(draggingItem, categoryDropped);
+    } else {
+        if (originalNextSibling) {
+            originalParent.insertBefore(draggingItem, originalNextSibling);
+        } else {
+            originalParent.appendChild(draggingItem);
+        }
+    }
+
+    draggingItem = null;
+    originalParent = null;
+    originalNextSibling = null;
+    offsetX = 0;
+    offsetY = 0;
 }
 
 function onItemDrag(e) {

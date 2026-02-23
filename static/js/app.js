@@ -21,6 +21,7 @@ import { initContextMenu } from './modules/contextMenu.js';
 import { initCollapse } from './modules/collapse.js';
 import { initShortcuts } from './modules/shortcuts.js';
 import { initToolbarButtons } from './modules/toolbar.js';
+import { initDragAndDrop } from './modules/dragAndDrop.js';
 
 
 // --- Track mouse position ---
@@ -38,6 +39,7 @@ initSearchBar();
 initProfileListeners();
 initShortcuts();
 initToolbarButtons();
+initDragAndDrop();
 
 
 // --- Load persisted settings ---

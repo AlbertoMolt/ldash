@@ -3,6 +3,7 @@
 // ================================
 
 import { elements } from './dom.js';
+import { openDialog, closeDialog } from './utils.js';
 
 const defaultColors = {
     'color-primary': '#6f60eb',
@@ -69,7 +70,7 @@ function resetColors() {
 }
 
 export function openColorCustomization() {
-    elements.customizeDialog.showModal();
+    openDialog(elements.customizeDialog);
 
     const inputs = getColorInputs();
     const root = getComputedStyle(document.documentElement);

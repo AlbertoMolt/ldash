@@ -6,18 +6,12 @@ import { elements } from './dom.js';
 import { getCookie } from './utils.js';
 import { apiImportDatabase } from './api.js';
 import { updateDashboard } from './dashboard.js';
-import { loadProfilesForConfig } from './profiles.js';
 import { reloadPage } from './utils.js';
+import { closeAllDialogs } from './utils.js';
 
 let searchEndpointValue = "";
 
 export function initConfig() {
-    // Open config dialog
-    document.getElementById('config-btn').addEventListener('click', () => {
-        loadProfilesForConfig();
-        elements.configDialog.showModal();
-    });
-
     // Apply settings
     document.getElementById('apply-config-btn').addEventListener('click', () => {
         saveSearchBarConfig();
@@ -38,7 +32,7 @@ export function initConfig() {
 
         apiImportDatabase(formData)
             .then(() => {
-                elements.configDialog.close();
+                closeAllDialogs();
                 updateDashboard();
                 fileInput.value = "";
             })

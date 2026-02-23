@@ -158,3 +158,9 @@ export function initContextMenu() {
         }
     }
 }
+
+export function closeContextMenu() {
+    if (elements.contextMenu) {
+        elements.contextMenu.style.display = "none";
+    }
+}

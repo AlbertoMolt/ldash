@@ -2,6 +2,9 @@
 //         UTILITY FUNCTIONS
 // ================================
 
+import state from './state.js';
+import { dialogs } from './dom.js';
+
 export const openingMethods = {
     _blank : "_blank",
     _self : "_self",
@@ -44,4 +47,39 @@ export function reloadPage() {
 
 export function openUrl(itemUrl, openingMethod) {
     window.open(itemUrl, openingMethod);
+}
+
+export function openDialog(dialog) {
+    if (state.disableDialogs) return;
+    if (state.dialogOpen) return;
+
+    state.dialogOpen = true;
+    dialog.showModal();
+
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.paddingRight = scrollbarWidth + 'px';
+    document.body.style.overflow = 'hidden'; // disable scroll body
+}
+
+export function closeDialog(dialog) {
+    if (state.disableDialogs) return;
+    
+    state.dialogOpen = false;
+    dialog.close();
+
+    document.body.style.paddingRight = '';
+    document.body.style.overflow = ''; // enable scroll body
+}
+
+export function closeAllDialogs() {
+    state.dialogOpen = false;
+
+    Object.values(dialogs).forEach(dialogElement => {
+        if (dialogElement && typeof dialogElement.close === 'function') {
+            dialogElement.close();
+        }
+    });
+
+    document.body.style.paddingRight = '';
+    document.body.style.overflow = ''; // enable scroll body
 }

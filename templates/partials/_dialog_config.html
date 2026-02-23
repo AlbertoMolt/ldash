@@ -1,43 +1,56 @@
 <dialog class="config-dialog" id="config-dialog">
-    <div class="config-wrapper dialog-wrapper">
-        <h2 class="config-title title">Configuration</h2>
-        <label for="enable-ping-status">Enable ping status</label>
-        <input type="checkbox" id="enable-ping-status" name="enable-ping-status">
+    <div class="config-wrapper">
+        <h2 class="title">Configuration</h2>
 
-        <label for="default-profile">Default profile</label>
-        <select id="default-profile" name="default-profile"></select>
+        <div class="section-container">
+            <div class="section">
+                <h3 class="section-title">General</h3>
+                <div class="section-content">
+                    <label>Enable ping status</label>
+                    <input type="checkbox" id="enable-ping-status" name="enable-ping-status">
+                </div>
+                <div class="section-content">
+                    <label>Default profile</label>
+                    <select id="default-profile" name="default-profile"></select>
+                </div>
+            </div>
 
-        <div class="section">
-            <h3 class="section-title">Search Bar</h3>
-            <div class="section-content">
-                <label>Enable search bar</label>
-                <input type="checkbox" id="enable-search-bar" name="enable-search-bar">
+            <div class="section">
+                <h3 class="section-title">Search Bar</h3>
+                <div class="section-content">
+                    <label>Enable search bar</label>
+                    <input type="checkbox" id="enable-search-bar" name="enable-search-bar">
+                </div>
+                <div class="section-content">
+                    <label>Enable autofocus</label>
+                    <input type="checkbox" id="enable-autofocus-search-bar" name="enable-autofocus-search-bar">
+                </div>
+                <div class="section-content">
+                    <label for="search-bar-opening-method">Opening method</label>
+                    <select id="search-bar-opening-method" name="search-bar-opening-method">
+                        <option value="_blank">New tab</option>
+                        <option value="_self">Same tab</option>
+                    </select>
+                </div>
+                <div class="section-content">
+                    <label>Search endpoint</label>
+                    <input type="url" id="search-endpoint" name="search-endpoint">
+                </div>
             </div>
-            <div class="section-content">
-                <label>Enable autofocus</label>
-                <input type="checkbox" id="enable-autofocus-search-bar" name="enable-autofocus-search-bar">
-            </div>
-            <div class="section-content">
-                <label for="search-bar-opening-method">Opening method</label>
-                <select id="search-bar-opening-method" name="search-bar-opening-method">
-                    <option value="_blank">New tab</option>
-                    <option value="_self">Same tab</option>
-                </select>
-            </div>
-            <div class="section-content">
-                <label>Search endpoint</label>
-                <input type="text" id="search-endpoint" name="search-endpoint">
+
+            <div class="section">
+                <h3 class="section-title">Database</h3>
+                <div class="section-content" style="padding: 0; gap: 0;">
+                    <input type="file" id="file-input-import">
+                    <button class="db-transfer-btn" id="import-db-btn" style="flex: 1; border-radius: 0; border: none; border-right: 1px solid var(--color-border);">📥 Import</button>
+                    <button class="db-transfer-btn" id="export-db-btn" style="flex: 1; border: none; border-radius: 0;" onclick="window.location.href='/api/export/database'">📤 Export</button>
+                </div>
             </div>
         </div>
 
-        <button class="apply-close" id="apply-config-btn">Apply</button>
-
-        <input type="file" id="file-input-import">
         <div class="dialog-actions">
-            <button class="db-transfer-btn" id="import-db-btn">📥Import db</button>
-            <a href="/api/export/database">
-                <button class="db-transfer-btn">📤Export db</button>
-            </a>
+            <button class="success-btn" id="apply-config-btn">Apply</button>
+            <button class="cancel-btn" id="cancel-btn">Close</button>
         </div>
     </div>
 </dialog>

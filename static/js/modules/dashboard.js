@@ -119,8 +119,8 @@ function renderItemByType(item) {
                     <div class="iframe-header iframe-button" tabindex="0">
                         <h2 class="iframe-title">${item.name}</h2>
                     </div>
-                    <iframe 
-                        class="iframe-content" 
+                    <iframe
+                        class="iframe-content"
                         src="${item.url}"
                         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation"
                         loading="lazy"

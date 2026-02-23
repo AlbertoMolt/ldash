@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "backdrop-filter",
+          "@starting-style",
+          "@starting-style"
+        ]
+      }
+    ],
+    "no-inline-styles": "off"
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not and_ff <= 132",
+    "not chrome <= 109",
+    "not firefox <= 135",
+    "not ios_saf <= 16.7",
+    "not samsung <= 27"
+  ]
+}

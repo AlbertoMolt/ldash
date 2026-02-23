@@ -61,6 +61,10 @@ export function initProfileListeners() {
     enablePingStatus.addEventListener('change', () => {
         setCookie("statusPing", enablePingStatus.checked, 365);
     });
+
+    document.getElementById("create-profile-btn").addEventListener("click", () => {
+        createProfile();
+    });
 }
 
 export function createProfile() {

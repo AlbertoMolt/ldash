@@ -2,13 +2,16 @@
 //       CREATE ITEM DIALOG
 // ================================
 
+import { closeDialog, openDialog } from '../utils.js';
 import { elements } from '../dom.js';
 import { fetchItemCategories, apiCreateItem } from '../api.js';
 import { updateDashboard } from '../dashboard.js';
 
 export function openCreateDialog(preselectedCategory = "") {
     const { createItemDialog } = elements;
-    createItemDialog.showModal();
+    createItemDialog.innerHTML = `<p style="padding-left: 16px;">Loading...</p>`;
+
+    openDialog(createItemDialog)
 
     fetchItemCategories()
         .then(itemCategories => {
@@ -30,65 +33,76 @@ function buildCreateForm(categoryOptions, preselectedCategory) {
     const categorySelectValue = preselectedCategory === "" ? "newCategory" : preselectedCategory;
 
     return `
-        <div class="create-item-wrapper dialog-wrapper" style="font-family: sans-serif; padding: 20px; color: white; border-radius: 8px;">
-            <h2 class="title" id="createItemTitle" style="margin-top: 0; padding-bottom: 10px;">Create item</h2>
+    <div class="create-item-wrapper">
+        <h2 class="title" id="createItemTitle">Create item</h2>
 
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Type</label>
-                    <input type="radio" id="item-type-item" name="radio-item-type" value="item" required checked>
-                    <label for="item-type-item">Item</label>
-                    <input type="radio" id="item-type-iframe" name="radio-item-type" value="iframe">
-                    <label for="item-type-iframe">Iframe</label>
-                </div>
-                
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name</label>
-                    <input type="text" id="itemNameCreate" placeholder="Item name..." style="width: 100%; padding: 8px; box-sizing: border-box;">
-                </div>
-
-                <div id="iconURLWrapperCreate">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Icon URL <span style="font-weight: normal; font-style: italic; color: rgba(255, 255, 255, 0.2); font-size: 0.8rem;"> It can also be an emoji</span></label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="itemIcon" placeholder="https://..." style="flex-grow: 1; padding: 8px;">
-                        <div style="background: #0b1021; padding: 5px; border-radius: 4px; display: flex; align-items: center; min-width: 30px; min-height: 30px;">
-                            <img src="/static/assets/preview-icon.png" id="iconPreview" width="30px" height="30px" style="object-fit: contain;">
-                        </div>
+        <div class="section-container">
+            <div class="section">
+                <h3 class="section-title">Item type</h3>
+                <div class="section-content">
+                    <div>
+                        <input type="radio" id="item-type-item" name="radio-item-type" value="item" required checked>
+                        <label for="item-type-item">Item</label>
+                        <input type="radio" id="item-type-iframe" name="radio-item-type" value="iframe">
+                        <label for="item-type-iframe">Iframe</label>
                     </div>
                 </div>
+            </div>
 
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL</label>
-                    <input type="url" id="itemUrlCreate" placeholder="https://google.com" style="width: 100%; padding: 8px; box-sizing: border-box;">
+            <div class="section">
+                <h3 class="section-title">Name</h3>
+                <div class="section-content">
+                    <input type="text" id="itemNameCreate" placeholder="Item name..." style="border: none;">
                 </div>
+            </div>
 
-                <div id="categoryWrapperCreate">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Category</label>
-                    <select id="itemCategoryCreate" style="width: 100%; padding: 8px;">
+            <div class="section" id="iconURLWrapperCreate">
+                <h3 class="section-title">Icon URL <span class="section-description">It can also be an emoji</span></h3>
+                <div class="section-content">
+                    <input type="text" id="itemIcon" placeholder="https://..." style="width: 100%; border: none;">
+                    <div style="min-width: 30px; min-height: 30px; display: flex; align-items: center;">
+                        <img src="/static/assets/preview-icon.svg" id="iconPreview" width="30px" height="30px" style="object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">URL</h3>
+                <div class="section-content">
+                    <input type="url" id="itemUrlCreate" placeholder="https://google.com" style="width: 100%; border: none;">
+                </div>
+            </div>
+
+            <div class="section" id="categoryWrapperCreate">
+                <h3 class="section-title">Category</h3>
+                <div class="section-content">
+                    <select id="itemCategoryCreate" style="width: 100%; border: none;">
                         <option value="newCategory" ${categorySelectValue === "newCategory" ? "selected" : ""}>- New category -</option>
                         ${categoryOptions}
                     </select>
                 </div>
-
-                <div id="newCategoryWrapperCreate" style="background: #0b1021; padding: 10px; border-radius: 4px; display: ${showNewCategoryWrapper ? 'block' : 'none'};">
-                    <label style="display: block; margin-bottom: 5px;">New category name</label>
-                    <input type="text" id="newCategoryCreate" value="${preselectedCategory}" style="width: 100%; padding: 8px; box-sizing: border-box;">
+                <div class="section-content" id="newCategoryWrapperCreate" style="display: ${showNewCategoryWrapper ? '' : 'none'};">
+                    <label>New category name</label>
+                    <input type="text" id="newCategoryCreate" value="${preselectedCategory}">
                 </div>
+            </div>
 
-                <div id="openingMethodWrapperCreate">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Opening method</label>
-                    <select id="openingMethodCreate" style="width: 100%; padding: 8px;">
+            <div class="section" id="openingMethodWrapperCreate">
+                <h3 class="section-title">Opening method</h3>
+                <div class="section-content">
+                    <select id="openingMethodCreate" style="width: 100%; border: none;">
                         <option value="true" selected>New tab</option>
                         <option value="false">Same tab</option>
                     </select>
                 </div>
             </div>
-
-            <div class="dialog-actions">
-                <button type="button" class="success-btn" id="createItemBtnDialog">Create</button>
-                <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
-            </div>
         </div>
+
+        <div class="dialog-actions">
+            <button type="button" class="success-btn" id="createItemBtnDialog">Create</button>
+            <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
+        </div>
+    </div>
     `;
 }
 
@@ -109,7 +123,7 @@ function attachCreateListeners(dialog, preselectedCategory) {
     if (itemCategoryCreate) {
         itemCategoryCreate.addEventListener('change', () => {
             if (itemCategoryCreate.value === "newCategory") {
-                newCategoryWrapperCreate.style.display = "block";
+                newCategoryWrapperCreate.style.display = "";
                 selectedCategory = newCategoryCreate.value;
             } else {
                 newCategoryWrapperCreate.style.display = "none";
@@ -128,9 +142,37 @@ function attachCreateListeners(dialog, preselectedCategory) {
 
     // Icon preview
     const itemIconCreate = document.getElementById('itemIcon');
+    const iconPreview = document.getElementById('iconPreview');
+    const iconPreviewContainer = iconPreview.parentElement;
+
     if (itemIconCreate) {
         itemIconCreate.addEventListener('input', () => {
-            document.getElementById('iconPreview').src = itemIconCreate.value;
+            const value = itemIconCreate.value.trim();
+
+            const existingEmoji = iconPreviewContainer.querySelector('.emoji-preview');
+            if (existingEmoji) existingEmoji.remove();
+
+            if (!value) {
+                iconPreview.style.display = '';
+                iconPreview.src = '/static/assets/preview-icon.svg';
+                return;
+            }
+
+            const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/u;
+            if (emojiRegex.test(value)) {
+                iconPreview.style.display = 'none';
+                const emojiSpan = document.createElement('span');
+                emojiSpan.className = 'emoji-preview';
+                emojiSpan.textContent = value;
+                emojiSpan.style.fontSize = '1.5rem';
+                iconPreviewContainer.appendChild(emojiSpan);
+            } else {
+                iconPreview.style.display = '';
+                iconPreview.src = value;
+                iconPreview.onerror = () => {
+                    iconPreview.src = '/static/assets/preview-icon.svg';
+                };
+            }
         });
     }
 
@@ -142,11 +184,11 @@ function attachCreateListeners(dialog, preselectedCategory) {
             const openingMethodWrapper = document.getElementById('openingMethodWrapperCreate');
 
             if (e.target.value === 'item') {
-                if (iconWrapper) iconWrapper.style.display = 'block';
-                if (openingMethodWrapper) openingMethodWrapper.style.display = 'block';
-                if (categoryWrapperCreate) categoryWrapperCreate.style.display = 'block';
+                if (iconWrapper) iconWrapper.style.display = '';
+                if (openingMethodWrapper) openingMethodWrapper.style.display = '';
+                if (categoryWrapperCreate) categoryWrapperCreate.style.display = '';
                 if (itemCategoryCreate.value === "newCategory") {
-                    newCategoryWrapperCreate.style.display = 'block';
+                    newCategoryWrapperCreate.style.display = '';
                 }
                 createItemTitle.innerHTML = "Create item";
                 itemNameCreate.placeholder = "Item name...";
@@ -195,7 +237,7 @@ function attachCreateListeners(dialog, preselectedCategory) {
                 ).then(() => updateDashboard());
             }
 
-            dialog.close();
+            closeDialog(dialog);
         });
     }
 }
