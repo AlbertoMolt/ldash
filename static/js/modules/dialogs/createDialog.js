@@ -57,7 +57,7 @@ function buildCreateForm(categoryOptions, preselectedCategory) {
             </div>
 
             <div class="section" id="iconURLWrapperCreate">
-                <h3 class="section-title">Icon URL <span class="section-description">It can also be an emoji</span></h3>
+                <h3 class="section-title">Icon URL <span class="section-description">Emoji supported</span></h3>
                 <div class="section-content">
                     <input type="text" id="itemIcon" placeholder="https://..." style="width: 100%; border: none;">
                     <div style="min-width: 30px; min-height: 30px; display: flex; align-items: center;">
