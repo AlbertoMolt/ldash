@@ -176,20 +176,24 @@ button:hover {
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 5px;
     background-color: var(--bg-item);
-    transition: all 0.15s ease-in-out;
     z-index: 1000;
     overflow: hidden;
     position: relative;
     transform-origin: 50% 50%;
+    
+    transition: all 0.2s ease-in-out; 
 }
+
 .item-card:hover {
-    scale: 1.07;
+    scale: 1.05;
     z-index: 1001;
     border: 1px solid var(--color-border-hover);
+    transition: all 0.15s ease-out;
 }
 
 .item-card:active {
-    scale: 1.03;
+    scale: 0.98;
+    transition: scale 0.05s ease-out;
 }
 
 .item-card a {
