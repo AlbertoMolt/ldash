@@ -53,6 +53,8 @@ export function openDialog(dialog) {
     if (state.disableDialogs) return;
     if (state.dialogOpen) return;
 
+    history.pushState({ dialog: true }, '');
+
     state.dialogOpen = true;
     dialog.showModal();
 

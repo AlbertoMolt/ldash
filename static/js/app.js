@@ -15,6 +15,7 @@ import { updateDashboard } from './modules/dashboard.js';
 
 // Dialogs
 import { initCancelButtons } from './modules/operationsUtils.js';
+import { closeAllDialogs } from './modules/utils.js';
 
 // UI modules
 import { initContextMenu } from './modules/contextMenu.js';
@@ -41,6 +42,12 @@ initShortcuts();
 initToolbarButtons();
 initDragAndDrop();
 
+
+window.addEventListener('popstate', (e) => {
+    state.dialogOpen = false;
+    state.disableDialogs = false;
+    closeAllDialogs();
+});
 
 // --- Load persisted settings ---
 window.onload = () => {
