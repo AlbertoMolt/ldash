@@ -2,6 +2,7 @@
 //      STATUS PING + WEBSOCKET
 // ================================
 
+import { getCookie } from './utils.js';
 import { fetchItemStatus } from './api.js';
 import { apiForceCheckItemStatus } from './api.js';
 import { sleep } from './utils.js';
@@ -13,6 +14,13 @@ export async function startStatusPolling() {
     connectWebSocket();
     
     await loadInitialStatus();
+}
+
+export function applyPingVisibility() {
+    const enabled = document.cookie.includes('statusPing=true');
+    document.querySelectorAll('.status-btn').forEach(btn => {
+        btn.style.display = enabled ? '' : 'none';
+    });
 }
 
 function connectWebSocket() {
@@ -48,6 +56,8 @@ async function loadInitialStatus() {
 }
 
 function updateStatusUI(statuses) {
+    const pingEnabled = getCookie('statusPing') === "true";
+
     if (!Array.isArray(statuses)) return;
     
     statuses.forEach(itemStatus => {
@@ -57,6 +67,8 @@ function updateStatusUI(statuses) {
         const pingBtn = el.querySelector('.status-btn');
         const ping = pingBtn.querySelector('.status-ping');
         if (!ping) return;
+
+        pingBtn.style.display = pingEnabled ? '' : 'none';
 
         const isOnline = itemStatus.status > 0 && itemStatus.status < 400;
         const isPartial = itemStatus.status >= 400 && itemStatus.status < 500;

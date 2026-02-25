@@ -1,0 +1,70 @@
+<div class="create-item-wrapper">
+    <h2 class="title" id="createItemTitle">Create item</h2>
+
+    <div class="section-container">
+        <div class="section">
+            <h3 class="section-title">Item type</h3>
+            <div class="section-content">
+                <div>
+                    <input type="radio" id="item-type-item" name="radio-item-type" value="item" required checked>
+                    <label for="item-type-item">Item</label>
+                    <input type="radio" id="item-type-iframe" name="radio-item-type" value="iframe">
+                    <label for="item-type-iframe">Iframe</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Name</h3>
+            <div class="section-content">
+                <input type="text" id="itemNameCreate" placeholder="Item name..." style="border: none;">
+            </div>
+        </div>
+
+        <div class="section" id="iconURLWrapperCreate">
+            <h3 class="section-title">Icon URL <span class="section-description">Emoji supported</span></h3>
+            <div class="section-content">
+                <input type="text" id="itemIcon" placeholder="https://..." style="width: 100%; border: none;">
+                <div style="min-width: 30px; min-height: 30px; display: flex; align-items: center;">
+                    <img src="/static/assets/preview-icon.svg" id="iconPreview" width="30px" height="30px" style="object-fit: contain;">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">URL</h3>
+            <div class="section-content">
+                <input type="url" id="itemUrlCreate" placeholder="https://google.com" style="width: 100%; border: none;">
+            </div>
+        </div>
+
+        <div class="section" id="categoryWrapperCreate">
+            <h3 class="section-title">Category</h3>
+            <div class="section-content">
+                <select id="itemCategoryCreate" style="width: 100%; border: none;">
+                    <option value="newCategory">- New category -</option>
+                    <!-- options injected by JS -->
+                </select>
+            </div>
+            <div class="section-content" id="newCategoryWrapperCreate">
+                <label>New category name</label>
+                <input type="text" id="newCategoryCreate" value="">
+            </div>
+        </div>
+
+        <div class="section" id="openingMethodWrapperCreate">
+            <h3 class="section-title">Opening method</h3>
+            <div class="section-content">
+                <select id="openingMethodCreate" style="width: 100%; border: none;">
+                    <option value="true" selected>New tab</option>
+                    <option value="false">Same tab</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="dialog-actions">
+        <button type="button" class="success-btn" id="createItemBtnDialog">Create</button>
+        <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
+    </div>
+</div>

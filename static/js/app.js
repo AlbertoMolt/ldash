@@ -23,6 +23,7 @@ import { initCollapse } from './modules/collapse.js';
 import { initShortcuts } from './modules/shortcuts.js';
 import { initToolbarButtons } from './modules/toolbar.js';
 import { initDragAndDrop } from './modules/dragAndDrop.js';
+import { applyPingVisibility } from './modules/statusPing.js';
 
 
 // --- Track mouse position ---
@@ -57,6 +58,7 @@ window.onload = () => {
     loadSearchEndpoint();
     loadSearchBar();
     loadConfigInputState();
+    applyPingVisibility();
 };
 
 // --- Initial render ---

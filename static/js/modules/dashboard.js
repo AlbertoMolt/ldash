@@ -7,8 +7,33 @@ import { elements } from './dom.js';
 import { fetchItemsByCategory, fetchItemCategories } from './api.js';
 import { restoreCollapsableElementsStates } from './collapse.js';
 import { startStatusPolling } from './statusPing.js';
+import { loadTemplate } from './templateLoader.js';
 
 let isDashboardUpdating = false;
+
+// Parse an HTML string into a DOM element
+function parseTemplate(html) {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = html.trim();
+    return tpl.content.firstElementChild;
+}
+
+// Pre-load all dashboard templates and cache them as DOM clones
+let _templates = null;
+async function getTemplates() {
+    if (_templates) return _templates;
+    const [categoryHtml, itemHtml, iframeHtml] = await Promise.all([
+        loadTemplate('dashboard/category.html'),
+        loadTemplate('dashboard/item-card.html'),
+        loadTemplate('dashboard/iframe-card.html'),
+    ]);
+    _templates = {
+        category: parseTemplate(categoryHtml),
+        item:     parseTemplate(itemHtml),
+        iframe:   parseTemplate(iframeHtml),
+    };
+    return _templates;
+}
 
 export async function updateDashboard() {
     if (state.organizeModeEnabled) return;
@@ -16,9 +41,12 @@ export async function updateDashboard() {
 
     isDashboardUpdating = true;
     try {
-        const items = await fetchItemsByCategory();
-        const categories = await fetchItemCategories();
-        renderDashboard(items, categories);
+        const [items, categories, templates] = await Promise.all([
+            fetchItemsByCategory(),
+            fetchItemCategories(),
+            getTemplates(),
+        ]);
+        renderDashboard(items, categories, templates);
         restoreCollapsableElementsStates();
         startStatusPolling();
     } finally {
@@ -26,110 +54,113 @@ export async function updateDashboard() {
     }
 }
 
-function renderDashboard(items, categories) {
+function renderDashboard(items, categories, templates) {
     const { itemsContainer } = elements;
-    const html = [];
     const filteredItems = items.filter(item => item.profile === state.currentProfile);
 
     if (filteredItems.length === 0) {
-        itemsContainer.style.width = "50%";
+        itemsContainer.style.width = '50%';
         itemsContainer.innerHTML = `<p style="text-align:center;">No items were found in this profile. Create an item to use.</p>`;
         return;
     }
 
-    itemsContainer.removeAttribute("style");
-    itemsContainer.innerHTML = "";
+    itemsContainer.removeAttribute('style');
+    itemsContainer.innerHTML = '';
 
-    const regularItems = filteredItems.filter(item => item.item_type === "item");
-    const otherItems = filteredItems.filter(item => item.item_type !== "item");
-    const itemsWithCategory = regularItems.filter(item => item.category);
+    const regularItems      = filteredItems.filter(item => item.item_type === 'item');
+    const otherItems        = filteredItems.filter(item => item.item_type !== 'item');
+    const itemsWithCategory    = regularItems.filter(item => item.category);
     const itemsWithoutCategory = regularItems.filter(item => !item.category);
 
-    // Uncategorized items
+    // Uncategorized
     if (itemsWithoutCategory.length > 0) {
-        html.push(`
-            <div class="category" data-type="category" data-category="uncategorized">
-                <div class="category-header category-button" role="button" tabindex="0">
-                    <h3>Uncategorized</h3>
-                </div>
-            <div class="items-wrapper">
-        `);
-        for (const item of itemsWithoutCategory) {
-            html.push(renderItemByType(item));
-        }
-        html.push(`</div></div>`);
+        const catEl = buildCategory('uncategorized', 'Uncategorized', itemsWithoutCategory, templates);
+        itemsContainer.appendChild(catEl);
     }
 
-    // Categorized items (respecting order)
+    // Categorized (respecting server order)
     const categoriesWithItems = [...new Set(itemsWithCategory.map(item => item.category))];
-    const categoriesToShow = categories.filter(cat => categoriesWithItems.includes(cat));
+    const categoriesToShow    = categories.filter(cat => categoriesWithItems.includes(cat));
 
     for (const category of categoriesToShow) {
         const categoryItems = itemsWithCategory.filter(item => item.category === category);
         if (categoryItems.length > 0) {
-            html.push(`
-                <div class="category" data-name="${category}" data-type="category" data-category="${category}">
-                    <div class="category-header category-button" role="button" tabindex="0">
-                        <h3>${category}</h3>
-                    </div>
-                <div class="items-wrapper">
-            `);
-            for (const item of categoryItems) {
-                html.push(renderItemByType(item));
-            }
-            html.push(`</div></div>`);
+            const catEl = buildCategory(category, category, categoryItems, templates);
+            itemsContainer.appendChild(catEl);
         }
     }
 
-    // Non-regular items (iframes, etc.)
+    // Iframes / other
     for (const item of otherItems) {
-        html.push(renderItemByType(item));
+        itemsContainer.appendChild(buildItem(item, templates));
     }
-
-    itemsContainer.innerHTML = html.join("");
 }
 
-function renderItemByType(item) {
-    const target = item.tab_type ? "_blank" : "_self";
+// --- Builders ---
 
-    switch (item.item_type) {
-        case "item": {
-            let iconElement;
-            if (/\p{Extended_Pictographic}/u.test(item.icon)) {
-                iconElement = `<span class="item-icon emoji-icon" aria-hidden="true">${item.icon}</span>`;
-            } else {
-                iconElement = `<img class="item-icon" src="${item.icon}" alt="${item.name} icon" loading="lazy">`;
-            }
+function buildCategory(categoryKey, categoryLabel, items, templates) {
+    const el = templates.category.cloneNode(true);
+    el.dataset.name     = categoryKey;
+    el.dataset.category = categoryKey;
+    el.querySelector('.category-name').textContent = categoryLabel;
 
-            return `
-                <div class="item-card" data-id="${item.id}" data-name="${item.name}" data-type="item" data-typeitem="item" data-category="${item.category}">
-                    <a href="${item.url}" target="${target}">
-                        <div class="item-content" tabindex="0">
-                            <p class="item-title">${item.name}</p>
-                            ${iconElement}
-                        </div>
-                    </a>
-                    <button class="status-btn" id="statusBtn" tabindex="0" title="Ping now"><span class="status-ping" id="statusPing">•</span></button>
-                </div>
-            `;
-        }
-        case "iframe":
-            return `
-                <div class="iframe-item" data-id="${item.id}" data-name="${item.name}" data-type="item" data-typeitem="iframe" data-category="${item.category}">
-                    <div class="iframe-header iframe-button" tabindex="0">
-                        <h2 class="iframe-title">${item.name}</h2>
-                    </div>
-                    <iframe
-                        class="iframe-content"
-                        src="${item.url}"
-                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-presentation"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; microphone; camera; display-capture"
-                        allowfullscreen
-                        onerror="this.style.display='none'; this.parentElement.innerHTML += '<p style=\\'text-align:center; padding:20px;\\'>❌ This site cannot be displayed in an iframe</p>'"
-                    ></iframe>
-                </div>
-            `;
+    const wrapper = el.querySelector('.items-wrapper');
+    for (const item of items) {
+        wrapper.appendChild(buildItem(item, templates));
     }
+    return el;
+}
+
+function buildItem(item, templates) {
+    switch (item.item_type) {
+        case 'item':   return buildItemCard(item, templates);
+        case 'iframe': return buildIframeCard(item, templates);
+        default:       return document.createTextNode('');
+    }
+}
+
+function buildItemCard(item, templates) {
+    const el = templates.item.cloneNode(true);
+
+    el.dataset.id       = item.id;
+    el.dataset.name     = item.name;
+    el.dataset.category = item.category;
+
+    const link = el.querySelector('a');
+    link.href   = item.url;
+    link.target = item.tab_type === 'true' || item.tab_type === true ? '_blank' : '_self';
+
+    el.querySelector('.item-title').textContent = item.name;
+
+    // Icon
+    const content = el.querySelector('.item-content');
+    if (/\p{Extended_Pictographic}/u.test(item.icon)) {
+        const span = document.createElement('span');
+        span.className   = 'item-icon emoji-icon';
+        span.ariaHidden  = 'true';
+        span.textContent = item.icon;
+        content.appendChild(span);
+    } else {
+        const img = document.createElement('img');
+        img.className = 'item-icon';
+        img.src       = item.icon;
+        img.alt       = `${item.name} icon`;
+        img.loading   = 'lazy';
+        content.appendChild(img);
+    }
+
+    return el;
+}
+
+function buildIframeCard(item, templates) {
+    const el = templates.iframe.cloneNode(true);
+
+    el.dataset.id       = item.id;
+    el.dataset.name     = item.name;
+    el.dataset.category = item.category;
+
+    el.querySelector('.iframe-title').textContent = item.name;
+    el.querySelector('.iframe-content').src       = item.url;
+
+    return el;
 }

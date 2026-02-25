@@ -1,0 +1,57 @@
+<div class="edit-item-wrapper">
+    <h2 class="title" id="editItemTitle">Edit item</h2>
+
+    <div class="section-container">
+        <div class="section">
+            <h3 class="section-title">Name</h3>
+            <div class="section-content">
+                <input type="text" id="itemNameEdit" value="" style="width: 100%; border: none;">
+            </div>
+        </div>
+
+        <div class="section" id="iconWrapperEdit">
+            <h3 class="section-title">Icon URL <span class="section-description">Emoji supported</span></h3>
+            <div class="section-content">
+                <input type="text" id="itemIcon" value="" style="flex: 1; border: none;">
+                <div style="min-width: 30px; min-height: 30px; display: flex; align-items: center;">
+                    <img src="/static/assets/preview-icon.svg" id="iconPreview" width="30px" height="30px" style="object-fit: contain;">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">URL</h3>
+            <div class="section-content">
+                <input type="url" id="itemUrlEdit" value="" style="width: 100%; border: none;">
+            </div>
+        </div>
+
+        <div class="section" id="categoryWrapperEdit">
+            <h3 class="section-title">Category</h3>
+            <div class="section-content">
+                <select id="itemCategoryEdit" style="width: 100%; border: none;">
+                    <!-- options injected by JS -->
+                </select>
+            </div>
+            <div class="section-content" id="newCategoryWrapperEdit" style="display: none;">
+                <label>New category name</label>
+                <input type="text" id="newCategoryEdit">
+            </div>
+        </div>
+
+        <div class="section" id="openingMethodWrapperEdit">
+            <h3 class="section-title">Opening method</h3>
+            <div class="section-content">
+                <select id="openingMethodEdit" style="width: 100%; border: none;">
+                    <option value="true">New tab</option>
+                    <option value="false">Same tab</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="dialog-actions">
+        <button type="button" class="success-btn" id="applyItemBtn">Apply</button>
+        <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
+    </div>
+</div>

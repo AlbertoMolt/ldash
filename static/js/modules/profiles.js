@@ -7,6 +7,7 @@ import { elements } from './dom.js';
 import { setCookie, getCookie, existCookie } from './utils.js';
 import { fetchItemProfiles } from './api.js';
 import { updateDashboard } from './dashboard.js';
+import { applyPingVisibility } from './statusPing.js';
 
 export function getDefaultProfile() {
     if (existCookie("profile")) {
@@ -60,6 +61,7 @@ export function initProfileListeners() {
 
     enablePingStatus.addEventListener('change', () => {
         setCookie("statusPing", enablePingStatus.checked, 365);
+        applyPingVisibility();
     });
 
     document.getElementById("create-profile-btn").addEventListener("click", () => {
